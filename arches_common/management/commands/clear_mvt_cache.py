@@ -3,6 +3,8 @@ from django.core.cache import cache
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 class Command(BaseCommand):
     """
     Command to clear the MVT cache

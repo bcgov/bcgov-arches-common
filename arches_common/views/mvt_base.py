@@ -9,6 +9,7 @@ from arches.app.utils.permission_backend import (
 from arches.app.models import models
 from arches.app.models.system_settings import settings
 
+
 class MVTConfig:
 
     # object with nodeid: ['field1','field2','field3'...] lookup
@@ -56,8 +57,12 @@ class MVTQueryGenerator:
     def format_query(nodeid, config):
         if nodeid not in MVTQueryGenerator.query_cache:
             print("Generating query")
-            attributes = "\n".join(map(lambda field: "tiledata ->> '%s' as %s," % (field, field), config))
-            MVTQueryGenerator.query_cache[nodeid] = MVTQueryGenerator.base_query.format(attributes)
+            attributes = "\n".join(
+                map(lambda field: "tiledata ->> '%s' as %s," % (field, field), config)
+            )
+            MVTQueryGenerator.query_cache[nodeid] = MVTQueryGenerator.base_query.format(
+                attributes
+            )
         print("Returning query from cache")
         return MVTQueryGenerator.query_cache[nodeid]
 
@@ -74,12 +79,16 @@ class MVT(MVTBase):
             models.UserProfile.objects.create(user=request.user)
         viewable_nodegroups = request.user.userprofile.viewable_nodegroups
         try:
-            node = models.Node.objects.get(nodeid=nodeid, nodegroup_id__in=viewable_nodegroups)
+            node = models.Node.objects.get(
+                nodeid=nodeid, nodegroup_id__in=viewable_nodegroups
+            )
         except models.Node.DoesNotExist:
             raise Http404()
         config = node.config
 
-        if int(zoom) <= int(config["clusterMaxZoom"]) or not self.get_mvt_config().has_config(nodeid):
+        if int(zoom) <= int(
+            config["clusterMaxZoom"]
+        ) or not self.get_mvt_config().has_config(nodeid):
             # print("Using parent")
             return super(MVT, self).get(request, nodeid, zoom, x, y)
         else:
@@ -87,18 +96,33 @@ class MVT(MVTBase):
             cache_key = MVT.create_mvt_cache_key(node, zoom, x, y, request.user)
             tile = cache.get(cache_key)
             if tile is None:
-                resource_ids = [] if request.user.is_superuser else get_restricted_instances(request.user, allresources=True)
+                resource_ids = (
+                    []
+                    if request.user.is_superuser
+                    else get_restricted_instances(request.user, allresources=True)
+                )
                 if len(resource_ids) == 0:
-                    resource_ids.append("10000000-0000-0000-0000-000000000001")  # This must have a uuid that will never be a resource id.
+                    resource_ids.append(
+                        "10000000-0000-0000-0000-000000000001"
+                    )  # This must have a uuid that will never be a resource id.
                 resource_ids = tuple(resource_ids)
 
                 with connection.cursor() as cursor:
                     # print(self.site_query % {"nodeid": nodeid, "zoom": zoom, "x": x, "y": y,
                     #                          "resource_ids": resource_ids})
                     cursor.execute(
-                        MVTQueryGenerator.format_query(nodeid, self.get_mvt_config().get_config(nodeid)),
+                        MVTQueryGenerator.format_query(
+                            nodeid, self.get_mvt_config().get_config(nodeid)
+                        ),
                         # self.site_query,
-                        {"nodeid": nodeid, "zoom": zoom, "x": x, "y":y, "resource_ids": resource_ids } )
+                        {
+                            "nodeid": nodeid,
+                            "zoom": zoom,
+                            "x": x,
+                            "y": y,
+                            "resource_ids": resource_ids,
+                        },
+                    )
                     tile = bytes(cursor.fetchone()[0])
                     # print(str(tile))
                     cache.set(cache_key, tile, settings.TILE_CACHE_TIMEOUT)

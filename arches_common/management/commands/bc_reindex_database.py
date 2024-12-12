@@ -24,7 +24,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.reindex_database(quiet=options["quiet"])
 
-    def reindex_database(self, clear_index=True, batch_size=settings.BULK_IMPORT_BATCH_SIZE, quiet=False):
+    def reindex_database(
+        self, clear_index=True, batch_size=settings.BULK_IMPORT_BATCH_SIZE, quiet=False
+    ):
         resource_types_uuid = []
         resource_types = (
             models.GraphModel.objects.filter(isresource=True)
@@ -45,7 +47,7 @@ class Command(BaseCommand):
             resource_types_uuid.append(resource_types_lookup[i][1])
 
         # Add any resources not in the index order list
-        for key,value in resource_types_lookup.items():
+        for key, value in resource_types_lookup.items():
             if key not in index_order:
                 resource_types_uuid.append(value[1])
         # for val in resource_types:

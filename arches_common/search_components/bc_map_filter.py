@@ -59,8 +59,13 @@ class BCMapFilter(BaseSearchFilter):
                     buffered_feature_geoms.append(buffered_feature_geom)
 
                     # If it's not inverted (filter is set, no must_not) and it's a union, turn it into a should
-                    if len(spatial_filter["features"]) > 1 and spatial_filter["operation"] == "union":
-                        single_feature_search_query.should(single_feature_search_query.dsl["bool"]["filter"][0])
+                    if (
+                        len(spatial_filter["features"]) > 1
+                        and spatial_filter["operation"] == "union"
+                    ):
+                        single_feature_search_query.should(
+                            single_feature_search_query.dsl["bool"]["filter"][0]
+                        )
                         single_feature_search_query.dsl["bool"]["filter"] = []
 
                     spatial_query.merge(single_feature_search_query)
@@ -71,6 +76,8 @@ class BCMapFilter(BaseSearchFilter):
             search_query_object[self.componentname] = {}
 
         try:
-            search_query_object[self.componentname]["search_buffer"] = buffered_feature_geoms
+            search_query_object[self.componentname][
+                "search_buffer"
+            ] = buffered_feature_geoms
         except NameError:
             logger.info(_("Feature geometry is not defined"))

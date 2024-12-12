@@ -4,6 +4,7 @@ import urllib3.request, urllib3.response
 import json
 import re
 
+
 # Management command to administer the Elasticsearch security preferences. Creates
 # 1. a role for each application that has minimal privileges necessary
 # 2. a user with a single role as created in 1.
@@ -14,15 +15,18 @@ class Command(BaseCommand):
     es_connection_parameters = {
         "host": settings.ELASTICSEARCH_HTTP_HOST,
         "port": settings.ELASTICSEARCH_HTTP_PORT,
-        "cert_location":  settings.ELASTICSEARCH_CERT_LOCATION,
+        "cert_location": settings.ELASTICSEARCH_CERT_LOCATION,
         "username": None,
-        "password": None
+        "password": None,
     }
 
     endpoints = {
         "get_roles": {"mode": "GET", "path": "_security/role"},
         "get_role": {"mode": "GET", "path": "_security/role/%(role_name)s"},
-        "create_role": {"mode": "PUT", "path": "_security/role/%(role_name)s", "payload": """  
+        "create_role": {
+            "mode": "PUT",
+            "path": "_security/role/%(role_name)s",
+            "payload": """  
         {
           "cluster": ["manage_own_api_key"],
           "applications": [
@@ -41,25 +45,36 @@ class Command(BaseCommand):
             "application": ["%(app_name)s"],
             "description": ["Application owner role for the %(app_name)s application"]
           }
-        }"""},
+        }""",
+        },
         "delete_role": {"mode": "DELETE", "path": "_security/role/%(role_name)s"},
-
-
         "get_users": {"mode": "GET", "path": "_security/user"},
         "get_user": {"mode": "GET", "path": "_security/user/%(app_name)s"},
-        "create_user": {"mode": "PUT", "path": "_security/user/%(app_name)s", "payload": """
+        "create_user": {
+            "mode": "PUT",
+            "path": "_security/user/%(app_name)s",
+            "payload": """
         { "password" : "%(password)s",
            "roles" : [ "%(app_name)s-user" ], "full_name" : "%(app_name)s Application Owner",
            "metadata" : {
              "description" : "Application User for %(app_name)s"
            }
-        }"""},
+        }""",
+        },
         "delete_user": {"mode": "DELETE", "path": "_security/user/%(app_name)s"},
-
-
-        "get_api_keys": {"mode": "GET", "path": "_security/api_key?name=%(key_name)s&owner=true"},
-        "delete_api_key": {"mode": "DELETE", "path": "_security/api_key", "payload": """ { "name": "%(app_name)s-key", "owner": "true" }"""},
-        "create_api_key": {"mode": "POST", "path": "_security/api_key", "payload": """{ "name": "%(app_name)s-key",
+        "get_api_keys": {
+            "mode": "GET",
+            "path": "_security/api_key?name=%(key_name)s&owner=true",
+        },
+        "delete_api_key": {
+            "mode": "DELETE",
+            "path": "_security/api_key",
+            "payload": """ { "name": "%(app_name)s-key", "owner": "true" }""",
+        },
+        "create_api_key": {
+            "mode": "POST",
+            "path": "_security/api_key",
+            "payload": """{ "name": "%(app_name)s-key",
           "role_descriptors": {
               "application-role": {
                 "indices": [ { "names": ["%(app_name)s_*"], "privileges": ["all"] } ]
@@ -73,8 +88,8 @@ class Command(BaseCommand):
                   "developer": "QED Systems Inc.",
                   "tags": ["dev", "staging"]
               }
-          }}"""},
-
+          }}""",
+        },
     }
 
     def add_arguments(self, parser):
@@ -87,9 +102,9 @@ class Command(BaseCommand):
                 "api_key",
             ],
             help="Operation Type; "
-                 + "'role'=Create / Delete / List Elasticsearch roles"
-                 + "'user'=Create / Delete / List Elasticsearch users"
-                 + "'api_key'=Create / Invalidate / List API Keys"
+            + "'role'=Create / Delete / List Elasticsearch roles"
+            + "'user'=Create / Delete / List Elasticsearch users"
+            + "'api_key'=Create / Invalidate / List API Keys",
         )
 
         # ES Connection options
@@ -194,34 +209,49 @@ class Command(BaseCommand):
         )
 
     def _get_headers(self):
-        headers = urllib3.util.make_headers(basic_auth="%s:%s"%(self.es_connection_parameters["username"],
-                                                                self.es_connection_parameters["password"]),
-                                            disable_cache=True)
-        headers['Content-Type'] =  'application/json'
+        headers = urllib3.util.make_headers(
+            basic_auth="%s:%s"
+            % (
+                self.es_connection_parameters["username"],
+                self.es_connection_parameters["password"],
+            ),
+            disable_cache=True,
+        )
+        headers["Content-Type"] = "application/json"
         return headers
 
     def _make_es_call(self, endpoint_name, parameters):
         # use the opener to fetch a URL
 
         # print("Parameters: %s " % parameters)
-        http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=self.es_connection_parameters["cert_location"])
+        http = urllib3.PoolManager(
+            cert_reqs="CERT_REQUIRED",
+            ca_certs=self.es_connection_parameters["cert_location"],
+        )
         headers = self._get_headers()
         endpoint = self.endpoints[endpoint_name]
 
         endpoint_str = endpoint["path"] % parameters if parameters else endpoint["path"]
-        url = "https://%s:%s/%s" % (self.es_connection_parameters["host"] ,
-                                    self.es_connection_parameters["port"], endpoint_str)
+        url = "https://%s:%s/%s" % (
+            self.es_connection_parameters["host"],
+            self.es_connection_parameters["port"],
+            endpoint_str,
+        )
 
         if "payload" in endpoint and endpoint["payload"] and endpoint["mode"] != "GET":
-            payload_bytes = ( re.compile(r"\n").sub("", endpoint["payload"]) %parameters if parameters else endpoint["payload"]).encode()
+            payload_bytes = (
+                re.compile(r"\n").sub("", endpoint["payload"]) % parameters
+                if parameters
+                else endpoint["payload"]
+            ).encode()
         else:
             payload_bytes = None
         # print("Payload: %s" % payload_bytes)
 
-        response = http.request(endpoint["mode"], url=url, headers=headers, body=payload_bytes)
+        response = http.request(
+            endpoint["mode"], url=url, headers=headers, body=payload_bytes
+        )
         return json.loads(response.data)
-
-
 
     # Get API Keys for the give app_name
     def get_api_keys(self, app_name, valid_only=False):
@@ -229,10 +259,11 @@ class Command(BaseCommand):
         # print(response["api_keys"][0])
         # print(len(response["api_keys"]))
         if valid_only:
-            response["api_keys"] = list(filter(lambda item: not item["invalidated"], response["api_keys"]))
+            response["api_keys"] = list(
+                filter(lambda item: not item["invalidated"], response["api_keys"])
+            )
         # print(response)
         print(json.dumps(response, indent=4, sort_keys=True))
-
 
     # Get API Keys for the give app_name
     def create_api_key(self, app_name):
@@ -252,13 +283,13 @@ class Command(BaseCommand):
             for key in sorted(response.keys()):
                 print(key)
 
-
     def create_user(self, app_name, password):
         if not app_name or not password:
             print("app_name and app_user_password options required")
             exit(1)
-        response = self._make_es_call("create_user", {"app_name": app_name,
-                                                      "password": password})
+        response = self._make_es_call(
+            "create_user", {"app_name": app_name, "password": password}
+        )
         print(json.dumps(response, indent=4, sort_keys=True))
 
     def delete_user(self, app_name):
@@ -278,38 +309,50 @@ class Command(BaseCommand):
         # print(json.dumps(response, indent=4, sort_keys=True))
 
     def create_role(self, app_name):
-        response = self._make_es_call("create_role", {"role_name": "%s-user" % app_name, "app_name": app_name})
+        response = self._make_es_call(
+            "create_role", {"role_name": "%s-user" % app_name, "app_name": app_name}
+        )
         print(json.dumps(response, indent=4, sort_keys=True))
 
     def delete_role(self, app_name, role_name):
-        response = self._make_es_call("delete_role", {"role_name": "%s-user" % app_name if app_name else role_name})
+        response = self._make_es_call(
+            "delete_role",
+            {"role_name": "%s-user" % app_name if app_name else role_name},
+        )
         print(json.dumps(response, indent=4, sort_keys=True))
 
-# Tries to set the ES admin credentials. Uses the command line values if provided,
-# otherwise tries the values set in the .settings_es_admin file
+    # Tries to set the ES admin credentials. Uses the command line values if provided,
+    # otherwise tries the values set in the .settings_es_admin file
     def _set_es_connection_parameters(self, options):
         if options["elasticsearch_username"]:
-            self.es_connection_parameters["username"] = options["elasticsearch_username"]
+            self.es_connection_parameters["username"] = options[
+                "elasticsearch_username"
+            ]
         elif settings.setting_exists("ES_ADMIN_USER"):
             # print("Setting admin user to: %s" % settings.ES_ADMIN_USER)
             self.es_connection_parameters["username"] = settings.ES_ADMIN_USER
         else:
-            print("ES Admin Username must be set in settings file or on the command line.")
+            print(
+                "ES Admin Username must be set in settings file or on the command line."
+            )
             exit(1)
 
         if options["elasticsearch_password"]:
-            self.es_connection_parameters["password"] = options["elasticsearch_password"]
+            self.es_connection_parameters["password"] = options[
+                "elasticsearch_password"
+            ]
         elif settings.setting_exists("ES_ADMIN_PASSWORD"):
             # print("Setting admin password to: %s" % settings.ES_ADMIN_PASSWORD)
             self.es_connection_parameters["password"] = settings.ES_ADMIN_PASSWORD
         else:
-            print("ES Admin password must be set in settings file or on the command line.")
+            print(
+                "ES Admin password must be set in settings file or on the command line."
+            )
             exit(1)
 
         # print("Connection settings: %s" % self.es_connection_parameters)
 
-
-    def handle(self,  *args, **options):
+    def handle(self, *args, **options):
         print(options["operation"])
         self._set_es_connection_parameters(options)
 
@@ -318,7 +361,9 @@ class Command(BaseCommand):
                 self.get_users(options["app_name"])
             elif options["create"]:
                 self.create_role(options["app_name"])
-                self.create_user(app_name=options["app_name"], password=options["app_user_password"])
+                self.create_user(
+                    app_name=options["app_name"], password=options["app_user_password"]
+                )
             elif options["delete"]:
                 self.delete_user(app_name=options["app_name"])
             pass
@@ -337,13 +382,12 @@ class Command(BaseCommand):
                 exit(1)
 
             if options["create"]:
-                self.create_api_key(
-                    app_name=options["app_name"]
-                )
+                self.create_api_key(app_name=options["app_name"])
             elif options["delete"]:
                 self.delete_api_key(app_name=options["app_name"])
             elif options["list_values"]:
-                self.get_api_keys(app_name=options["app_name"],
-                                  valid_only=options["valid"])
+                self.get_api_keys(
+                    app_name=options["app_name"], valid_only=options["valid"]
+                )
             else:
                 print("Must specify one of --create, --delete or --list")

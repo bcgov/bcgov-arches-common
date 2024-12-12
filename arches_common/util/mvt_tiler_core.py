@@ -118,13 +118,13 @@ class MVTTiler:
         return query_string.format(filter=permission_filter)
 
     def createTile(
-            self,
-            nodeid: str,
-            viewable_nodegroups: list[str],
-            user: any,
-            zoom: int,
-            x: int,
-            y: int,
+        self,
+        nodeid: str,
+        viewable_nodegroups: list[str],
+        user: any,
+        zoom: int,
+        x: int,
+        y: int,
     ) -> bytes | None:
         try:
             node = models.Node.objects.get(
@@ -142,7 +142,10 @@ class MVTTiler:
                 base_params = {"zoom": zoom, "x": x, "y": y, "nodeid": nodeid}
                 # get all of the resources in this bbox
 
-                cursor.execute(self.get_resource_query(), self.get_resource_query_params(base_params))
+                cursor.execute(
+                    self.get_resource_query(),
+                    self.get_resource_query_params(base_params),
+                )
                 resources = [record[0] for record in cursor.fetchall()]
 
                 exclusive_set, resource_ids = get_filtered_instances(
@@ -174,41 +177,51 @@ class MVTTiler:
                     params = self.get_count_query_params(base_params)
                     print("Params: %s" % params)
                     cursor.execute(
-                        self.format_query(self.get_count_query(),
-                                          permission_filter=permission_framework_filter,
-                                          params=params),
+                        self.format_query(
+                            self.get_count_query(),
+                            permission_filter=permission_framework_filter,
+                            params=params,
+                        ),
                         params,
                     )
                     search_geom_count = cursor.fetchone()[0]
 
                     if search_geom_count >= min_points:
-                        params = self.get_cluster_query_params(dict({"distance": distance, "min_points": min_points}, **base_params))
+                        params = self.get_cluster_query_params(
+                            dict(
+                                {"distance": distance, "min_points": min_points},
+                                **base_params,
+                            )
+                        )
                         cursor.execute(
-                            self.format_query(self.get_cluster_query(),
-                                              permission_filter=permission_framework_filter,
-                                              params=params),
-                            params
+                            self.format_query(
+                                self.get_cluster_query(),
+                                permission_filter=permission_framework_filter,
+                                params=params,
+                            ),
+                            params,
                         )
                     elif search_geom_count:
                         params = self.get_resource_details_query_params(base_params)
                         cursor.execute(
-                            self.format_query(self.get_resource_details_query(),
-                                              permission_filter=permission_framework_filter,
-                                              params=params
-                                              ),
+                            self.format_query(
+                                self.get_resource_details_query(),
+                                permission_filter=permission_framework_filter,
+                                params=params,
+                            ),
                             params,
                         )
                     else:
                         tile = ""
                 else:
-                    params =  self.get_resource_details_query_params(base_params)
+                    params = self.get_resource_details_query_params(base_params)
                     cursor.execute(
-                        self.format_query(self.get_resource_details_query(),
-                                          permission_filter=permission_framework_filter,
-                                          params=params
-                                          ),
+                        self.format_query(
+                            self.get_resource_details_query(),
+                            permission_filter=permission_framework_filter,
+                            params=params,
+                        ),
                         params,
-
                     )
                 tile = bytes(cursor.fetchone()[0]) if tile is None else tile
                 cache.set(cache_key, tile, settings.TILE_CACHE_TIMEOUT)

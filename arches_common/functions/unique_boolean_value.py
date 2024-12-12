@@ -33,12 +33,16 @@ class UniqueBooleanValue(BaseFunction):
             other_tiles = models.TileModel.objects.filter(
                 Q(resourceinstance=tile.resourceinstance),
                 Q(nodegroup_id=self.config["triggering_nodegroups"][0]),
-                ~Q(tileid=tile.tileid))
+                ~Q(tileid=tile.tileid),
+            )
             if len(other_tiles) > 0:
                 for other_tile in other_tiles:
                     if datatype.values_match(node_value, other_tile.data[node_id]):
                         node = models.Node.objects.get(pk=node_id)
-                        raise TileValidationError("%s must be unique within all %s values" % (node_value, node.name))
+                        raise TileValidationError(
+                            "%s must be unique within all %s values"
+                            % (node_value, node.name)
+                        )
             # else:
             #     print("Why are we here?")
 
