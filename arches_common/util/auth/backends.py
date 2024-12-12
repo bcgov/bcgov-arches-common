@@ -8,7 +8,7 @@ class BCGovRemoteUserBackend(RemoteUserBackend):
         """
         Force username to lowercase and remove optional idir prefix
         """
-        cleaned_username = username.lower().replace('idir\\', '')
+        cleaned_username = username.lower().replace("idir\\", "")
 
         # print("Replacing "+username+" with "+cleaned_username)
         return cleaned_username

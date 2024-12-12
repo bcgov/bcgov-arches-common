@@ -74,7 +74,7 @@ class MVTTiler(MVTTiler_Base):
         return (
             dict(
                 base_params,
-                **{"custom_tile_data": self.get_query_config()[base_params["nodeid"]]}
+                **{"custom_tile_data": self.get_query_config()[base_params["nodeid"]]},
             )
             if base_params["nodeid"] in self.get_query_config()
             else dict(base_params, **{"custom_tile_data": None})
