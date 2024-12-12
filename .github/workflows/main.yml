@@ -7,6 +7,16 @@ on:
 
 env:
   ES_SCHEME: http
+  ES_PORT: 9200
+  ES_HOST: localhost
+  ES_CERT_FILE: ""
+  ES_API_KEY: ""
+  ELASTICSEARCH_PREFIX: arches_common
+  PGHOST: localhost
+  PGDBNAME: arches_common
+  PGPASSWORD: postgis
+  PGUSERNAME: postgres
+
 
 jobs:
   build_target_branch:
