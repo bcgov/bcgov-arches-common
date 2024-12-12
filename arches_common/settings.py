@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 
+
 def get_env_variable(var_name, is_optional=False):
     msg = "Set the %s environment variable"
     try:
@@ -20,6 +21,7 @@ def get_env_variable(var_name, is_optional=False):
             return None
         error_msg = msg % var_name
         raise ImproperlyConfigured(error_msg)
+
 
 try:
     from arches.settings import *
@@ -77,19 +79,26 @@ DEFAULT_HOST = "arches_common"
 ELASTICSEARCH_SCHEME = get_env_variable("ES_SCHEME")
 ELASTICSEARCH_HTTP_PORT = int(get_env_variable("ES_PORT"))
 ELASTICSEARCH_HTTP_HOST = get_env_variable("ES_HOST")
-ELASTICSEARCH_HOSTS = [{"scheme": ELASTICSEARCH_SCHEME, "host": ELASTICSEARCH_HTTP_HOST, "port": ELASTICSEARCH_HTTP_PORT}]
+ELASTICSEARCH_HOSTS = [
+    {
+        "scheme": ELASTICSEARCH_SCHEME,
+        "host": ELASTICSEARCH_HTTP_HOST,
+        "port": ELASTICSEARCH_HTTP_PORT,
+    }
+]
 
 # How do we handle this across environments?
-ELASTICSEARCH_CERT_LOCATION=get_env_variable("ES_CERT_FILE")
-ELASTICSEARCH_API_KEY=get_env_variable("ES_API_KEY")
+ELASTICSEARCH_CERT_LOCATION = get_env_variable("ES_CERT_FILE")
+ELASTICSEARCH_API_KEY = get_env_variable("ES_API_KEY")
 #
 # # # If you need to connect to Elasticsearch via an API key instead of username/password, use the syntax below:
 if ELASTICSEARCH_CERT_LOCATION and ELASTICSEARCH_API_KEY:
-    ELASTICSEARCH_CONNECTION_OPTIONS = {"timeout": 30,
-                                        "api_key": ELASTICSEARCH_API_KEY,
-                                        "verify_certs": True,
-                                        "ca_certs": ELASTICSEARCH_CERT_LOCATION
-                                        }
+    ELASTICSEARCH_CONNECTION_OPTIONS = {
+        "timeout": 30,
+        "api_key": ELASTICSEARCH_API_KEY,
+        "verify_certs": True,
+        "ca_certs": ELASTICSEARCH_CERT_LOCATION,
+    }
 # a prefix to append to all elasticsearch indexes, note: must be lower case
 ELASTICSEARCH_PREFIX = get_env_variable("ELASTICSEARCH_PREFIX")
 
@@ -124,14 +133,9 @@ DATABASES = {
         "PASSWORD": get_env_variable("PGPASSWORD"),
         "PORT": "5432",
         "POSTGIS_TEMPLATE": "template_postgis",
-        "TEST": {
-            "CHARSET": None,
-            "COLLATION": None,
-            "MIRROR": None,
-            "NAME": None
-        },
+        "TEST": {"CHARSET": None, "COLLATION": None, "MIRROR": None, "NAME": None},
         "TIME_ZONE": None,
-        "USER": get_env_variable("PGUSERNAME")
+        "USER": get_env_variable("PGUSERNAME"),
     }
 }
 
