@@ -45,6 +45,3 @@ class RunPrivilegedSQL(RunSQL):
         return super().database_backwards(
             app_label, schema_editor, from_state, to_state
         )
-
-
-
