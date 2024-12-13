@@ -16,7 +16,7 @@
     "centery": null,
     "icon": "fa fa-globe",
     "isoverlay": true,
-    "legend": "<p><img alt=\"\" class=\"rivers legend-swatch\" src=\"/{ url_context_root }/static/img/blank.png\" />Rivers</p>",
+    "legend": "<p><div class=\"rivers legend-swatch\"></div>Rivers</p>",
     "searchonly": false,
     "sortorder": 0,
     "zoom": null

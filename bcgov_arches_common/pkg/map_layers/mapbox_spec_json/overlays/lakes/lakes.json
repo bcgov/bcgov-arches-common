@@ -16,7 +16,7 @@
     "centery": null,
     "icon": "fa fa-globe",
     "isoverlay": true,
-    "legend": "<p><img alt=\"\" class=\"lakes legend-swatch\" src=\"/{ url_context_root }/static/img/blank.png\" />Lake Boundary</p>",
+    "legend": "<p><div alt=\"\" class=\"lakes legend-swatch\"></div>Lake Boundary</p>",
     "searchonly": false,
     "sortorder": 0,
     "zoom": null
