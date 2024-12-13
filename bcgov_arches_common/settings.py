@@ -1,5 +1,5 @@
 """
-Django settings for arches_common project.
+Django settings for bcgov_arches_common project.
 """
 
 import os
@@ -28,7 +28,7 @@ try:
 except ImportError:
     pass
 
-APP_NAME = "arches_common"
+APP_NAME = "bcgov_arches_common"
 APP_VERSION = semantic_version.Version(major=0, minor=0, patch=0)
 APP_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
@@ -38,10 +38,10 @@ WEBPACK_LOADER = {
     },
 }
 
-DATATYPE_LOCATIONS.append("arches_common.datatypes")
-FUNCTION_LOCATIONS.append("arches_common.functions")
-ETL_MODULE_LOCATIONS.append("arches_common.etl_modules")
-SEARCH_COMPONENT_LOCATIONS.append("arches_common.search_components")
+DATATYPE_LOCATIONS.append("bcgov_arches_common.datatypes")
+FUNCTION_LOCATIONS.append("bcgov_arches_common.functions")
+ETL_MODULE_LOCATIONS.append("bcgov_arches_common.etl_modules")
+SEARCH_COMPONENT_LOCATIONS.append("bcgov_arches_common.search_components")
 
 LOCALE_PATHS.insert(0, os.path.join(APP_ROOT, "locale"))
 
@@ -71,10 +71,10 @@ SECRET_KEY = "django-insecure-+q^ivasr3l0!u@a=)ibw=_#*4!-7p37lx*n+svxpqo*4#awxmw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ROOT_URLCONF = "arches_common.urls"
-ROOT_HOSTCONF = "arches_common.hosts"
+ROOT_URLCONF = "bcgov_arches_common.urls"
+ROOT_HOSTCONF = "bcgov_arches_common.hosts"
 
-DEFAULT_HOST = "arches_common"
+DEFAULT_HOST = "bcgov_arches_common"
 
 ELASTICSEARCH_SCHEME = get_env_variable("ES_SCHEME")
 ELASTICSEARCH_HTTP_PORT = int(get_env_variable("ES_PORT"))
@@ -104,7 +104,7 @@ ELASTICSEARCH_PREFIX = get_env_variable("ELASTICSEARCH_PREFIX")
 
 ELASTICSEARCH_CUSTOM_INDEXES = []
 # [{
-#     'module': 'arches_common.search_indexes.sample_index.SampleIndex',
+#     'module': 'bcgov_arches_common.search_indexes.sample_index.SampleIndex',
 #     'name': 'my_new_custom_index', <-- follow ES index naming rules
 #     'should_update_asynchronously': False  <-- denotes if asynchronously updating the index would affect custom functionality within the project.
 # }]
@@ -161,7 +161,7 @@ INSTALLED_APPS = (
     "oauth2_provider",
     "django_celery_results",
     # "silk",
-    "arches_common",  # Ensure the project is listed before any other arches applications
+    "bcgov_arches_common",  # Ensure the project is listed before any other arches applications
 )
 
 # Placing this last ensures any templates provided by Arches Applications
@@ -205,7 +205,7 @@ ALLOWED_HOSTS = []
 SYSTEM_SETTINGS_LOCAL_PATH = os.path.join(
     APP_ROOT, "system_settings", "System_Settings.json"
 )
-WSGI_APPLICATION = "arches_common.wsgi.application"
+WSGI_APPLICATION = "bcgov_arches_common.wsgi.application"
 
 # URL that handles the media served from MEDIA_ROOT, used for managing stored files.
 # It must end in a slash if set to a non-empty value.
@@ -269,7 +269,7 @@ RATE_LIMIT = "5/m"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 15728640
 
 # Unique session cookie ensures that logins are treated separately for each app
-SESSION_COOKIE_NAME = "arches_common"
+SESSION_COOKIE_NAME = "bcgov_arches_common"
 
 # For more info on configuring your cache: https://docs.djangoproject.com/en/2.2/topics/cache/
 CACHES = {
@@ -439,7 +439,7 @@ SHOW_LANGUAGE_SWITCH = len(LANGUAGES) > 1
 
 # Implement this class to associate custom documents to the ES resource index
 # See tests.views.search_tests.TestEsMappingModifier class for example
-# ES_MAPPING_MODIFIER_CLASSES = ["arches_common.search.es_mapping_modifier.EsMappingModifier"]
+# ES_MAPPING_MODIFIER_CLASSES = ["bcgov_arches_common.search.es_mapping_modifier.EsMappingModifier"]
 
 try:
     from .package_settings import *

@@ -5,7 +5,7 @@ from arches.settings_utils import generate_frontend_configuration
 
 
 class ArchesCommonConfig(AppConfig):
-    name = "arches_common"
+    name = "bcgov_arches_common"
     is_arches_application = True
 
     def ready(self):

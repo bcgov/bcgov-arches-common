@@ -23,7 +23,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arches_common.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bcgov_arches_common.settings")
 
     from django.core.management import execute_from_command_line
 
