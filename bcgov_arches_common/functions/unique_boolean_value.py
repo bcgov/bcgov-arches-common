@@ -21,8 +21,8 @@ details = {
 
 
 class UniqueBooleanValue(BaseFunction):
-    def save(self, tile, request):
-        # print("running before tile save")
+    def save(self, tile, request, context):
+        print("running before tile save from arches_common")
         data = tile.data
         node_id = self.config["node_id"]
         node_value = data[node_id]
