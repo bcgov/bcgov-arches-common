@@ -1,12 +1,8 @@
-import uuid
-from django.core.exceptions import ValidationError
 from arches.app.functions.base import BaseFunction
 from arches.app.models import models
-from arches.app.models.tile import Tile
 from arches.app.datatypes.datatypes import BooleanDataType
 from django.db.models import Q
 from arches.app.models.tile import TileValidationError
-import json
 
 details = {
     "functionid": "60000000-0000-0000-0000-000000002001",
@@ -22,7 +18,6 @@ details = {
 
 class UniqueBooleanValue(BaseFunction):
     def save(self, tile, request, context):
-        print("running before tile save from arches_common")
         data = tile.data
         node_id = self.config["node_id"]
         node_value = data[node_id]
