@@ -132,7 +132,7 @@ class MVTTiler:
             )
         except models.Node.DoesNotExist:
             return None
-        print("Trying to run queries")
+        # print("Trying to run queries")
         search_geom_count = 0
         config = node.config
         cache_key = self.create_mvt_cache_key(node, zoom, x, y, user)
