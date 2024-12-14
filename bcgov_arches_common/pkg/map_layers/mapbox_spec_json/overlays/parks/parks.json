@@ -10,8 +10,8 @@
     }
   },
   "arches-metadata": {
-    "ispublic": false,
-    "addtomap": false,
+    "ispublic": true,
+    "addtomap": true,
     "centerx": null,
     "centery": null,
     "icon": "fa fa-globe",
