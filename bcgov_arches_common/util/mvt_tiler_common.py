@@ -58,15 +58,15 @@ class MVTTiler(MVTTiler_Base):
                     )
                 else:
                     attributes = " "
-                print("format_query.Attributes: %s" % attributes)
-                print("format_query.Query: %s" % query_string)
+                # print("format_query.Attributes: %s" % attributes)
+                # print("format_query.Query: %s" % query_string)
                 MVTTiler.query_cache[params["nodeid"]] = query_string.format(
                     filter=permission_filter, custom_attributes=attributes
                 )
-            print(
-                "Returning query from cache: %s"
-                % MVTTiler.query_cache[params["nodeid"]]
-            )
+            # print(
+            #     "Returning query from cache: %s"
+            #     % MVTTiler.query_cache[params["nodeid"]]
+            # )
             return MVTTiler.query_cache[params["nodeid"]]
         return super().format_query(query_string, permission_filter, params)
 
