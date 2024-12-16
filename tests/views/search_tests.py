@@ -72,7 +72,7 @@ class TestSearchView(TestCase):
                     print("Map source: %s" % source.source)
                     self.assertTrue(
                         source.source["tiles"][0].startswith(
-                            "https://tiles.planet.com"
+                            "https://tiles.planet.com/"
                         ),
                         "Wrong prefix for layer %s: %s"
                         % (source.name, source.source["tiles"][0]),
