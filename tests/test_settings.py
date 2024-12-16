@@ -25,6 +25,8 @@ PACKAGE_NAME = "bcgov_arches_common"
 PROJECT_TEST_ROOT = os.path.dirname(__file__)
 MEDIA_ROOT = os.path.join(PROJECT_TEST_ROOT, "fixtures", "data")
 
+BCGOV_PROXY_PREFIX = "bcgov_arches_core/"
+
 BUSINESS_DATA_FILES = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.

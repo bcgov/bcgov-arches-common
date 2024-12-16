@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.urls import include, path
+from django.urls import include, path, re_path
+from bcgov_arches_common.views.search import SearchView
 
 urlpatterns = [
     # project-level urls
+    re_path(
+        r"^/bcgov_arches_common/search$",
+        SearchView.as_view(),
+        name="common_search_home",
+    ),
 ]
 
 # Ensure Arches core urls are superseded by project-level urls
