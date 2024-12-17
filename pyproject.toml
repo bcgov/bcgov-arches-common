@@ -24,8 +24,8 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "arches>=7.6.3,<7.7.0",
-    #"arches @ git+https://github.com/bcgov/arches.git@stable/7.6.3_bcgov_11578_11679_11689",
+    #"arches>=7.6.3,<7.7.0",
+    "arches @ git+https://github.com/bcgov/arches.git@stable/7.6.3_bcgov_11578_11679_11689",
 ]
 version = "0.9.0"
 
