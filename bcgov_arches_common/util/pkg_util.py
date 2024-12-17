@@ -6,7 +6,9 @@ def get_mapbox_spec_files():
     root_dir = os.path.dirname(__file__)
     map_specs = []
 
-    for dir_path, dir_names, filenames in os.walk(os.path.join(root_dir, "..", "pkg", "map_layers")):
+    for dir_path, dir_names, filenames in os.walk(
+        os.path.join(root_dir, "..", "pkg", "map_layers")
+    ):
         for filename in filenames:
             if filename.lower().endswith(".json"):
                 spec_filename = os.path.join(dir_path, filename)
