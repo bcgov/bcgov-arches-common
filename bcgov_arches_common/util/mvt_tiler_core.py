@@ -175,7 +175,7 @@ class MVTTiler:
 
                     # get the count of matching geometries
                     params = self.get_count_query_params(base_params)
-                    print("Params: %s" % params)
+                    # print("Params: %s" % params)
                     cursor.execute(
                         self.format_query(
                             self.get_count_query(),
