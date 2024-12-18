@@ -2,7 +2,6 @@ from arches.app.models import models
 from django.core.management.base import BaseCommand, CommandError
 from arches.app.utils.index_database import index_resources_by_type, index_concepts
 from arches.app.models.system_settings import settings
-from ..data.index_order import get_index_order
 
 
 class Command(BaseCommand):
@@ -10,6 +9,14 @@ class Command(BaseCommand):
     Custom ES reindex command to take resource dependency into account
 
     """
+
+    def get_index_order(self):
+        """
+        Override this function to provide indexes to order
+        :return: Array of index names to rebuild
+        """
+        print("No indexes to process")
+        return []
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -40,7 +47,7 @@ class Command(BaseCommand):
         resource_types_lookup = {}
         for rt in resource_types:
             resource_types_lookup[rt[0]] = rt
-        index_order = get_index_order()
+        index_order = self.get_index_order()
         # print("Index order: %s" % str(index_order))
 
         for i in index_order:
