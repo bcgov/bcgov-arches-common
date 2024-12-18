@@ -10,11 +10,16 @@ class SearchView(CoreSearchView):
 
     def __init__(self, **kwargs):
         super(SearchView, self).__init__(**kwargs)
-        if settings.BCGOV_PROXY_PREFIX:
+        url_context_root = (
+            settings.BCGOV_PROXY_PREFIX
+            if settings.BCGOV_PROXY_PREFIX
+            else settings.FORCE_SCRIPT_NAME
+        )
+        if url_context_root:
             self.url_prefix = "/" + re.sub(
                 re.compile("^/"),
                 "",
-                re.sub(re.compile("/$"), "", settings.BCGOV_PROXY_PREFIX),
+                re.sub(re.compile("/$"), "", url_context_root),
             )
 
     def format_url(self, tile_url):
