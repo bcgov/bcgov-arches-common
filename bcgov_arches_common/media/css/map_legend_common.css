@@ -28,29 +28,15 @@ div.legend-swatch {
     vertical-align: middle;
 }
 
-/*img.legend-swatch {*/
-/*    border-style:solid;*/
-/*    border-width:1px;*/
-/*    height:10px;*/
-/*    margin:0 5px;*/
-/*    width:10px;*/
-/*}*/
-
 div.legend-line {
+    display: inline-block;
     height: 2px;
     width: 4px;
     vertical-align: middle;
     margin-right: 4px;
 }
 
-/*img.legend-line {*/
-/*    height: 2px;*/
-/*    width: 4px;*/
-/*    vertical-align: middle;*/
-/*    margin-right: 4px;*/
-/*}*/
-
-img.legend-point {
+div.legend-point {
     height:10px;
     margin:0 5px;
     width:10px;
