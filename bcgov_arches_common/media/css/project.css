@@ -461,13 +461,16 @@ img.bc-details-image
     }
 
     /* Force the content to be visible on pages 2++ */
-    #container, #main-content {
+    #container, #main-content, .scroll-y-auto,
+    .card-form-preview-container, .resource-component-abstract {
         overflow: visible !important;
         display: block;
         height: 100%;
     }
 
-    .rp-report-section, .rp-report-section-root, .resource-report-abstract-container, .content-panel, .flex, .ep-form-toolbar {
+    .flex, .ep-form-toolbar,
+    .rp-report-section, .rp-report-section-root,  .resource-report, .content-panel,
+    .resource-report-abstract-container, .resource-component-abstract {
         display: block !important;
     }
 
