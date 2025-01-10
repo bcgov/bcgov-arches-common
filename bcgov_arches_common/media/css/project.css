@@ -462,7 +462,10 @@ img.bc-details-image
 
     /* Force the content to be visible on pages 2++ */
     #container, #main-content, .scroll-y-auto,
-    .card-form-preview-container, .resource-component-abstract {
+    .card-form-preview-container, .resource-component-abstract,
+    .rp-report-container-preview,
+    .content-panel /* New */
+    {
         overflow: visible !important;
         display: block;
         height: 100%;
