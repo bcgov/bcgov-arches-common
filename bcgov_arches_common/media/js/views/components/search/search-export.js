@@ -67,7 +67,7 @@ define([
         });
 
         this.getExportData = function(){
-            const maxUriLength = 2048 - arches.urls.export_results.length - 1;
+            const maxUrlLength = 2048;
             var payload = ko.unwrap(this.query);
             self.downloadPending(true);
             payload.format = this.format();
@@ -77,7 +77,9 @@ define([
             payload.email = this.emailInput();
             payload.exportName = this.exportName() || "Arches Export";
             payload.exportsystemvalues = this.exportSystemValues();
-            const requestType = encodeURI(JSON.stringify(payload)).length > maxUriLength ? "POST" : "GET";
+
+            const urlLength = (window.location.origin+arches.urls.export_results+"?"+$.param(payload)).length;
+            const requestType = urlLength > maxUrlLength ?  "POST" : "GET";
             $.ajax({
                 type: requestType,
                 url: arches.urls.export_results,
