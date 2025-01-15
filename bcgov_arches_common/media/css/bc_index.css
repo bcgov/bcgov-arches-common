@@ -327,6 +327,23 @@ footer {
     width: 100%;
 }
 
+a > div.arches_version:hover {
+     text-decoration: none !important;
+     color: #337ab7 !important;
+}
+
+a > div.arches_version, .project_version {
+    display: inline-block;
+    font-size: .45rem;
+    position: absolute;
+    right: 5px;
+    margin-top: -2px;
+}
+
+.project_version {
+    color: #66adda;
+}
+
 .arches_link {
     margin-right: 5px;
     margin-left: auto;
