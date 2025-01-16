@@ -19,8 +19,7 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "archesproject/arches#stable/7.6.4",
-        "@mapbox/mapbox-gl-draw": "1.4.3"
+        "arches": "archesproject/arches#stable/7.6.4"
     },
     "devDependencies": {
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
