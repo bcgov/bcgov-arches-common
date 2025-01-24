@@ -531,7 +531,7 @@ define([
         },
             showDetailsFromFilter: function(resourceinstanceid) {
                 const url = arches.urls.search_results+`?id=${resourceinstanceid}&tiles=true`
-                const searchResults = this.filters["search-results"]
+                const searchResults = this.searchFilterVms["search-results"]
                 const instanceCache = searchResults().bulkDisambiguatedResourceInstanceCache;
                 searchResults().selectedTab('search-result-details');
                 searchResults().details.loading(true);
@@ -550,7 +550,7 @@ define([
                         {
                             // Otherwise load the details page directly
                             console.log("Showing details from showDetailsFromFilter");
-                            this.filters["search-results"]().showResourceSummaryReport(result)();
+                            this.searchFilterVms["search-results"]().showResourceSummaryReport(result)();
                         }
                     });
                 }
