@@ -35,6 +35,6 @@ DO
 $$
     DECLARE
     BEGIN
-        execute 'alter procedure public.delete_concept_and_children owner to {app_name};';
+        execute 'alter procedure public.delete_concept_and_children owner to {app_owner};';
     END
 $$ language plpgsql;

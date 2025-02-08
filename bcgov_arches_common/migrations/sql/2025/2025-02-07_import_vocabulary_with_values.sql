@@ -77,6 +77,6 @@ DO
 $$
     DECLARE
     BEGIN
-        execute 'alter function public.import_vocabulary_item_with_values owner to {app_name};';
+        execute 'alter function public.import_vocabulary_item_with_values owner to {app_owner};';
     END
 $$ language plpgsql;
