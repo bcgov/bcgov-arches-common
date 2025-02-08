@@ -28,6 +28,6 @@ DO
 $$
     DECLARE
     BEGIN
-        execute 'alter function public.import_vocabulary_item_with_collection owner to {app_name};';
+        execute 'alter function public.import_vocabulary_item owner to {app_name};';
     END
 $$ language plpgsql;
