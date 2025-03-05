@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useGettext } from "vue3-gettext";
-import { RouteNamesType } from '@/bcgov_arches_common/routes.ts';
+import { type RouteNamesType } from '@/bcgov_arches_common/routes.ts';
+import { type PropType } from "vue";
 
 const props = defineProps({
-      "routeNames": {
-        "type": RouteNamesType,
-        "required": true
-      }
-    }
-);
+  routeNames: {
+    type: Object as PropType<typeof RouteNamesType>,
+    required: true
+  }
+});
 
 // import { routeNames } from "@/bcrhp/routes.ts";
 

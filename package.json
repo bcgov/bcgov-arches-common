@@ -21,7 +21,8 @@
     "dependencies": {
         "arches": "archesproject/arches#stable/7.6.4",
         "vue-router": "^4.4.3",
-        "primevue": "^4.2.5"
+        "primevue": "^4.2.5",
+        "vite": "latest"
     },
     "devDependencies": {
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"

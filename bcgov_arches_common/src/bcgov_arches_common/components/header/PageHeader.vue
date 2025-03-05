@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useGettext } from "vue3-gettext";
+import { type PropType } from "vue";
 
 import Menubar from "primevue/menubar";
 
-import RouteNamesType from "@/bcgov_arches_common/routes.ts";
+import type { RouteNamesType } from "@/bcgov_arches_common/routes.ts";
 
 const props = defineProps({
   "routeNames": {
-    "type": RouteNamesType,
+    type: Object as PropType<typeof RouteNamesType>,
     "required": true
   },
   "systemName": {
