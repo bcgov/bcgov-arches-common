@@ -30,5 +30,5 @@
     "devDependencies": {
        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
     },
-    "nodeModulesPaths": {},
+    "nodeModulesPaths": {}
 }
