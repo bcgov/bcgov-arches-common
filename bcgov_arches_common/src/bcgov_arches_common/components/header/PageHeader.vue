@@ -29,6 +29,7 @@ const items = ref([
     //     name: routeNames.root,
     // },
 ]);
+const logoUrl = new URL("../../assets/img/logo/BCID_H_rgb_rev.png", import.meta.url).href;
 </script>
 
 <template>
@@ -45,7 +46,7 @@ const items = ref([
           <div class="relative nav-brand-container">
             <div class="navbar-brand-v5-icon-container">
               <a href="https://www2.gov.bc.ca/gov/content/home" target="BCGov Home">
-                <img class="navbar-brand-v5-icon" src="../../assets/img/logo/BCID_H_rgb_rev.png" alt="BC Government Logo">
+                <img class="navbar-brand-v5-icon" :src="logoUrl" alt="BC Government Logo">
               </a>
               <h1>{{ $gettext(props.systemName) }}</h1>
             </div>

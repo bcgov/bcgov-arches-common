@@ -2,7 +2,7 @@
 import { computed, inject } from "vue";
 // import { useRouter } from "vue-router";
 import { useGettext } from "vue3-gettext";
-import arches from "arches/arches/app/media/js/arches.js";
+import { arches } from "@/bcgov_arches_common/api.ts";
 
 // import { useToast } from "primevue/usetoast";
 // import { logout } from "@/bcrhp/api.ts";
@@ -73,11 +73,6 @@ const greeting = computed(() => {
 </template>
 
 <style scoped>
-.header-link {
-  font-size: .61rem !important;
-}
-
-
 
 </style>
 <style>
