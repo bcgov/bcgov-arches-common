@@ -41,6 +41,10 @@ const clickNext = () => {
         @click="$emit('previousClick', props.stepNumber-1)"
       >
     </Button>
+      <div
+      v-if="!props.showPrevious">
+          &nbsp;
+      </div>
     <Button
         v-if="props.showNext"
         :label=props.nextLabel
@@ -53,18 +57,6 @@ const clickNext = () => {
 </template>
 
 <style scoped>
-.stepper-nav-panel {
-  background: var(--p-panel-background);
-  display: flex;
-  height: 50px;
-  align-items: flex-start;
-  align-self: stretch;
-  margin-top: .25rem;
-}
 
-.next-button {
-  position: absolute;
-  right: 1rem;
-}
 
 </style>

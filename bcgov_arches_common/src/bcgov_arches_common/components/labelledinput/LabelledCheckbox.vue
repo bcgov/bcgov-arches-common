@@ -34,9 +34,6 @@ const isRequired = computed(() => {
    color: red;
    content: "*";
    padding-right: .1rem;
-   //margin-left: .5rem;
-   //position: absolute;
-   //left: -5px;
  }
 
  .labelled-input > label {
