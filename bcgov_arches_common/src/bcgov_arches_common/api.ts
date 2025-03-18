@@ -19,8 +19,8 @@ export const arches = {
         api_search_component_data: '/search_component_data/',
         api_tiles: '/api/tiles/',
         api_user_incomplete_workflows: '/api/user_incomplete_workflows',
-        user_profile_manager: '/user'
-    }
+        user_profile_manager: '/user',
+    },
 };
 
 export function setUrlPrefix(prefix: string) {
@@ -49,12 +49,12 @@ export const fetchUser = async () => {
 export const fetchSearchResults = async (
     searchTerm: string,
     items: number,
-    page: number
+    page: number,
 ) => {
     const params = new URLSearchParams({
         term: searchTerm,
         items: items.toString(),
-        page: page.toString()
+        page: page.toString(),
     });
 
     const url = formatUrl(`${arches.urls.api_search}?${params.toString()}`);
@@ -64,9 +64,9 @@ export const fetchSearchResults = async (
     return parsed;
 };
 
-export const fetchConcepts = function(concept_id: string, concepts: Ref) {
+export const fetchConcepts = function (concept_id: string, concepts: Ref) {
     const params = new URLSearchParams({
-        conceptid: concept_id
+        conceptid: concept_id,
     });
     fetch(formatUrl(`${arches.urls.paged_dropdown}?${params.toString()}`))
         .then((response) => response.json())

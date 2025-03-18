@@ -1,10 +1,9 @@
 interface RouteNames {
-    "home": string,
-    "login": string
+    home: string;
+    login: string;
 }
 
- 
-const routeNames: RouteNames = {"home": "/", "login": ""};
+const routeNames: RouteNames = { home: '/', login: '' };
 
 type RouteNamesType = typeof routeNames;
 
