@@ -6,19 +6,17 @@ import { type PropType } from "vue";
 
 const props = defineProps({
   routeNames: {
-    type: Object as PropType<typeof RouteNamesType>,
+    type: Object as PropType<RouteNamesType>,
     required: true
   }
 });
-
-// import { routeNames } from "@/bcrhp/routes.ts";
 
 const { $gettext } = useGettext();
 
 const items = ref([
     {
         icon: "fa fa-home",
-        routeName: props.routeNames.root,
+        routeName: props.routeNames.home,
         linkName: $gettext("Home"),
     },
 ]);

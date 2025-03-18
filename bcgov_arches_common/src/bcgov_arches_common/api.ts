@@ -4,22 +4,33 @@ import type { Ref } from 'vue';
 // @todo Initialize these from sever API call?
 export const arches = {
     prefix: 'http://localhost/',
+    context_root: '',
     urls: {
         api_login: '',
         api_logout: '',
-        api_user: 'http://localhost/bcrhp/api/user/',
+        api_user: '/api/user/',
         api_search: '',
         paged_dropdown: '',
         api_bulk_disambiguated_resource_instance:
-            '/bcrhp/api/bulk_disambiguated_resource_instance',
-        api_card: '/bcrhp/cards/',
-        api_get_frontend_i18n_data: '/bcrhp/api/get_frontend_i18n_data',
-        api_node_value: '/bcrhp/api/node_value/',
-        api_search_component_data: '/bcrhp/search_component_data/',
-        api_tiles: '/bcrhp/api/tiles/',
-        api_user_incomplete_workflows: '/bcrhp/api/user_incomplete_workflows',
-    },
+            '/api/bulk_disambiguated_resource_instance',
+        api_card: '/cards/',
+        api_get_frontend_i18n_data: '/api/get_frontend_i18n_data',
+        api_node_value: '/api/node_value/',
+        api_search_component_data: '/search_component_data/',
+        api_tiles: '/api/tiles/',
+        api_user_incomplete_workflows: '/api/user_incomplete_workflows',
+        user_profile_manager: '/user'
+    }
 };
+
+export function setUrlPrefix(prefix: string) {
+    arches.prefix = prefix.replace(/\/$/, '');
+}
+
+export function formatUrl(url: string) {
+    return arches.prefix + arches.context_root + url;
+}
+
 function getToken() {
     const token = Cookies.get('csrftoken');
     if (!token) {
@@ -28,29 +39,8 @@ function getToken() {
     return null;
 }
 
-export const login = async (username: string, password: string) => {
-    const response = await fetch(arches.urls.api_login, {
-        method: 'POST',
-        headers: { 'X-CSRFTOKEN': getToken() },
-        body: JSON.stringify({ username, password }),
-    });
-    const parsed = await response.json();
-    if (!response.ok) throw new Error(parsed.message || response.statusText);
-    return parsed;
-};
-
-export const logout = async () => {
-    const response = await fetch(arches.urls.api_logout, {
-        method: 'POST',
-        headers: { 'X-CSRFTOKEN': getToken() },
-    });
-    if (response.ok) return true;
-    const parsedError = await response.json();
-    throw new Error(parsedError.message || response.statusText);
-};
-
 export const fetchUser = async () => {
-    const response = await fetch(arches.urls.api_user);
+    const response = await fetch(formatUrl(arches.urls.api_user));
     const parsed = await response.json();
     if (!response.ok) throw new Error(parsed.message || response.statusText);
     return parsed;
@@ -59,26 +49,26 @@ export const fetchUser = async () => {
 export const fetchSearchResults = async (
     searchTerm: string,
     items: number,
-    page: number,
+    page: number
 ) => {
     const params = new URLSearchParams({
         term: searchTerm,
         items: items.toString(),
-        page: page.toString(),
+        page: page.toString()
     });
 
-    const url = `${arches.urls.api_search}?${params.toString()}`;
+    const url = formatUrl(`${arches.urls.api_search}?${params.toString()}`);
     const response = await fetch(url);
     const parsed = await response.json();
     if (!response.ok) throw new Error(parsed.message || response.statusText);
     return parsed;
 };
 
-export const fetchConcepts = function (concept_id: string, concepts: Ref) {
+export const fetchConcepts = function(concept_id: string, concepts: Ref) {
     const params = new URLSearchParams({
-        conceptid: concept_id,
+        conceptid: concept_id
     });
-    fetch(`${arches.urls.paged_dropdown}?${params.toString()}`)
+    fetch(formatUrl(`${arches.urls.paged_dropdown}?${params.toString()}`))
         .then((response) => response.json())
         .then((data) => (concepts.value = data.results));
 };

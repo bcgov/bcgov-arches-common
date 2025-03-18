@@ -9,7 +9,7 @@ import type { RouteNamesType } from "@/bcgov_arches_common/routes.ts";
 
 const props = defineProps({
   "routeNames": {
-    type: Object as PropType<typeof RouteNamesType>,
+    type: Object as PropType<RouteNamesType>,
     "required": true
   },
   "systemName": {

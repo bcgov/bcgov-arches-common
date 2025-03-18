@@ -14,7 +14,7 @@ import {
 } from "@/bcgov_arches_common/constants.ts";
 // import { routeNames } from "@/bcrhp/routes.ts";
 
-import type { UserRefAndSetter } from "/types.ts";
+import type { UserRefAndSetter } from "@/bcgov_arches_common/types.ts";
 
 const { $gettext } = useGettext();
 // const toast = useToast();
