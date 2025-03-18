@@ -5,12 +5,18 @@ import pluginVue from 'eslint-plugin-vue';
 import prettier from 'eslint-plugin-prettier/recommended';
 import vueConfigPrettier from '@vue/eslint-config-prettier';
 
+const GLOBALS_BROWSER_FIX = Object.assign({}, globals.browser, {
+    AudioWorkletGlobalScope: globals.browser['AudioWorkletGlobalScope ']
+});
+
+delete GLOBALS_BROWSER_FIX['AudioWorkletGlobalScope '];
+
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
     languageOptions: {
       globals: {
-        ...globals.browser,
+        ...GLOBALS_BROWSER_FIX,
         ...globals.node,
       },
     },
