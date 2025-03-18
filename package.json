@@ -25,7 +25,8 @@
         "vite": "latest"
     },
     "devDependencies": {
-        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
+        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4",
+        "eslint-plugin-prettier": "^5.2.3"
     },
     "nodeModulesPaths": {},
     "overrides": {
