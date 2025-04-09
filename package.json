@@ -1,7 +1,7 @@
 {
     "name": "bcgov_arches_common",
     "license": "AGPL-3.0-only",
-    "version": "0.9.0-b.0",
+    "version": "1.1.0-b.0",
     "scripts": {
         "build_development": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack --config ./webpack/webpack.config.dev.js",
         "build_production": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 NODE_ENV=production webpack --config ./webpack/webpack.config.prod.js",
@@ -18,17 +18,17 @@
         "start": "cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack serve --config ./webpack/webpack.config.dev.js",
         "vitest": "vitest --run --coverage"
     },
-    "dependencies": {
-        "arches": "archesproject/arches#stable/7.6.4"
-    },
-    "devDependencies": {
-        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
-    },
-    "nodeModulesPaths": {},
     "overrides": {
         "moment-timezone": "^0.5.45",
         "nomnom": "npm:@gerhobbelt/nomnom",
         "rimraf": "^5.0.7",
         "underscore": "^1.13.6"
-    }
+    },
+    "dependencies": {
+        "arches": "github:bcgov/arches#v7.6.4.1_bcgov"
+    },
+    "devDependencies": {
+       "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
+    },
+    "nodeModulesPaths": {}
 }
