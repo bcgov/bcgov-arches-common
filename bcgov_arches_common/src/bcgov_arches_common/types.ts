@@ -95,3 +95,8 @@ export interface ResourceSearchResults {
 const resourceSearchResults: ResourceSearchResults = {'paging-filter': {}, 'total-hits': 0, 'results': []};
 
 export  type ResourceSearchResultsType = typeof resourceSearchResults;
+
+export interface ConceptOption {
+    id: string;
+    text: string;
+}
