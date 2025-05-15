@@ -87,9 +87,9 @@ export interface ResourceOption {
     label: string;
 }
 
-const resourceOption: ResourceOption = {resourceinstanceid: "", label: ""}
+const resourceOption: ResourceOption = { resourceinstanceid: '', label: '' };
 
-export type ResourceOptionType  = typeof resourceOption;
+export type ResourceOptionType = typeof resourceOption;
 
 export interface ResourceSearchResults {
     'paging-filter': object;
@@ -97,9 +97,13 @@ export interface ResourceSearchResults {
     results: Array<ResourceOption>;
 }
 
-const resourceSearchResults: ResourceSearchResults = {'paging-filter': {}, 'total-hits': 0, 'results': []};
+const resourceSearchResults: ResourceSearchResults = {
+    'paging-filter': {},
+    'total-hits': 0,
+    results: [],
+};
 
-export  type ResourceSearchResultsType = typeof resourceSearchResults;
+export type ResourceSearchResultsType = typeof resourceSearchResults;
 
 export interface ConceptOption {
     id: string;
