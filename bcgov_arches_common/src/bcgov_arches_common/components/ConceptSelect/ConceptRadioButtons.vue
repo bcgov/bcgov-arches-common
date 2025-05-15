@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
+import type { Ref } from 'vue';
 import { getConceptsForNode } from '@/bcgov_arches_common/api.ts';
 import RadioButton from 'primevue/radiobutton';
 import RadioButtonGroup from 'primevue/radiobuttongroup';
+import type {ConceptOption} from '@/bcgov_arches_common/types.ts';
 
 const model = defineModel<string | number>();
 const props = defineProps({
@@ -15,7 +17,7 @@ const props = defineProps({
 
 const emit = defineEmits(['valueUpdated']);
 
-const options = ref([]);
+const options: Ref<Array<ConceptOption>> = ref([]);
 
 const valueUpdated = function (event: Event) {
     emit('valueUpdated', event.target.value, event.target);

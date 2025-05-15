@@ -77,6 +77,11 @@ export interface SearchResultItem {
     polyhierarchical: boolean;
 }
 
+export interface ConceptOption {
+    id: string;
+    text: string;
+}
+
 export interface ResourceOption {
     resourceinstanceid: string;
     label: string;
