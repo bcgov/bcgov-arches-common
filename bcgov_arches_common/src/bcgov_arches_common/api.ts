@@ -25,12 +25,6 @@ export const arches = {
         user_profile_manager: '/user',
         get_node_config: '/api/node_config',
         api_relatable_resources: '/resource/related/relatable',
-    //     api_node_data: (graphSlug, nodeAlias) => { return  `${graphSlug}/${nodeAlias}`;},
-    //     api_widget_data: (graphSlug, nodeAlias) => { return  `${graphSlug}/${nodeAlias}`;},
-    //         api_relatable_resources='(graph_slug, node_alias) => {return "{% url "api-relatable-resources" "----p1" "----p2" %}".replace("----p1", graph_slug).replace("----p2", node_alias)}'
-    // api_widget_data='(graph_slug, node_alias) => {return "{% url "api-widget-data" "----p1" "----p2" %}".replace("----p1", graph_slug).replace("----p2", node_alias)}'
-    // api_node_data='(graph_slug, node_alias) => {return "{% url "api-node-data" "----p1" "----p2" %}".replace("----p1", graph_slug).replace("----p2", node_alias)}'
-
     },
 };
 
@@ -115,88 +109,3 @@ const getNodeConfig = async function (
         formatUrl(`${arches.urls.get_node_config}/${graphSlug}/${nodeAlias}`),
     ).then((urlResponse) => urlResponse.json());
 };
-
-// export const fetchWidgetData = async (graphSlug: string, nodeAlias: string) => {
-//     const response = await fetch(
-//         arches.urls.api_widget_data(graphSlug, nodeAlias)
-//     );
-//
-//     try {
-//         const parsed = await response.json();
-//         if (response.ok) {
-//             return parsed;
-//         }
-//         throw new Error(parsed.message);
-//     } catch (error) {
-//         throw new Error((error as Error).message || response.statusText);
-//     }
-// };
-
-// export const fetchNodeData = async (graphSlug: string, nodeAlias: string) => {
-//     const response = await fetch(
-//         arches.urls.api_node_data(graphSlug,nodeAlias)
-//     );
-//
-//     try {
-//         const parsed = await response.json();
-//         if (response.ok) {
-//             return parsed;
-//         }
-//         throw new Error(parsed.message);
-//     } catch (error) {
-//         throw new Error((error as Error).message || response.statusText);
-//     }
-// };
-export const fetchResourceOptions = async function (
-    graphSlug: string,
-    nodeAlias: string,
-    resourceOptions: Ref<ResourceSearchResults>,
-    page: number = 1,
-) {
-    const config = await getNodeConfig(graphSlug, nodeAlias);
-    if (!config.node_config.datatype.startsWith('resource-instance')) {
-        throw new Error(
-            `Invalid datatype for node ${graphSlug}.${nodeAlias}. Expected resource-instance or resource-instance-list, got ${config.node_config.datatype}`,
-        );
-    }
-
-    const url = new URL(formatUrl(config.node_config.config.searchString));
-    url.searchParams.set('paging-filter', page.toString());
-
-    fetch(url)
-        .then((urlData: Response) => {
-            return urlData.json();
-        })
-        .then((data: any) => {
-            resourceOptions.value['paging-filter'] = data['paging-filter'];
-            resourceOptions.value['total-hits'] = data.results.hits.total.value;
-            resourceOptions.value['results'] = data.results.hits.hits.map(
-                (hit: object) => ({
-                    resourceinstanceid: hit._source.resourceinstanceid,
-                    label: hit._source.displayname,
-                }),
-            );
-        });
-};
-
-// export const fetchRelatableResources = async (
-//     graphSlug: string,
-//     nodeAlias: string,
-//     page: number,
-//     filterTerm?: string,
-// ) => {
-//     const params = new URLSearchParams();
-//
-//     params.append("page", page.toString());
-//     if (filterTerm) {
-//         params.append("filter_term", filterTerm);
-//     }
-//
-//     const response = await fetch(
-//         `${arches.urls.api_relatable_resources}/${graphSlug}/${nodeAlias}?${params}`,
-//     );
-//
-//     const parsed = await response.json();
-//     if (!response.ok) throw new Error(parsed.message || response.statusText);
-//     return parsed;
-// };
