@@ -39,7 +39,7 @@ onMounted(() => {
 <template>
     <RadioButtonGroup
         v-model="model"
-        name="id"
+        :name="id"
         :class="['flex flex-wrap', flexDirection]"
     >
         <div
