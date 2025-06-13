@@ -18,17 +18,22 @@
         "start": "cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack serve --config ./webpack/webpack.config.dev.js",
         "vitest": "vitest --run --coverage"
     },
+    "dependencies": {
+        "arches": "bcgov/arches#stable/7.6.9_bcgov",
+        "vue-router": "^4.4.3",
+        "primevue": "^4.2.5",
+        "vite": "latest"
+    },
+    "devDependencies": {
+        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.9",
+        "eslint-plugin-prettier": "^5.2.3",
+        "@vue/eslint-config-prettier": "^10.2.0"
+    },
+    "nodeModulesPaths": {},
     "overrides": {
         "moment-timezone": "^0.5.45",
         "nomnom": "npm:@gerhobbelt/nomnom",
         "rimraf": "^5.0.7",
         "underscore": "^1.13.6"
-    },
-    "dependencies": {
-        "arches": "github:bcgov/arches#v7.6.4.1_bcgov"
-    },
-    "devDependencies": {
-       "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.4"
-    },
-    "nodeModulesPaths": {}
+    }
 }
