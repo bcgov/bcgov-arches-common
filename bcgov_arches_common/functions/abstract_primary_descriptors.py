@@ -111,7 +111,7 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
         datatype = AbstractPrimaryDescriptors._datatypes[node_alias]
 
         if data_tile:
-            tiles = data_tile if type(data_tile) is list else [data_tile]
+            tiles = data_tile if isinstance(data_tile, list) else [data_tile]
         else:
             tiles = (
                 models.TileModel.objects.filter(
@@ -139,7 +139,7 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
 
     @staticmethod
     def _format_value(name, value, config):
-        if type(value) is list:
+        if isinstance(value, list):
             value = set(value)
             if "" in value:
                 value.remove("")
