@@ -1,4 +1,5 @@
 from arches.app.datatypes.datatypes import DataTypeFactory
+import html
 from arches.app.models import models
 from arches.app.functions.primary_descriptors import (
     AbstractPrimaryDescriptorsFunction as CoreDescriptorsFunction,
@@ -140,7 +141,7 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
     @staticmethod
     def _format_value(name, value, config):
         if isinstance(value, list):
-            value = set(value)
+            value = set([html.escape(str(v)) for v in value if v != ""])
             if "" in value:
                 value.remove("")
             value = ", ".join(sorted(value))
@@ -150,6 +151,6 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
         elif config["show_name"]:
             return (
                 "<div class='bc-popup-entry'><div class='bc-popup-label'>%s</div><div class='bc-popup-value'>%s</div></div>"
-                % (name, value)
+                % (html.escape(name), html.escape(str(value)))
             )
         return value
