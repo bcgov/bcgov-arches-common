@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     "corsheaders",
     "oauth2_provider",
     "django_celery_results",
+    "arches_component_lab",
     # "silk",
     "bcgov_arches_common",  # Ensure the project is listed before any other arches applications
 )
