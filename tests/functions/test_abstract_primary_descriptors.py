@@ -1,7 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from bcgov_arches_common.functions.abstract_primary_descriptors import AbstractPrimaryDescriptors
+from bcgov_arches_common.functions.abstract_primary_descriptors import (
+    AbstractPrimaryDescriptors,
+)
 
 
 @pytest.fixture
@@ -27,7 +29,9 @@ def mock_nodes():
 @pytest.fixture
 def mock_datatype():
     datatype = MagicMock()
-    datatype.get_display_value.side_effect = lambda tile, node: f"value_for_{node.alias}"
+    datatype.get_display_value.side_effect = (
+        lambda tile, node: f"value_for_{node.alias}"
+    )
     return datatype
 
 
@@ -48,12 +52,16 @@ def reset_class_state():
 
 @patch("bcgov_arches_common.functions.abstract_primary_descriptors.models.Node")
 @patch("bcgov_arches_common.functions.abstract_primary_descriptors.DataTypeFactory")
-def test_initialize_sets_nodes_and_datatypes(mock_factory, mock_node_model, mock_nodes, mock_datatype):
+def test_initialize_sets_nodes_and_datatypes(
+    mock_factory, mock_node_model, mock_nodes, mock_datatype
+):
     reset_class_state()
 
     # Setup mocks
     mock_factory.return_value.get_instance.return_value = mock_datatype
-    mock_node_model.objects.filter.return_value.first.side_effect = lambda: mock_nodes["alias1"]
+    mock_node_model.objects.filter.return_value.first.side_effect = lambda: mock_nodes[
+        "alias1"
+    ]
 
     AbstractPrimaryDescriptors.initialize()
 
@@ -68,7 +76,10 @@ def test_get_value_from_node_with_mock_tile(mock_tile_model, mock_nodes, mock_da
     AbstractPrimaryDescriptors._nodes = mock_nodes
     AbstractPrimaryDescriptors._datatypes = {"alias1": mock_datatype}
 
-    mock_tile_model.objects.filter.return_value.all.return_value = [MagicMock(), MagicMock()]
+    mock_tile_model.objects.filter.return_value.all.return_value = [
+        MagicMock(),
+        MagicMock(),
+    ]
 
     result = AbstractPrimaryDescriptors._get_value_from_node(
         node_alias="alias1", resourceinstanceid="res-123"
@@ -86,9 +97,7 @@ def test_get_values_in_order(mock_get_value, mock_config):
     mock_get_value.return_value = "MockValue"
 
     descriptor = AbstractPrimaryDescriptors().get_values_in_order(
-        aliases=["alias1"],
-        config=mock_config,
-        resource="res-001"
+        aliases=["alias1"], config=mock_config, resource="res-001"
     )
 
     assert "Mock Node" in descriptor
@@ -102,7 +111,9 @@ def test_get_name_descriptor_delegates_to_get_values(mock_get_values):
     AbstractPrimaryDescriptors._name_node_aliases = ["alias1"]
     mock_get_values.return_value = "NameDescriptor"
 
-    result = AbstractPrimaryDescriptors().get_name_descriptor("res-001", {"first_only": True, "show_name": False}, None)
+    result = AbstractPrimaryDescriptors().get_name_descriptor(
+        "res-001", {"first_only": True, "show_name": False}, None
+    )
     assert result == "NameDescriptor"
     mock_get_values.assert_called_once()
 
@@ -113,7 +124,9 @@ def test_get_search_card_descriptor_delegates_to_get_values(mock_get_values):
     AbstractPrimaryDescriptors._card_node_aliases = ["alias2"]
     mock_get_values.return_value = "CardDescriptor"
 
-    result = AbstractPrimaryDescriptors().get_search_card_descriptor("res-001", {"first_only": False, "show_name": True}, None)
+    result = AbstractPrimaryDescriptors().get_search_card_descriptor(
+        "res-001", {"first_only": False, "show_name": True}, None
+    )
     assert result == "CardDescriptor"
     mock_get_values.assert_called_once()
 
@@ -124,7 +137,9 @@ def test_get_map_popup_descriptor_delegates_to_get_values(mock_get_values):
     AbstractPrimaryDescriptors._popup_node_aliases = ["alias2"]
     mock_get_values.return_value = "PopupDescriptor"
 
-    result = AbstractPrimaryDescriptors().get_map_popup_descriptor("res-001", {"first_only": False, "show_name": True}, None)
+    result = AbstractPrimaryDescriptors().get_map_popup_descriptor(
+        "res-001", {"first_only": False, "show_name": True}, None
+    )
     assert result == "PopupDescriptor"
     mock_get_values.assert_called_once()
 
@@ -149,7 +164,9 @@ def test_get_primary_descriptor_from_nodes_dispatches_correctly(
     assert result == "NameDesc"
 
     # Test description
-    result = func.get_primary_descriptor_from_nodes("res1", {}, descriptor="description")
+    result = func.get_primary_descriptor_from_nodes(
+        "res1", {}, descriptor="description"
+    )
     assert result == "CardDesc"
 
     # Test map_popup fallback
