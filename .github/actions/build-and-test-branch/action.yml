@@ -78,16 +78,6 @@ runs:
         python manage.py makemigrations --check
       shell: bash
 
-    - name: Run migrations
-      run: |
-        python manage.py migrate
-      shell: bash
-
-    - name: Show migrations
-      run: |
-        python manage.py showmigrations
-      shell: bash
-
     - name: Ensure previous Python coverage data is erased
       run: |
         coverage erase
@@ -95,7 +85,7 @@ runs:
 
     - name: Run Python unit tests
       run: |
-        python -W default::DeprecationWarning -m coverage run manage.py test tests --settings="tests.test_settings"
+        python manage.py migrate && python -W default::DeprecationWarning -m coverage run manage.py test tests --settings="tests.test_settings"
       shell: bash
 
     - name: Generate Python report coverage
