@@ -36,24 +36,6 @@ BUSINESS_DATA_FILES = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-# DATABASES = {
-#     "default": {
-#         "ATOMIC_REQUESTS": False,
-#         "AUTOCOMMIT": True,
-#         "CONN_MAX_AGE": 0,
-#         "ENGINE": "django.contrib.gis.db.backends.postgis",
-#         "HOST": "localhost",
-#         "NAME": "bcgov_arches_common",
-#         "OPTIONS": {},
-#         "PASSWORD": "postgis",
-#         "PORT": "5432",
-#         "POSTGIS_TEMPLATE": "template_postgis",
-#         "TEST": {"CHARSET": None, "COLLATION": None, "MIRROR": None, "NAME": None},
-#         "TIME_ZONE": None,
-#         "USER": "postgres",
-#     }
-# }
-
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
@@ -72,7 +54,3 @@ TEST_RUNNER = "arches.test.runner.ArchesTestRunner"
 SILENCED_SYSTEM_CHECKS.append(
     "arches.W001",  # Cache backend does not support rate-limiting
 )
-
-# ELASTICSEARCH_HOSTS = [
-#     {"scheme": "http", "host": "localhost", "port": int(ELASTICSEARCH_HTTP_PORT)}
-# ]
