@@ -20,12 +20,15 @@ import os
 
 from bcgov_arches_common.settings import *
 
+try:
+    from bcgov_arches_common.settings_docker import *
+except ImportError:  # unable to import prior to installing requirements.txt in setup.py
+    pass
+
 PACKAGE_NAME = "bcgov_arches_common"
 
 PROJECT_TEST_ROOT = os.path.dirname(__file__)
 MEDIA_ROOT = os.path.join(PROJECT_TEST_ROOT, "fixtures", "data")
-
-BCGOV_PROXY_PREFIX = "bcgov_arches_core/"
 
 BUSINESS_DATA_FILES = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -33,23 +36,23 @@ BUSINESS_DATA_FILES = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-DATABASES = {
-    "default": {
-        "ATOMIC_REQUESTS": False,
-        "AUTOCOMMIT": True,
-        "CONN_MAX_AGE": 0,
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "HOST": "localhost",
-        "NAME": "bcgov_arches_common",
-        "OPTIONS": {},
-        "PASSWORD": "postgis",
-        "PORT": "5432",
-        "POSTGIS_TEMPLATE": "template_postgis",
-        "TEST": {"CHARSET": None, "COLLATION": None, "MIRROR": None, "NAME": None},
-        "TIME_ZONE": None,
-        "USER": "postgres",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ATOMIC_REQUESTS": False,
+#         "AUTOCOMMIT": True,
+#         "CONN_MAX_AGE": 0,
+#         "ENGINE": "django.contrib.gis.db.backends.postgis",
+#         "HOST": "localhost",
+#         "NAME": "bcgov_arches_common",
+#         "OPTIONS": {},
+#         "PASSWORD": "postgis",
+#         "PORT": "5432",
+#         "POSTGIS_TEMPLATE": "template_postgis",
+#         "TEST": {"CHARSET": None, "COLLATION": None, "MIRROR": None, "NAME": None},
+#         "TIME_ZONE": None,
+#         "USER": "postgres",
+#     }
+# }
 
 CACHES = {
     "default": {
@@ -70,6 +73,6 @@ SILENCED_SYSTEM_CHECKS.append(
     "arches.W001",  # Cache backend does not support rate-limiting
 )
 
-ELASTICSEARCH_HOSTS = [
-    {"scheme": "http", "host": "localhost", "port": ELASTICSEARCH_HTTP_PORT}
-]
+# ELASTICSEARCH_HOSTS = [
+#     {"scheme": "http", "host": "localhost", "port": int(ELASTICSEARCH_HTTP_PORT)}
+# ]
