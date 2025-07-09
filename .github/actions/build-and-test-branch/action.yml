@@ -78,6 +78,11 @@ runs:
         python manage.py makemigrations --check
       shell: bash
 
+    - name: Run migrations
+      run: |
+        python manage.py migrate
+      shell: bash
+
     - name: Show migrations
       run: |
         python manage.py showmigrations
