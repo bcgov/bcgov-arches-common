@@ -40,4 +40,4 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["bcgov-arches-common"]
+packages = ["bcgov_arches_common"]
