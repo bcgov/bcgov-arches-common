@@ -4,6 +4,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path
 from bcgov_arches_common.views.api.concept import ConceptsForNode
 from bcgov_arches_common.views.api import user as api_user
+from bcgov_arches_common.views import auth
 
 urlpatterns = [
     path(
@@ -12,6 +13,21 @@ urlpatterns = [
         name="concepts_for_node",
     ),
     path("api/user/", api_user.UserView.as_view(), name="api_user"),
+    # OAuth views
+    # Redirect the admin login page to use OAuth
+    path(
+        r"admin/login/",
+        auth.login,
+        name="admin_login",
+    ),
+    path(r"auth/", auth.login, name="auth_login"),
+    path(r"auth/eoauth_cb", auth.auth_callback, name="auth_callback"),
+    path(r"auth/logout/", auth.logout, name="auth_logout"),
+    path(
+        r"unauthorized/",
+        auth.UnauthorizedView.as_view(),
+        name="unauthorized",
+    ),
 ]
 
 # Adds URL pattern to serve media files during development

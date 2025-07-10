@@ -415,6 +415,33 @@ EXTRA_EMAIL_CONTEXT = {
 # django-admin.py makemessages --ignore=env/* --local=de --local=en --local=en_GB --local=es  --extension=htm,py
 # django-admin.py compilemessages
 
+AUTHLIB_OAUTH_CLIENTS = {
+    "default": {
+        "client_id": get_env_variable("OAUTH_CLIENT_ID"),
+        "client_secret": get_env_variable("OAUTH_CLIENT_SECRET"),
+        "authorize_url": get_env_variable("OAUTH_AUTH_ENDPOINT"),
+        "access_token_url": get_env_variable("OAUTH_TOKEN_ENDPOINT"),
+        "refresh_token_url": get_env_variable("OAUTH_TOKEN_ENDPOINT"),
+        "server_metadata_url": get_env_variable("OAUTH_SERVER_METADATA_URL"),
+        "client_kwargs": {
+            "scope": "openid profile email",
+            "token_endpoint_auth_method": "client_secret_post",
+        },
+        "urls": {
+            "home_page": "/",
+            "unauthorized_page": "/unauthorized",
+            "unauthorized_template": "unauthorized.htm",
+            "auth_exempt_pages": [
+                "/",
+                "/unauthorized" "/index.htm",
+                "/auth",
+                "/auth/eoauth_start",
+                "/auth/eoauth_cb",
+            ],
+        },
+    }
+}
+
 
 # default language of the application
 # language code needs to be all lower case with the form:
