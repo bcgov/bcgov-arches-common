@@ -31,7 +31,14 @@ runs:
         pip install '.[dev]'
         echo Python packages installed
       shell: bash
-    
+
+    - name: Load environment variables from .env file
+      run: |
+        set -a
+        source .github/github.env
+        set +a
+      shell: bash
+
     - name: Ensure frontend configuration files exist
       run: |
           python manage.py check
