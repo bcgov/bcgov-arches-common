@@ -34,9 +34,11 @@ runs:
 
     - name: Load environment variables from .env file
       run: |
-        set -a
-        source .github/github.env
-        set +a
+        while IFS='=' read -r key value || [ -n "$key" ]; do
+          if [[ ! "$key" =~ ^\s*# && -n "$key" ]]; then
+            echo "$key=$value" >> "$GITHUB_ENV"
+          fi
+        done < .github/github.env
       shell: bash
 
     - name: Ensure frontend configuration files exist
