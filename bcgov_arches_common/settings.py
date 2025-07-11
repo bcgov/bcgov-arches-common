@@ -419,6 +419,7 @@ EXTRA_EMAIL_CONTEXT = {
 ### Update the urls section with any application-specific prefixes
 AUTHLIB_OAUTH_CLIENTS = {
     "default": {
+        "auth_required": True,
         "client_id": get_env_variable("OAUTH_CLIENT_ID"),
         "client_secret": get_env_variable("OAUTH_CLIENT_SECRET"),
         "authorize_url": get_env_variable("OAUTH_AUTH_ENDPOINT"),

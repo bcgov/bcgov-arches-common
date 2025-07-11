@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 OAUTH_CONFIG = settings.AUTHLIB_OAUTH_CLIENTS["default"]
 HOME_PAGE = OAUTH_CONFIG["urls"]["home_page"]
 UNAUTHORIZED_PAGE = OAUTH_CONFIG["urls"]["unauthorized_page"]
+AUTH_REQUIRED = (
+    OAUTH_CONFIG["auth_required"] if "auth_required" in OAUTH_CONFIG else True
+)
 EXEMPT_PATHS = OAUTH_CONFIG["urls"]["auth_exempt_pages"]
 
 
@@ -21,9 +24,13 @@ def bypass_auth(request):
         if request.META.get("HTTP_X_FORWARDED_FOR") is None
         else request.META.get("HTTP_X_FORWARDED_FOR")
     )  # return True
-    return request.path.rstrip("/") in EXEMPT_PATHS or (
-        request_source in settings.AUTH_BYPASS_HOSTS
-        and request.META.get("HTTP_USER_AGENT").startswith("node-fetch/1.0")
+    return (
+        not AUTH_REQUIRED
+        or request.path.rstrip("/") in EXEMPT_PATHS
+        or (
+            request_source in settings.AUTH_BYPASS_HOSTS
+            and request.META.get("HTTP_USER_AGENT").startswith("node-fetch/1.0")
+        )
     )
 
 
