@@ -24,13 +24,9 @@ def bypass_auth(request):
         if request.META.get("HTTP_X_FORWARDED_FOR") is None
         else request.META.get("HTTP_X_FORWARDED_FOR")
     )  # return True
-    return (
-        not AUTH_REQUIRED
-        or request.path.rstrip("/") in EXEMPT_PATHS
-        or (
-            request_source in settings.AUTH_BYPASS_HOSTS
-            and request.META.get("HTTP_USER_AGENT").startswith("node-fetch/1.0")
-        )
+    return request.path.rstrip("/") in EXEMPT_PATHS or (
+        request_source in settings.AUTH_BYPASS_HOSTS
+        and request.META.get("HTTP_USER_AGENT").startswith("node-fetch/1.0")
     )
 
 
@@ -85,11 +81,11 @@ class OAuthTokenRefreshMiddleware:
                         log_user_out(request)
                         return redirect(UNAUTHORIZED_PAGE)
         else:
-            logger.warning(f"[Token] No token - logging user out.")
-            log_user_out(request)
-            return redirect(HOME_PAGE)
+            if request.user.is_authenticated:
+                logger.warning(f"[Token] No token - logging user out.")
+                log_user_out(request)
 
-        if not request.user.is_authenticated:
+        if AUTH_REQUIRED and not request.user.is_authenticated:
             return redirect(HOME_PAGE)
 
         return self.get_response(request)
