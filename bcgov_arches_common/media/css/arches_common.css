@@ -2,12 +2,12 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
-    --default-font-family: var(--font-sans);
-    --default-mono-font-family: var(--font-mono);
+ --font-sans: "BCSans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --default-font-family: var(--font-sans);
+  --default-mono-font-family: var(--font-mono);
   }
 }
 @layer base {
@@ -63,5 +63,8 @@
   ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
     height: auto;
   }
+}
+.p-select-option-label {
+    font-size: 0.9rem;
 }
 @layer utilities;
