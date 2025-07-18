@@ -58,8 +58,7 @@ const greeting = computed(() => {
             <router-link
                 target="_blank"
                 :to="arches.urls.user_profile_manager"
-                style="text-decoration: none; color: inherit"
-            >
+                style="text-decoration: none; color: inherit">
                 {{ greeting }}
             </router-link>
         </span>

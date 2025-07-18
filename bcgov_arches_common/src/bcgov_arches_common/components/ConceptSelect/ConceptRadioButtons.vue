@@ -40,13 +40,11 @@ onMounted(() => {
     <RadioButtonGroup
         v-model="model"
         :name="id"
-        :class="['flex flex-wrap', flexDirection]"
-    >
+        :class="['flex flex-wrap', flexDirection]">
         <div
             v-for="option in options"
             :key="option.id"
-            class="flex items-center gap-2"
-        >
+            class="flex items-center gap-2">
             <RadioButton
                 v-model="model"
                 :input-id="option.id"
@@ -54,8 +52,7 @@ onMounted(() => {
                 :value="option.id"
                 variant="filled"
                 size="small"
-                @change="valueUpdated"
-            />
+                @change="valueUpdated" />
             <label :for="option.id">{{ option.text }}</label>
         </div>
     </RadioButtonGroup>

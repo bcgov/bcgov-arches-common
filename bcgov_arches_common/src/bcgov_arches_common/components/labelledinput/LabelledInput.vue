@@ -15,7 +15,7 @@ const isRequired = computed(() => {
 </script>
 
 <template>
-    <div class="mb-2">
+    <div class="mb-2 formfield-margin-bottom">
         <label
             :for="props.inputName"
             :class="isRequired"
@@ -74,5 +74,9 @@ label.required::before {
 
 .p-message-secondary {
     background: unset;
+}
+
+.formfield-margin-bottom {
+    margin-bottom: 1rem;
 }
 </style>

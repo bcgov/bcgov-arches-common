@@ -26,18 +26,15 @@ const items = ref([
     <aside class="sidenav">
         <div
             v-for="item in items"
-            :key="item.routeName"
-        >
+            :key="item.routeName">
             <RouterLink
                 v-tooltip="item.linkName"
                 :to="{ name: item.routeName }"
                 class="p-button p-component p-button-primary"
-                style="text-decoration: none"
-            >
+                style="text-decoration: none">
                 <i
                     :class="item.icon"
-                    aria-hidden="true"
-                ></i>
+                    aria-hidden="true"></i>
             </RouterLink>
         </div>
     </aside>

@@ -39,8 +39,7 @@ const clickNext = () => {
             :disabled="reverseBlocked"
             class="previous-button"
             severity="secondary"
-            @click="$emit('previousClick', props.stepNumber - 1)"
-        >
+            @click="$emit('previousClick', props.stepNumber - 1)">
         </Button>
         <div v-if="!props.showPrevious">&nbsp;</div>
         <Button
@@ -48,8 +47,7 @@ const clickNext = () => {
             :label="props.nextLabel"
             :disabled="proceedBlocked"
             class="next-button"
-            @click="clickNext"
-        >
+            @click="clickNext">
         </Button>
     </div>
 </template>

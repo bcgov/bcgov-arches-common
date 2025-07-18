@@ -47,8 +47,7 @@ const valueUpdated = function (event: SelectChangeEvent) {
         fluid
         class="w-full md:w-14rem"
         size="small"
-        @change="valueUpdated"
-    />
+        @change="valueUpdated" />
 </template>
 
 <style scoped></style>
