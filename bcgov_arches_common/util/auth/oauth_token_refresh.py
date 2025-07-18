@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 OAUTH_CONFIG = settings.AUTHLIB_OAUTH_CLIENTS["default"]
 HOME_PAGE = OAUTH_CONFIG["urls"]["home_page"]
 UNAUTHORIZED_PAGE = OAUTH_CONFIG["urls"]["unauthorized_page"]
+AUTH_REQUIRED = (
+    OAUTH_CONFIG["auth_required"] if "auth_required" in OAUTH_CONFIG else True
+)
 EXEMPT_PATHS = OAUTH_CONFIG["urls"]["auth_exempt_pages"]
 
 
@@ -78,11 +81,11 @@ class OAuthTokenRefreshMiddleware:
                         log_user_out(request)
                         return redirect(UNAUTHORIZED_PAGE)
         else:
-            logger.warning(f"[Token] No token - logging user out.")
-            log_user_out(request)
-            return redirect(HOME_PAGE)
+            if request.user.is_authenticated:
+                logger.warning(f"[Token] No token - logging user out.")
+                log_user_out(request)
 
-        if not request.user.is_authenticated:
+        if AUTH_REQUIRED and not request.user.is_authenticated:
             return redirect(HOME_PAGE)
 
         return self.get_response(request)
