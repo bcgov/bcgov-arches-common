@@ -19,7 +19,7 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "bcgov/arches#stable/7.6.12.1_bcgov",
+        "arches": "bcgov/arches#v7.6.12.1_bcgov",
         "primevue": "^4.2.5",
         "vite": "latest",
         "vue-router": "^4.4.3"
