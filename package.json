@@ -20,14 +20,15 @@
     },
     "dependencies": {
         "arches": "bcgov/arches#stable/7.6.12_bcgov",
-        "vue-router": "^4.4.3",
         "primevue": "^4.2.5",
-        "vite": "latest"
+        "vite": "latest",
+        "vue-router": "^4.4.3"
     },
     "devDependencies": {
+        "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.12",
         "eslint-plugin-prettier": "^5.2.3",
-        "@vue/eslint-config-prettier": "^10.2.0"
+        "prettier": "^3.6.2"
     },
     "nodeModulesPaths": {},
     "overrides": {
