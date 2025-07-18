@@ -21,6 +21,5 @@ const config = computed(() => {
     <ckeditor
         v-model="data"
         :editor="ClassicEditor"
-        :config="config"
-    />
+        :config="config" />
 </template>

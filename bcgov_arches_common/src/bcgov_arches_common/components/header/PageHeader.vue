@@ -38,28 +38,23 @@ const logoUrl = new URL(
 <template>
     <nav
         class="v5-splash-navbar navbar"
-        role="navigation"
-    >
+        role="navigation">
         <Menubar
             class="page-header"
-            :model="items"
-        >
+            :model="items">
             <template #start>
                 <RouterLink
                     :to="{ name: props.routeNames.home }"
-                    style="text-decoration: none; color: inherit"
-                >
+                    style="text-decoration: none; color: inherit">
                     <div class="relative nav-brand-container">
                         <div class="navbar-brand-v5-icon-container">
                             <a
                                 href="https://www2.gov.bc.ca/gov/content/home"
-                                target="BCGov Home"
-                            >
+                                target="BCGov Home">
                                 <img
                                     class="navbar-brand-v5-icon"
                                     :src="logoUrl"
-                                    alt="BC Government Logo"
-                                />
+                                    alt="BC Government Logo" />
                             </a>
                             <h1>{{ $gettext(props.systemName) }}</h1>
                         </div>
@@ -72,12 +67,10 @@ const logoUrl = new URL(
                 <RouterLink
                     :to="{ name: item.name }"
                     class="p-button p-component p-button-primary"
-                    style="text-decoration: none"
-                >
+                    style="text-decoration: none">
                     <i
                         :class="item.icon"
-                        aria-hidden="true"
-                    ></i>
+                        aria-hidden="true"></i>
                     <span>{{ item.label }}</span>
                 </RouterLink>
             </template>

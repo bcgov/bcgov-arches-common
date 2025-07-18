@@ -23,26 +23,22 @@ watch(
         <label>{{ props.label }} ({{ displayValues.length }})</label>
         <div
             v-for="(value, index) in displayValues"
-            :key="value"
-        >
+            :key="value">
             <div>
                 <div
                     class="item-index"
-                    style="display: inline-block"
-                >
+                    style="display: inline-block">
                     {{ index + 1 }}
                 </div>
                 <div style="display: inline-block">
                     <slot
                         :value="value"
-                        :index="index"
-                    ></slot>
+                        :index="index"></slot>
                 </div>
                 <i
                     class="fa fa-trash-can item-delete-button"
                     aria-hidden="true"
-                    @click="props.deleteCallback(index)"
-                ></i>
+                    @click="props.deleteCallback(index)"></i>
             </div>
         </div>
     </div>
