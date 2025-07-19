@@ -46,7 +46,7 @@ class Command(BaseCommand):
             type=int,
             dest="max_subprocesses",
             default=0,
-            help="Changes the process pool size when using use_multiprocessing. Default is ceil(cpu_count()/2)",
+            help="It changes the process pool size when using use_multiprocessing. The default is ceil(cpu_count() / 2)",
         )
 
         parser.add_argument(
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             action="store_true",
             dest="recalculate_descriptors",
             default=True,
-            help="forces the primary descriptors to be recalculated before (re)indexing",
+            help="It forces the primary descriptors to be recalculated before (re)indexing",
         )
 
     def get_index_order(self):
