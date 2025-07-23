@@ -22,9 +22,9 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches@v7.6.12.1_bcgov",
+    "arches @ git+https://github.com/archesproject/arches@stable/8.0.2",
     "arches_component_lab",
     "Authlib",
 ]
