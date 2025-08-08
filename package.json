@@ -19,7 +19,7 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "archesproject/arches#stable/8.0.2",
+        "arches": "^8.0.2",
         "primevue": "^4.2.5",
         "vite": "latest",
         "vue-router": "^4.4.3"
