@@ -24,12 +24,12 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches.git@v7.6.12.1_bcgov",
+    "arches @ git+https://github.com/bcgov/arches@7.6.12+bcgov.1#egg=arches",
     "arches_component_lab",
     "Authlib",
 ]
 
-version = "1.2.4"
+version = "1.2.5"
 
 [project.optional-dependencies]
 dev = [
