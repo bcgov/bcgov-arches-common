@@ -10,12 +10,12 @@ const CollectionItemSchema = z.object({
     },
 });
 
-const ConceptValueSchema = z.object({
+export const ConceptValueSchema = z.object({
     display_value: z.string(),
     node_value: z.string().uuidv4(),
     details: z.array(CollectionItemSchema),
 });
 
-const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({
+export const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({
     node_value: z.string().uuidv4().min(1),
 });
