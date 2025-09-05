@@ -2,7 +2,7 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import type { ColumnDefinition } from "@/bcgov_arches_common/components/StandardDataTable/types.ts";
-import type { AliasedNodeData } from "@/arches_component_lab/types.ts";
+import type { AliasedTileData } from "@/arches_component_lab/types.ts";
 import {
     getNodeDisplayValue,
     labelize,
@@ -13,7 +13,7 @@ const { title, columnDefinitions, tableData, initialSortFieldIndex } =
     defineProps<{
         title?: string;
         columnDefinitions: ColumnDefinition[];
-        tableData: AliasedNodeData[];
+        tableData: AliasedTileData[];
         initialSortFieldIndex?: number;
     }>();
 
