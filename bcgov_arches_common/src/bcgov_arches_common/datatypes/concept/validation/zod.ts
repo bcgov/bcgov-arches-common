@@ -17,5 +17,5 @@ export const ConceptValueSchema = z.object({
 });
 
 export const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({
-    node_value: z.string().uuidv4().min(1),
+    node_value: z.string().uuidv4().min(1, { message: 'Value is required.' }),
 });
