@@ -12,7 +12,7 @@ const CollectionItemSchema = z.object({
 
 export const ConceptValueSchema = z.object({
     display_value: z.string(),
-    node_value: z.string().uuidv4(),
+    node_value: z.string().uuidv4().nullable(),
     details: z.array(CollectionItemSchema),
 });
 
