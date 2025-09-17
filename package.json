@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "arches": "^8.0.3",
+        "maplibre-gl": "^5.7.1",
         "primevue": "^4.2.5",
         "vite": "latest",
         "vue-router": "^4.4.3"
