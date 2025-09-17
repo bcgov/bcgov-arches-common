@@ -4,6 +4,11 @@
 import('@/arches/declarations.d.ts');
 
 declare module 'bcgov_arches_common';
+declare module 'underscore';
+declare module 'maplibre-gl';
+declare module '@turf/helpers';
+declare module '@turf/bbox';
+declare module '@turf/centroid';
 // declare filetypes used in `./src/` folder
 declare module '*.ts';
 declare module '*.vue';

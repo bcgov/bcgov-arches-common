@@ -4,25 +4,31 @@ import maplibregl, {
     type Map as MapLibreMap,
 } from 'maplibre-gl';
 import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
-import type { MapData } from '@/bcap/components/Map/types.ts';
+import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import { find } from 'underscore';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { FeatureCollection } from 'geojson';
-import type { AllGeoJSON } from '@turf/helpers';
+import type { SourceJson } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 import type {
     MapSource,
     MapLayer,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
+import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
+import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 
-const props = defineProps<{
-    mapData: MapData;
-    aliasedNodeData: AliasedGeojsonFeatureCollectionNode;
-}>();
+const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
+    defineProps<{
+        graphSlug: string;
+        nodeAlias: string;
+        cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
+        mapData: MapData;
+        aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
+    }>();
 
 const geometry = computed<FeatureCollection | undefined>(() => {
-    return props.aliasedNodeData?.node_value?.features?.[0];
+    return aliasedNodeData?.node_value?.features?.[0];
 });
 
 const hasGeometry = computed<boolean>(() => {
@@ -34,7 +40,7 @@ const mapLoaded = ref(false);
 const center = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, lat)
 const mapCentre = computed<[number, number]>(() => {
     return (
-        props.aliasedNodeData?.node_value
+        aliasedNodeData?.node_value
             ? (centroid(geometry.value as AllGeoJSON)?.geometry?.coordinates ??
               center.value)
             : center.value
@@ -61,14 +67,14 @@ function setupMap(): void {
     // dataLoaded.value = true;
     if (!mapEl.value) return;
 
-    const basemap = find(props.mapData.basemaps, (basemap: MapLayer) => {
+    const basemap = find(mapData.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
     defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
     defaultStyle.value.layers.push(...basemap.layerdefinitions);
-    if (props.mapData.default_bounds)
+    if (mapData.default_bounds)
         center.value = centroid(
-            props.mapData.default_bounds as AllGeoJSON,
+            mapData.default_bounds as AllGeoJSON,
         ).geometry.coordinates;
     map.value = new maplibregl.Map({
         container: mapEl.value,
@@ -90,9 +96,9 @@ function setupMap(): void {
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
-        if (props.aliasedNodeData?.node_value?.features?.[0]) {
+        if (aliasedNodeData?.node_value?.features?.[0]) {
             console.log('Adding geometry from load event');
-            addGeometryToMap(props.aliasedNodeData.node_value.features[0]);
+            addGeometryToMap(aliasedNodeData.node_value.features[0]);
         }
     });
 
@@ -109,16 +115,18 @@ function setupMap(): void {
 }
 
 onMounted(async () => {
-    if (!map.value && props.mapData.value) {
-        setupMap();
+    if (!map.value && mapData?.value) {
+        setupMap(mapData);
     }
 });
 
 watch(
-    () => props.mapData,
+    () => mapData,
     (mapData, prevMapData) => {
+        console.log('mapData updaed', mapData);
+        console.log('cardXNodeXWidgetData', cardXNodeXWidgetData);
         if (mapData) {
-            setupMap(mapData);
+            setupMap();
         }
     },
 );
@@ -130,18 +138,32 @@ watch(mapCentre, (val, oldVal) => {
 });
 
 const addGeometryToMap = (feature) => {
-    if (!map.value || !hasGeometry.value || !mapLoaded.value) return;
+    if (
+        !map.value ||
+        !hasGeometry.value ||
+        !mapLoaded.value ||
+        !cardXNodeXWidgetData
+    )
+        return;
 
     map.value.addSource(feature.id, {
         type: 'geojson',
         data: feature.geometry,
     });
 
-    map.value.addLayer({
-        id: `${feature.id}-site`,
-        type: 'line',
-        source: feature.id,
+    const layers = buildLayersForFeature(
+        feature,
+        cardXNodeXWidgetData as any as SourceJson,
+    );
+    layers.forEach((layer) => {
+        map.value.addLayer(layer);
     });
+
+    // map.value.addLayer({
+    //     id: `${feature.id}-site`,
+    //     type: 'line',
+    //     source: feature.id,
+    // });
 
     new maplibregl.Marker({ color: '#d97706' })
         .setLngLat(mapCentre.value)
@@ -165,8 +187,21 @@ const addGeometryToMap = (feature) => {
 };
 
 watch(
-    () => props.aliasedNodeData?.node_value?.features?.[0],
+    () => cardXNodeXWidgetData,
+    (cardXNodeXWidgetData, prevCardXNodeXWidgetData) => {
+        console.log('cardXNodeXWdigetData updated', cardXNodeXWidgetData);
+        if (cardXNodeXWidgetData && mapData) {
+            addGeometryToMap(aliasedNodeData?.node_value?.features?.[0]);
+        }
+    },
+);
+
+watch(
+    () => aliasedNodeData?.node_value?.features?.[0],
     (feature, prevFeature) => {
+        console.log('watch feature');
+        console.log(feature);
+        console.log(cardXNodeXWidgetData);
         if (feature && map.value) {
             console.log('Adding geometry from watch event');
             addGeometryToMap(feature);
