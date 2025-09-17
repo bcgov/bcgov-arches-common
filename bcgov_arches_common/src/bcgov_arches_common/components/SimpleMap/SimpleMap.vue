@@ -13,7 +13,7 @@ import MapView from '@/bcgov_arches_common//components/SimpleMap/components/Simp
 import ProgressSpinner from 'primevue/progressspinner';
 import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
 
-const mapData = ref<MapData | null>(null);
+const mapData = ref<MapData | null | undefined>(null);
 const { graphSlug, nodeAlias, mode, cardXNodeXWidgetData, aliasedNodeData } =
     defineProps<{
         graphSlug: string;

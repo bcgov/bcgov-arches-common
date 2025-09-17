@@ -26,7 +26,8 @@ export async function fetchSystemMapData() {
         );
 
         mapData.map_layers.forEach((layer: MapLayer) => {
-            layer.source = sourcesMap[layer.layerdefinitions?.[0].source];
+            if (layer?.layerdefinitions?.[0].source)
+                layer.source = sourcesMap[layer.layerdefinitions[0].source];
         });
 
         transformedMapData.overlays = layers.filter(

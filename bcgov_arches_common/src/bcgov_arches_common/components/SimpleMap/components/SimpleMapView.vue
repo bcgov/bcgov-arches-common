@@ -1,33 +1,36 @@
 <script setup lang="ts">
-import maplibregl, {
-    type LayerSpecification,
-    type Map as MapLibreMap,
-} from 'maplibre-gl';
+import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
 import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import { find } from 'underscore';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import type { FeatureCollection } from 'geojson';
-import type { SourceJson } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
+import type { FeatureCollection, Feature } from 'geojson';
+import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import type {
     MapSource,
     MapLayer,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
+import type {
+    LayerSpecificationType,
+    StyleSpecificationType,
+} from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
+
+type MapLibreMapType = typeof MapLibreMap;
 
 const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
     defineProps<{
         graphSlug: string;
         nodeAlias: string;
         cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
-        mapData: MapData;
+        mapData: MapData | undefined | null;
         aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
     }>();
 
-const geometry = computed<FeatureCollection | undefined>(() => {
+const geometry = computed<Feature | undefined>(() => {
     return aliasedNodeData?.node_value?.features?.[0];
 });
 
@@ -41,8 +44,7 @@ const center = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, l
 const mapCentre = computed<[number, number]>(() => {
     return (
         aliasedNodeData?.node_value
-            ? (centroid(geometry.value as AllGeoJSON)?.geometry?.coordinates ??
-              center.value)
+            ? (centroid(geometry.value)?.geometry?.coordinates ?? center.value)
             : center.value
     ) as [number, number];
 });
@@ -50,22 +52,22 @@ const mapCentre = computed<[number, number]>(() => {
 const zoom = ref<number>(3.5);
 
 const mapEl = ref<HTMLDivElement | null>(null);
-const map: Ref<MapLibreMap | null> = ref(null);
+const map: Ref<MapLibreMapType | null> = ref(null);
 
 const styleObj = {
     version: 8,
     name: 'Custom WMS Basemap + Overlays',
     sources: {} as MapSource,
-    layers: [] as LayerSpecification[],
+    layers: [] as LayerSpecificationType[],
     // Optional: wire up glyphs/sprite if you also use symbol layers elsewhere
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-} satisfies maplibregl.StyleSpecification;
+} satisfies StyleSpecificationType;
 
-const defaultStyle = shallowRef<maplibregl.StyleSpecification>(styleObj);
+const defaultStyle = shallowRef<StyleSpecificationType>(styleObj);
 
 function setupMap(): void {
     // dataLoaded.value = true;
-    if (!mapEl.value) return;
+    if (!mapEl.value || !mapData) return;
 
     const basemap = find(mapData.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
@@ -74,7 +76,7 @@ function setupMap(): void {
     defaultStyle.value.layers.push(...basemap.layerdefinitions);
     if (mapData.default_bounds)
         center.value = centroid(
-            mapData.default_bounds as AllGeoJSON,
+            mapData.default_bounds as FeatureCollection,
         ).geometry.coordinates;
     map.value = new maplibregl.Map({
         container: mapEl.value,
@@ -111,12 +113,12 @@ function setupMap(): void {
 
     const onResize = () => map.value && map.value.resize();
     window.addEventListener('resize', onResize);
-    (map.value as MapLibreMap).__onResize = onResize;
+    (map.value as MapLibreMapType).__onResize = onResize;
 }
 
 onMounted(async () => {
-    if (!map.value && mapData?.value) {
-        setupMap(mapData);
+    if (!map.value && mapData) {
+        setupMap();
     }
 });
 
@@ -137,7 +139,7 @@ watch(mapCentre, (val, oldVal) => {
     }
 });
 
-const addGeometryToMap = (feature) => {
+const addGeometryToMap = (feature: Feature) => {
     if (
         !map.value ||
         !hasGeometry.value ||
@@ -153,17 +155,11 @@ const addGeometryToMap = (feature) => {
 
     const layers = buildLayersForFeature(
         feature,
-        cardXNodeXWidgetData as any as SourceJson,
+        cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
     );
     layers.forEach((layer) => {
         map.value.addLayer(layer);
     });
-
-    // map.value.addLayer({
-    //     id: `${feature.id}-site`,
-    //     type: 'line',
-    //     source: feature.id,
-    // });
 
     new maplibregl.Marker({ color: '#d97706' })
         .setLngLat(mapCentre.value)
@@ -190,7 +186,11 @@ watch(
     () => cardXNodeXWidgetData,
     (cardXNodeXWidgetData, prevCardXNodeXWidgetData) => {
         console.log('cardXNodeXWdigetData updated', cardXNodeXWidgetData);
-        if (cardXNodeXWidgetData && mapData) {
+        if (
+            cardXNodeXWidgetData &&
+            mapData &&
+            aliasedNodeData?.node_value?.features?.[0]
+        ) {
             addGeometryToMap(aliasedNodeData?.node_value?.features?.[0]);
         }
     },
@@ -210,7 +210,10 @@ watch(
 );
 </script>
 <template>
-    <div class="map-wrap">
+    <div
+        class="map-wrap"
+        :data-graph-slug="graphSlug"
+        :data-node-alias="nodeAlias">
         <div
             ref="mapEl"
             class="map"

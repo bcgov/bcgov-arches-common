@@ -7,9 +7,12 @@ import type {
     GeoJSON,
 } from 'geojson';
 
-export interface AliasedGeojsonFeatureCollectionNode extends AliasedNodeData {
-    node_data: FeatureCollection;
-}
+export type AliasedGeojsonFeatureCollectionNode = Omit<
+    AliasedNodeData,
+    'node_value'
+> & {
+    node_value: FeatureCollection;
+};
 
 export type MapData = {
     overlays: MapLayer[];

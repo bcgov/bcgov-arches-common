@@ -1,27 +1,10 @@
 // If you have maplibre-gl types installed:
-import type { AnyLayer } from 'maplibre-gl';
-import type { Geometry } from 'geojson';
-import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
-
-type NodeConfig = {
-    weight?: number; // line width
-    outlineWeight?: number; // polygon outline width
-    radius?: number; // point radius
-    haloWeight?: number; // line/point halo width
-    haloRadius?: number; // extra radius for point halo
-    lineColor?: string;
-    lineHaloColor?: string;
-    pointColor?: string;
-    pointHaloColor?: string;
-    fillColor?: string;
-    outlineColor?: string;
-};
-
-export type SourceJson = {
-    node?: {
-        config?: NodeConfig;
-    };
-};
+import type { Feature, Geometry } from 'geojson';
+import type {
+    GeoJsonCardXNodeXWidgetData,
+    LayerSpecificationType,
+    GeoJsonNodeConfigType,
+} from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 
 type FeatureInput = {
     id: string;
@@ -53,10 +36,10 @@ function parseColor(input?: string): ParsedColor {
  * Returns layers ordered for proper z-index (halos first).
  */
 export function buildLayersForFeature(
-    feature: FeatureInput,
-    sourceJson: CardXNodeXWidgetData,
-): AnyLayer[] {
-    const cfg: NodeConfig = sourceJson?.node?.config ?? {};
+    feature: Feature,
+    sourceJson: GeoJsonCardXNodeXWidgetData,
+): LayerSpecificationType[] {
+    const cfg: GeoJsonNodeConfigType = sourceJson?.node?.config ?? {};
 
     const {
         weight = 2,
@@ -91,7 +74,7 @@ export function buildLayersForFeature(
     const isLineLike = /^(LineString|MultiLineString)$/i.test(geomType);
     const isPolygonLike = /^(Polygon|MultiPolygon)$/i.test(geomType);
 
-    const layers: AnyLayer[] = [];
+    const layers: LayerSpecificationType[] = [];
 
     if (isPointLike) {
         layers.push({
@@ -193,7 +176,7 @@ export function buildLayersForFeature(
                 'line-opacity': lineOpacity,
                 'line-width': Math.max(0, weight),
             },
-        } as AnyLayer);
+        } as LayerSpecificationType);
     }
 
     return layers;

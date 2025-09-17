@@ -19,11 +19,15 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "^8.0.3",
+        "@primeuix/styles": "^1.2.3",
+        "@turf/bbox": "^7.2.0",
+        "@turf/centroid": "^7.2.0",
+        "arches": "archesproject/arches#stable/8.0.x",
         "maplibre-gl": "^5.7.1",
-        "primevue": "^4.2.5",
+        "primevue": "^4.3.9",
         "vite": "latest",
-        "vue-router": "^4.4.3"
+        "vue-router": "^4.4.3",
+        "vue3-gettext": "^4.0.0-beta.1"
     },
     "devDependencies": {
         "@vue/eslint-config-prettier": "^10.2.0",

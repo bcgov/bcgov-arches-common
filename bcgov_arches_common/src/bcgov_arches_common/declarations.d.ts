@@ -9,6 +9,7 @@ declare module 'maplibre-gl';
 declare module '@turf/helpers';
 declare module '@turf/bbox';
 declare module '@turf/centroid';
+declare module '@maplibre/maplibre-gl-style-spec';
 // declare filetypes used in `./src/` folder
 declare module '*.ts';
 declare module '*.vue';
