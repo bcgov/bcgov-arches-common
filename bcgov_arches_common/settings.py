@@ -155,7 +155,7 @@ INSTALLED_APPS = (
     "arches.app.models",
     "arches.management",
     "guardian",
-    "captcha",
+    # "captcha",
     "revproxy",
     "corsheaders",
     "oauth2_provider",
