@@ -19,14 +19,14 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "^8.0.2",
+        "arches": "^8.0.3",
         "primevue": "^4.2.5",
         "vite": "latest",
         "vue-router": "^4.4.3"
     },
     "devDependencies": {
         "@vue/eslint-config-prettier": "^10.2.0",
-        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.2",
+        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.3",
         "eslint-plugin-prettier": "^5.2.3",
         "prettier": "^3.6.2"
     },

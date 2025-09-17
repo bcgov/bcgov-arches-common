@@ -5,6 +5,11 @@ from django.urls import include, path
 from bcgov_arches_common.views.api.concept import ConceptsForNode
 from bcgov_arches_common.views.api import user as api_user
 from bcgov_arches_common.views import auth
+from bcgov_arches_common.views.api.map import (
+    MapDataAPI,
+)
+
+uuid_regex = settings.UUID_REGEX
 
 urlpatterns = [
     path(
@@ -28,6 +33,8 @@ urlpatterns = [
         auth.UnauthorizedView.as_view(),
         name="unauthorized",
     ),
+    # Map Libre stuff from Rascolls
+    path("api/map-data", MapDataAPI.as_view(), name="api-map-data"),
 ]
 
 # Adds URL pattern to serve media files during development
