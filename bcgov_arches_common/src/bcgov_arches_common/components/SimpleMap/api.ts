@@ -1,12 +1,12 @@
 import type {
     MapLayer,
     MapSource,
-} from "@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts";
-import { map, object } from "underscore";
-import type { MapData } from "@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts";
+} from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
+import { map, object } from 'underscore';
+import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
-import { fetchMapData } from "@/bcgov_arches_common/datatypes/geojson-feature-collection/api.ts";
-import type { FeatureCollection } from "geojson";
+import { fetchMapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/api.ts';
+import type { FeatureCollection } from 'geojson';
 
 export async function fetchSystemMapData() {
     const transformedMapData: MapData = {

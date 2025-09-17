@@ -2,19 +2,19 @@
 import maplibregl, {
     type LayerSpecification,
     type Map as MapLibreMap,
-} from "maplibre-gl";
-import { watch, onMounted, type Ref, ref, shallowRef, computed } from "vue";
-import type { MapData } from "@/bcap/components/Map/types.ts";
-import centroid from "@turf/centroid";
-import bbox from "@turf/bbox";
-import { find } from "underscore";
-import type { AliasedGeojsonFeatureCollectionNode } from "@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts";
-import type { FeatureCollection } from "geojson";
-import type { AllGeoJSON } from "@turf/helpers";
+} from 'maplibre-gl';
+import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
+import type { MapData } from '@/bcap/components/Map/types.ts';
+import centroid from '@turf/centroid';
+import bbox from '@turf/bbox';
+import { find } from 'underscore';
+import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
+import type { FeatureCollection } from 'geojson';
+import type { AllGeoJSON } from '@turf/helpers';
 import type {
     MapSource,
     MapLayer,
-} from "@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts";
+} from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 const props = defineProps<{
     mapData: MapData;
@@ -48,11 +48,11 @@ const map: Ref<MapLibreMap | null> = ref(null);
 
 const styleObj = {
     version: 8,
-    name: "Custom WMS Basemap + Overlays",
+    name: 'Custom WMS Basemap + Overlays',
     sources: {} as MapSource,
     layers: [] as LayerSpecification[],
     // Optional: wire up glyphs/sprite if you also use symbol layers elsewhere
-    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
 } satisfies maplibregl.StyleSpecification;
 
 const defaultStyle = shallowRef<maplibregl.StyleSpecification>(styleObj);
@@ -78,25 +78,25 @@ function setupMap(): void {
         attributionControl: false,
     });
 
-    map.value.on("load", () => {
+    map.value.on('load', () => {
         mapLoaded.value = true;
         map.value?.addControl(
             new maplibregl.NavigationControl({ visualizePitch: true }),
-            "top-right",
+            'top-right',
         );
         map.value?.addControl(
-            new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }),
+            new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }),
         );
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
         if (props.aliasedNodeData?.node_value?.features?.[0]) {
-            console.log("Adding geometry from load event");
+            console.log('Adding geometry from load event');
             addGeometryToMap(props.aliasedNodeData.node_value.features[0]);
         }
     });
 
-    map.value.on("moveend", () => {
+    map.value.on('moveend', () => {
         if (!map.value) return;
         const c = map.value.getCenter();
         center.value = [Number(c.lng.toFixed(5)), Number(c.lat.toFixed(5))];
@@ -104,7 +104,7 @@ function setupMap(): void {
     });
 
     const onResize = () => map.value && map.value.resize();
-    window.addEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
     (map.value as MapLibreMap).__onResize = onResize;
 }
 
@@ -133,19 +133,19 @@ const addGeometryToMap = (feature) => {
     if (!map.value || !hasGeometry.value || !mapLoaded.value) return;
 
     map.value.addSource(feature.id, {
-        type: "geojson",
+        type: 'geojson',
         data: feature.geometry,
     });
 
     map.value.addLayer({
         id: `${feature.id}-site`,
-        type: "line",
+        type: 'line',
         source: feature.id,
     });
 
-    new maplibregl.Marker({ color: "#d97706" })
+    new maplibregl.Marker({ color: '#d97706' })
         .setLngLat(mapCentre.value)
-        .setPopup(new maplibregl.Popup().setHTML("<b>Feature centroid</b>"))
+        .setPopup(new maplibregl.Popup().setHTML('<b>Feature centroid</b>'))
         .addTo(map.value);
 
     const bounds = bbox(feature.geometry);
@@ -161,14 +161,14 @@ const addGeometryToMap = (feature) => {
     );
 
     center.value = mapCentre.value;
-    console.log("New centre value: ", center.value);
+    console.log('New centre value: ', center.value);
 };
 
 watch(
     () => props.aliasedNodeData?.node_value?.features?.[0],
     (feature, prevFeature) => {
         if (feature && map.value) {
-            console.log("Adding geometry from watch event");
+            console.log('Adding geometry from watch event');
             addGeometryToMap(feature);
         }
     },
@@ -179,8 +179,7 @@ watch(
         <div
             ref="mapEl"
             class="map"
-            style="min-height: 300px"
-        ></div>
+            style="min-height: 300px"></div>
         <div class="panel">
             <!--button @click="flyVancouver">Vancouver</button>
             <button @click="flyParis">Paris</button-->

@@ -1,11 +1,11 @@
-import type { AliasedNodeData } from "@/arches_component_lab/types.ts";
+import type { AliasedNodeData } from '@/arches_component_lab/types.ts';
 import type {
     Feature,
     FeatureCollection,
     GeometryCollection,
     Geometry,
     GeoJSON,
-} from "geojson";
+} from 'geojson';
 
 export interface AliasedGeojsonFeatureCollectionNode extends AliasedNodeData {
     node_data: FeatureCollection;
@@ -55,7 +55,7 @@ export interface LayerDefinition {
     id: string;
     type: string;
     source?: string;
-    "source-layer"?: string;
+    'source-layer'?: string;
     layout?: Record<string, unknown>;
     paint?: Record<string, unknown>;
     // filter?: FilterSpecification;

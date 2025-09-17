@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import type { ColumnDefinition } from "@/bcgov_arches_common/components/StandardDataTable/types.ts";
-import type { AliasedTileData } from "@/arches_component_lab/types.ts";
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import type { ColumnDefinition } from '@/bcgov_arches_common/components/StandardDataTable/types.ts';
+import type { AliasedTileData } from '@/arches_component_lab/types.ts';
 import {
     getNodeDisplayValue,
     labelize,
-} from "@/bcgov_arches_common/datatypes/utils.ts";
-import { computed } from "vue";
+} from '@/bcgov_arches_common/datatypes/utils.ts';
+import { computed } from 'vue';
 
 const { title, columnDefinitions, tableData, initialSortFieldIndex } =
     defineProps<{
@@ -22,7 +22,7 @@ const isSortable = (col: ColumnDefinition) => {
 };
 
 const tableTitle = computed(() => {
-    return title ?? "";
+    return title ?? '';
 });
 
 const initialSortField = computed(() => {

@@ -13,4 +13,4 @@ export const createRequest = (url: string) => {
     };
 };
 
-export const fetchMapData = createRequest("api/map-data");
+export const fetchMapData = createRequest('api/map-data');
