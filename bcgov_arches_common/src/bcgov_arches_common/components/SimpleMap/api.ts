@@ -2,7 +2,7 @@ import type {
     MapLayer,
     MapSource,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import { map, object } from 'underscore';
+import * as _ from 'underscore';
 import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 import { fetchMapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/api.ts';
@@ -19,8 +19,8 @@ export async function fetchSystemMapData() {
         const layers = mapData.map_layers;
         transformedMapData.default_bounds = mapData.default_bounds;
 
-        const sourcesMap = object(
-            map(mapData.map_sources, function (item: MapSource) {
+        const sourcesMap = _.object(
+            _.map(mapData.map_sources, function (item: MapSource) {
                 return [item.name, item];
             }),
         );

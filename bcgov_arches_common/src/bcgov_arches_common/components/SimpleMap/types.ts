@@ -1,9 +1,11 @@
 import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
-import { LayerSpecification, StyleSpecification } from 'maplibre-gl';
+import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
 
 // Not sure why this needs to be done -- seems like it's been exported as a type
-export type LayerSpecificationType = typeof LayerSpecification;
-export type StyleSpecificationType = typeof StyleSpecification;
+// export type LayerSpecificationType = typeof LayerSpecification;
+export type LayerSpecificationType = LayerSpecification;
+// export type StyleSpecificationType = typeof StyleSpecification;
+export type StyleSpecificationType = StyleSpecification;
 
 type GeoJsonNode = {
     alias: string;

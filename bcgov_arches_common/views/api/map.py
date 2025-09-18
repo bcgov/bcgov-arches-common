@@ -13,9 +13,8 @@ class MapDataAPI(View):
         for map_source in map_sources:
             if "tiles" in map_source.source:
                 if not map_source.source["tiles"][0].startswith("http"):
-                    print(settings.PUBLIC_SERVER_ADDRESS)
                     source = "{}{}".format(
-                        "http://localhost:82/", map_source.source["tiles"][0]
+                        settings.PUBLIC_SERVER_ADDRESS, map_source.source["tiles"][0]
                     )
                     map_source.source["tiles"][0] = source
 

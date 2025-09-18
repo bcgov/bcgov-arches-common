@@ -2,9 +2,9 @@
 import type { Feature, Geometry } from 'geojson';
 import type {
     GeoJsonCardXNodeXWidgetData,
-    LayerSpecificationType,
     GeoJsonNodeConfigType,
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
+import type { LayerSpecification } from 'maplibre-gl';
 
 type FeatureInput = {
     id: string;
@@ -38,7 +38,7 @@ function parseColor(input?: string): ParsedColor {
 export function buildLayersForFeature(
     feature: Feature,
     sourceJson: GeoJsonCardXNodeXWidgetData,
-): LayerSpecificationType[] {
+): LayerSpecification[] {
     const cfg: GeoJsonNodeConfigType = sourceJson?.node?.config ?? {};
 
     const {
@@ -66,7 +66,7 @@ export function buildLayersForFeature(
     const { color: outlineColorRGB, opacity: outlineOpacity } =
         parseColor(outlineColor);
 
-    const src = feature.id;
+    const src: string = feature.id as string;
     const baseId = `${feature.id}-site`;
     const geomType = feature.geometry?.type ?? 'Geometry';
 
@@ -74,7 +74,7 @@ export function buildLayersForFeature(
     const isLineLike = /^(LineString|MultiLineString)$/i.test(geomType);
     const isPolygonLike = /^(Polygon|MultiPolygon)$/i.test(geomType);
 
-    const layers: LayerSpecificationType[] = [];
+    const layers: LayerSpecification[] = [];
 
     if (isPointLike) {
         layers.push({
@@ -176,7 +176,7 @@ export function buildLayersForFeature(
                 'line-opacity': lineOpacity,
                 'line-width': Math.max(0, weight),
             },
-        } as LayerSpecificationType);
+        } as LayerSpecification);
     }
 
     return layers;
