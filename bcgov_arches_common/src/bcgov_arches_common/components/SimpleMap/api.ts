@@ -2,7 +2,7 @@ import type {
     MapLayer,
     MapSource,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import * as _ from 'underscore';
+import _ from 'underscore';
 import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 import { fetchMapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/api.ts';
