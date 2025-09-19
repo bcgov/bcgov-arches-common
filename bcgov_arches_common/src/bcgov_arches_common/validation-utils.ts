@@ -1,7 +1,7 @@
 export type FieldError = { type?: string; message: string };
 // Zod reports errors with keys like "project_name.node_value.en.value". Want to flatten them at the top so they can
 // be applied like $form.project_name.error.message
-export function collapseFieldNames(
+function collapseFieldNames(
     nestedErrors: Record<string, FieldError[]>,
     options: { dedupe?: boolean; aggregate?: boolean } = {
         dedupe: true,
@@ -39,4 +39,17 @@ export function collapseFieldNames(
     }
 
     return out;
+}
+export function getFlattenResolver(baseZodResolver: (values: any) => any) {
+    return async (values: any) => {
+        // Run Zod first
+        const base = (await baseZodResolver(values)) || {};
+        const rawErrors = { ...(base.errors ?? {}) } as Record<
+            string,
+            Array<{ type?: string; message: string }>
+        >;
+        const errors = collapseFieldNames(rawErrors);
+        // Return just the errors bag; PrimeVue derives $form.*.invalid from this
+        return { errors };
+    };
 }
