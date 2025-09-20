@@ -464,6 +464,8 @@ module.exports = () => {
                 removeAvailableModules: true,
             },
             plugins: [
+                new webpack.IgnorePlugin({ resourceRegExp: /^fs$/ }),
+                new webpack.IgnorePlugin({ resourceRegExp: /^pofile$/ }),
                 new CleanWebpackPlugin(),
                 new webpack.DefinePlugin(universalConstants),
                 new webpack.DefinePlugin({
@@ -537,11 +539,17 @@ module.exports = () => {
                 modules: [
                     Path.resolve(__dirname, PROJECT_RELATIVE_NODE_MODULES_PATH),
                 ],
+                fallback: {
+                    fs: false, // and don't try to polyfill fs
+                    path: false,
+                    os: false,
+                },
                 alias: {
                     ...javascriptRelativeFilepathToAbsoluteFilepathLookup,
                     ...templateFilepathLookup,
                     ...imageFilepathLookup,
                     ...nodeModulesAliases,
+                    pofile: false,
                     '@': [
                         Path.resolve(__dirname, APP_ROOT, 'src'),
                         ...archesApplicationsVuePaths,
