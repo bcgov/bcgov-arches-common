@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { fetchSystemMapData } from '@/bcgov_arches_common//components/SimpleMap/api.ts';
-import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 import { computed, ref, shallowRef, watchEffect } from 'vue';
 
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';

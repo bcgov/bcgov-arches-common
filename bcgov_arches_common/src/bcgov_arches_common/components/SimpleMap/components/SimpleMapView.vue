@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
-import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import { find } from 'underscore';
@@ -9,17 +8,16 @@ import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/
 import type { FeatureCollection, Feature } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import type {
-    MapSource,
+    MapData,
     MapLayer,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
 import type {
     LayerSpecificationType,
     StyleSpecificationType,
+    MapLibreMapSourcesType,
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
-
-type MapLibreMapType = typeof MapLibreMap;
 
 const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
     defineProps<{
@@ -52,12 +50,12 @@ const mapCentre = computed<[number, number]>(() => {
 const zoom = ref<number>(3.5);
 
 const mapEl = ref<HTMLDivElement | null>(null);
-const map: Ref<MapLibreMapType | null> = ref(null);
+const map: Ref<MapLibreMap | null> = ref(null);
 
 const styleObj = {
     version: 8,
     name: 'Custom WMS Basemap + Overlays',
-    sources: {} as MapSource,
+    sources: {} as MapLibreMapSourcesType,
     layers: [] as LayerSpecificationType[],
     // Optional: wire up glyphs/sprite if you also use symbol layers elsewhere
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -111,9 +109,12 @@ function setupMap(): void {
         zoom.value = Number(map.value.getZoom().toFixed(2));
     });
 
-    const onResize = () => map.value && map.value.resize();
+    const onResize = () => {
+        console.log('Resizing');
+        map.value?.resize();
+    };
     window.addEventListener('resize', onResize);
-    (map.value as MapLibreMapType).__onResize = onResize;
+    // map.value.on('resize', onResize);
 }
 
 onMounted(async () => {
@@ -148,7 +149,7 @@ const addGeometryToMap = (feature: Feature) => {
     )
         return;
 
-    map.value.addSource(feature.id, {
+    map.value.addSource(feature.id as string, {
         type: 'geojson',
         data: feature.geometry,
     });
@@ -158,7 +159,7 @@ const addGeometryToMap = (feature: Feature) => {
         cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
     );
     layers.forEach((layer) => {
-        map.value.addLayer(layer);
+        map.value?.addLayer(layer);
     });
 
     new maplibregl.Marker({ color: '#d97706' })

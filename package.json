@@ -23,18 +23,20 @@
         "@turf/bbox": "^7.2.0",
         "@turf/centroid": "^7.2.0",
         "arches": "bcgov/arches#stable/8.0.3_bcgov_12377_12434",
+        "arches-component-lab": "archesproject/arches-component-lab#main",
         "maplibre-gl": "^5.7.1",
         "primevue": "^4.3.9",
         "vue-router": "^4.4.3",
         "vue3-gettext": "^4.0.0-beta.1"
     },
     "devDependencies": {
-        "vite": "latest",
+        "@types/underscore": "^1.13.0",
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.3",
         "eslint-plugin-prettier": "^5.2.3",
-        "prettier": "^3.6.2"
+        "prettier": "^3.6.2",
+        "vite": "latest"
     },
     "nodeModulesPaths": {},
     "overrides": {

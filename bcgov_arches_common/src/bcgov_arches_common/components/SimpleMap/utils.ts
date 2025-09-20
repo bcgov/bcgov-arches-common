@@ -6,11 +6,6 @@ import type {
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import type { LayerSpecification } from 'maplibre-gl';
 
-type FeatureInput = {
-    id: string;
-    geometry: Geometry; // Point | LineString | Polygon | Multi*
-};
-
 type ParsedColor = { color: string; opacity: number };
 
 function parseColor(input?: string): ParsedColor {
