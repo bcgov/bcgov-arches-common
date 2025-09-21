@@ -3,9 +3,10 @@ import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
+import type { AllGeoJSON } from '@turf/helpers';
 import { find } from 'underscore';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import type { FeatureCollection, Feature } from 'geojson';
+import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import type {
     MapData,
@@ -41,7 +42,7 @@ const mapLoaded = ref(false);
 const center = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, lat)
 const mapCentre = computed<[number, number]>(() => {
     return (
-        aliasedNodeData?.node_value
+        aliasedNodeData?.node_value && geometry.value
             ? (centroid(geometry.value)?.geometry?.coordinates ?? center.value)
             : center.value
     ) as [number, number];
@@ -72,10 +73,12 @@ function setupMap(): void {
     });
     defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
     defaultStyle.value.layers.push(...basemap.layerdefinitions);
-    if (mapData.default_bounds)
-        center.value = centroid(
-            mapData.default_bounds as FeatureCollection,
-        ).geometry.coordinates;
+    if (mapData.default_bounds) {
+        let c = centroid(mapData.default_bounds as unknown as AllGeoJSON)
+            .geometry?.coordinates as Position | undefined;
+        center.value =
+            Array.isArray(c) && c.length >= 2 ? [c[0], c[1]] : center.value;
+    }
     map.value = new maplibregl.Map({
         container: mapEl.value,
         style: defaultStyle.value,

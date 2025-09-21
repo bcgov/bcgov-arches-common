@@ -26,12 +26,13 @@
         "arches-component-lab": "archesproject/arches-component-lab#main",
         "maplibre-gl": "^5.7.1",
         "primevue": "^4.3.9",
+        "typescript": "^5.6.2",
         "vue-router": "^4.4.3",
         "vue3-gettext": "^4.0.0-beta.1"
     },
     "devDependencies": {
-        "@types/underscore": "^1.13.0",
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",
+        "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.3",
         "eslint-plugin-prettier": "^5.2.3",
