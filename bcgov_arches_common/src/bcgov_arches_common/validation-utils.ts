@@ -1,4 +1,9 @@
+import * as z from 'zod';
+
+export type GenericZodObjectType = typeof z.object;
 export type FieldError = { type?: string; message: string };
+type FlattenErrors = Record<string, FieldError[]>;
+
 // Zod reports errors with keys like "project_name.node_value.en.value". Want to flatten them at the top so they can
 // be applied like $form.project_name.error.message
 function collapseFieldNames(
@@ -40,14 +45,17 @@ function collapseFieldNames(
 
     return out;
 }
-export function getFlattenResolver(baseZodResolver: (values: any) => any) {
-    return async (values: any) => {
+export function getFlattenResolver(
+    baseZodResolver: (
+        values: GenericZodObjectType,
+    ) => Promise<{ errors?: FlattenErrors } | undefined>,
+) {
+    return async (
+        values: GenericZodObjectType,
+    ): Promise<{ errors: FlattenErrors }> => {
         // Run Zod first
-        const base = (await baseZodResolver(values)) || {};
-        const rawErrors = { ...(base.errors ?? {}) } as Record<
-            string,
-            Array<{ type?: string; message: string }>
-        >;
+        const base = (await baseZodResolver(values)) ?? {};
+        const rawErrors = (base.errors ?? {}) as FlattenErrors;
         const errors = collapseFieldNames(rawErrors);
         // Return just the errors bag; PrimeVue derives $form.*.invalid from this
         return { errors };
