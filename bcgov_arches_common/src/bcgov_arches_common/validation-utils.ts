@@ -55,7 +55,7 @@ export function getFlattenResolver(
     ): Promise<{ errors: FlattenErrors }> => {
         // Run Zod first
         const base = (await baseZodResolver(values)) ?? {};
-        const rawErrors = (base.errors ?? {}) as FlattenErrors;
+        const rawErrors = { ...(base.errors ?? {}) } as FlattenErrors;
         const errors = collapseFieldNames(rawErrors);
         // Return just the errors bag; PrimeVue derives $form.*.invalid from this
         return { errors };
