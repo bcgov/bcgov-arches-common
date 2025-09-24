@@ -1,6 +1,4 @@
 import { beforeAll, vi } from 'vitest';
-import '@/bcgov_arches_common/declarations.d.ts';
-
 
 beforeAll(() => {
     vi.mock('arches', () => ({
@@ -9,7 +7,7 @@ beforeAll(() => {
 
     vi.mock('vue3-gettext', () => ({
         useGettext: () => ({
-            $gettext: (text: string) => (text)
-        })
+            $gettext: (text: string) => text,
+        }),
     }));
 });

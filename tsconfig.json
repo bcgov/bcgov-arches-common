@@ -1,5 +1,5 @@
 {
-  "extends": "./.tsconfig-paths.json",
+  "extends": "./frontend_configuration/tsconfig-paths.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -15,9 +15,17 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
     "types": [
       "vitest/globals"
     ],
-    "allowImportingTsExtensions": true
+    "paths": {
+      "@/bcgov_arches_common/*": [
+        "./bcgov_arches_common/src/bcgov_arches_common/*"
+      ],
+      "@/arches_component_lab/*": [
+        "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
+      ],
+    },
   }
 }
