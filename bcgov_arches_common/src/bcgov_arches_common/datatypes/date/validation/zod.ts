@@ -5,6 +5,6 @@ export const DateValueRequiredSchema = z.object({
     node_value: z.iso.date(),
 });
 
-export const DateValueSchema = DateValueRequiredSchema.safeExtend({
+export const DateValueSchema = DateValueRequiredSchema.extend({
     node_value: z.iso.date().nullish(),
 });

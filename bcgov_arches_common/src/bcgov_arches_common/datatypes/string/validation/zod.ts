@@ -47,7 +47,7 @@ export function getStringValueSchema(maxLength: number = 0) {
 export function getStringValueRequiredSchema(maxLength: number = 0) {
     const nodeSchema = !maxLength
         ? StringNodeValueRequiredSchema
-        : StringNodeValueRequiredSchema.safeExtend({
+        : StringNodeValueRequiredSchema.extend({
               en: LanguageValueSchema.safeExtend({
                   value: z
                       .string()
@@ -59,7 +59,7 @@ export function getStringValueRequiredSchema(maxLength: number = 0) {
               }),
           });
 
-    return StringValueRequiredSchema.safeExtend({
+    return StringValueRequiredSchema.extend({
         node_value: nodeSchema,
     });
 }
