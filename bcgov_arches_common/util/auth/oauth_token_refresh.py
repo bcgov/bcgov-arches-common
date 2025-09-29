@@ -24,9 +24,12 @@ def bypass_auth(request):
         if request.META.get("HTTP_X_FORWARDED_FOR") is None
         else request.META.get("HTTP_X_FORWARDED_FOR")
     )  # return True
+
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
+
     return request.path.rstrip("/") in EXEMPT_PATHS or (
         request_source in settings.AUTH_BYPASS_HOSTS
-        and request.META.get("HTTP_USER_AGENT").startswith("node-fetch/1.0")
+        and user_agent.startswith("node-fetch/1.0")
     )
 
 
