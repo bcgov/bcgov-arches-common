@@ -5,7 +5,7 @@ import { computed } from 'vue';
 const props = defineProps({
     stepNumber: { type: Number, default: 1 },
     showNext: { type: Boolean, default: true },
-    validateFn: { type: Function, default: null },
+    isValid: { type: Boolean, default: true },
     nextLabel: { type: String, default: 'Next' },
     validateReverse: { type: Boolean, default: false },
     showPrevious: { type: Boolean, default: true },
@@ -15,13 +15,11 @@ const props = defineProps({
 const emit = defineEmits(['previousClick', 'nextClick']);
 
 const proceedBlocked = computed(() => {
-    return !props.validateFn ? false : !props.validateFn(props.stepNumber);
+    return !props.isValid;
 });
 
 const reverseBlocked = computed(() => {
-    return !props.validateReverse || !props.validateFn
-        ? false
-        : props.validateFn(props.stepNumber);
+    return false;
 });
 
 const clickNext = () => {

@@ -1,7 +1,7 @@
 {
     "name": "bcgov-arches-common",
     "license": "AGPL-3.0-only",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "scripts": {
         "build_development": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack --config ./webpack/webpack.config.dev.js",
         "build_production": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 NODE_ENV=production webpack --config ./webpack/webpack.config.prod.js",
@@ -22,7 +22,8 @@
         "arches": "github:bcgov/arches#7.6.12+bcgov.1",
         "primevue": "^4.2.5",
         "vite": "latest",
-        "vue-router": "^4.4.3"
+        "vue-router": "^4.4.3",
+        "zod": "^4.1.5"
     },
     "devDependencies": {
         "@vue/eslint-config-prettier": "^10.2.0",
