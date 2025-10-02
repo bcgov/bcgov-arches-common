@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import type { TreeNode } from 'primevue/treenode';
+import type { AliasedNodeData, AliasedNodegroupData, AliasedTileData } from "@/arches_component_lab/types.ts";
 // import type { Label } from "@/arches_vue_utils/types";
 
 // From arches_vue_utils in v8.0.x
