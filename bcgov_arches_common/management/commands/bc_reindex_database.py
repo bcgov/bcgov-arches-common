@@ -1,14 +1,62 @@
+from django.core.management.base import BaseCommand
+
 from arches.app.models import models
-from django.core.management.base import BaseCommand, CommandError
-from arches.app.utils.index_database import index_resources_by_type, index_concepts
 from arches.app.models.system_settings import settings
+from arches.app.utils.index_database import index_concepts, index_resources_by_type
 
 
 class Command(BaseCommand):
     """
     Custom ES reindex command to take resource dependency into account
-
     """
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "-q",
+            "--quiet",
+            action="store_true",
+            dest="quiet",
+            default=False,
+            help="It silences the status bar output during certain operations, use in celery operations for example",
+        )
+
+        parser.add_argument(
+            "-b",
+            "--batch_size",
+            action="store",
+            dest="batch_size",
+            type=int,
+            default=settings.BULK_IMPORT_BATCH_SIZE,
+            help="The number of records to index as a group, the larger the number the more memory required",
+        )
+
+        parser.add_argument(
+            "-mp",
+            "--use_multiprocessing",
+            action="store_true",
+            dest="use_multiprocessing",
+            default=False,
+            help="It indexes the batches in parallel processes",
+        )
+
+        parser.add_argument(
+            "-mxp",
+            "--max_subprocesses",
+            action="store",
+            type=int,
+            dest="max_subprocesses",
+            default=0,
+            help="It changes the process pool size when using use_multiprocessing. The default is ceil(cpu_count() / 2)",
+        )
+
+        parser.add_argument(
+            "-rd",
+            "--recalculate-descriptors",
+            action="store_true",
+            dest="recalculate_descriptors",
+            default=True,
+            help="It forces the primary descriptors to be recalculated before (re)indexing",
+        )
 
     def get_index_order(self):
         """
@@ -18,57 +66,60 @@ class Command(BaseCommand):
         print("No indexes to process")
         return []
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "-q",
-            "--quiet",
-            action="store_true",
-            dest="quiet",
-            default=False,
-            help="Silences the status bar output during certain operations, use in celery operations for example",
+    def handle(self, *args, **options):
+        self.reindex_database(
+            clear_index=True,
+            batch_size=options["batch_size"],
+            quiet=options["quiet"],
+            use_multiprocessing=options["use_multiprocessing"],
+            max_subprocesses=options["max_subprocesses"],
+            recalculate_descriptors=options["recalculate_descriptors"],
         )
 
-    def handle(self, *args, **options):
-        self.reindex_database(quiet=options["quiet"])
-
     def reindex_database(
-        self, clear_index=True, batch_size=settings.BULK_IMPORT_BATCH_SIZE, quiet=False
+        self,
+        clear_index=True,
+        batch_size=settings.BULK_IMPORT_BATCH_SIZE,
+        quiet=False,
+        use_multiprocessing=False,
+        max_subprocesses=0,
+        recalculate_descriptors=True,
     ):
-        resource_types_uuid = []
         resource_types = (
             models.GraphModel.objects.filter(isresource=True)
             .exclude(graphid=settings.SYSTEM_SETTINGS_RESOURCE_MODEL_ID)
             .exclude(publication=None)
             .values_list("slug", "graphid")
         )
-        # Create lookup of slug->graphs
 
-        # print("Before: %s" % str(resource_types))
+        # Create lookup of slug->graphs
         resource_types_lookup = {}
+
         for rt in resource_types:
             resource_types_lookup[rt[0]] = rt
+
         index_order = self.get_index_order()
-        # print("Index order: %s" % str(index_order))
+
+        ordered_resource_types = []
 
         for i in index_order:
-            resource_types_uuid.append(resource_types_lookup[i][1])
+            if i in resource_types_lookup:
+                ordered_resource_types.append(resource_types_lookup[i][1])
 
-        # Add any resources not in the index order list
         for key, value in resource_types_lookup.items():
             if key not in index_order:
-                resource_types_uuid.append(value[1])
-        # for val in resource_types:
-        #     print("%s: %s" % (val[0], 100 if val[0] not in index_order else index_order.index(val[0])))
-        # for rt in resource_types:
-        #     resource_types_uuid.append(rt[1])
+                ordered_resource_types.append(value[1])
 
         index_concepts(clear_index=clear_index, batch_size=batch_size)
-        index_resources_by_type(
-            resource_types_uuid,
-            clear_index=clear_index,
-            batch_size=batch_size,
-            quiet=quiet,
-            recalculate_descriptors=True,
-        )
 
-        # index_custom_indexes(clear_index=clear_index, batch_size=batch_size, quiet=quiet)
+        # Process each resource type individually to maintain ordering
+        for i, resource_type_uuid in enumerate(ordered_resource_types):
+            index_resources_by_type(
+                [resource_type_uuid],
+                clear_index=(clear_index and i == 0),
+                batch_size=batch_size,
+                quiet=quiet,
+                use_multiprocessing=use_multiprocessing,
+                max_subprocesses=max_subprocesses,
+                recalculate_descriptors=recalculate_descriptors,
+            )
