@@ -109,3 +109,33 @@ export interface ConceptOption {
     id: string;
     text: string;
 }
+
+// Audit/Edit Log Types
+export interface EditLogResponse {
+    modified_on: string | null;
+    modified_by: string | null;
+    transaction_id?: string | null;
+    edit_type?: string | null;
+    user_email?: string | null;
+    is_system_edit?: boolean;
+    method_used?: string;
+    error?: string;
+    tile_id?: string | null;
+    nodegroup_id?: string | null;
+}
+
+export interface EditLogEntry {
+    entered_on: string | null;
+    entered_by: string | null;
+}
+
+export type EditLogData = Record<string, EditLogEntry>;
+
+export interface AliasedNodeDataWithAudit extends AliasedNodeData {
+    audit?: EditLogEntry;
+}
+
+export interface AliasedTileDataWithAudit extends Omit<AliasedTileData, 'aliased_data'> {
+    audit?: EditLogEntry;
+    aliased_data: Record<string, AliasedNodeDataWithAudit | AliasedNodegroupData | null>;
+}
