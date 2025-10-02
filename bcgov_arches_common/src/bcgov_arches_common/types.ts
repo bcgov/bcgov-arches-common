@@ -1,6 +1,10 @@
 import type { Ref } from 'vue';
 import type { TreeNode } from 'primevue/treenode';
-import type { AliasedNodeData, AliasedNodegroupData, AliasedTileData } from "@/arches_component_lab/types.ts";
+import type {
+    AliasedNodeData,
+    AliasedNodegroupData,
+    AliasedTileData,
+} from '@/arches_component_lab/types.ts';
 // import type { Label } from "@/arches_vue_utils/types";
 
 // From arches_vue_utils in v8.0.x
@@ -136,7 +140,11 @@ export interface AliasedNodeDataWithAudit extends AliasedNodeData {
     audit?: EditLogEntry;
 }
 
-export interface AliasedTileDataWithAudit extends Omit<AliasedTileData, 'aliased_data'> {
+export interface AliasedTileDataWithAudit
+    extends Omit<AliasedTileData, 'aliased_data'> {
     audit?: EditLogEntry;
-    aliased_data: Record<string, AliasedNodeDataWithAudit | AliasedNodegroupData | null>;
+    aliased_data: Record<
+        string,
+        AliasedNodeDataWithAudit | AliasedNodegroupData | null
+    >;
 }

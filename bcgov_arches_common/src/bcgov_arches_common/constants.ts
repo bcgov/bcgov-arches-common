@@ -28,7 +28,7 @@ export const ENGLISH = {
 
 export const EDIT_LOG_FIELDS = {
     ENTERED_ON: 'entered_on',
-    ENTERED_BY: 'entered_by'
+    ENTERED_BY: 'entered_by',
 } as const;
 
 export const DEFAULT_ENTERED_ON_FIELD = EDIT_LOG_FIELDS.ENTERED_ON;

@@ -20,7 +20,9 @@ const { title, columnDefinitions, tableData, initialSortFieldIndex } =
 
 const AUDIT_FIELDS = Object.values(EDIT_LOG_FIELDS) as string[];
 
-const isAuditField = (field: string): field is typeof EDIT_LOG_FIELDS[keyof typeof EDIT_LOG_FIELDS] => {
+const isAuditField = (
+    field: string,
+): field is (typeof EDIT_LOG_FIELDS)[keyof typeof EDIT_LOG_FIELDS] => {
     return AUDIT_FIELDS.includes(field);
 };
 
