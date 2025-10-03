@@ -191,8 +191,7 @@ const populateAllEnteredFields = async () => {
         :disabled="loading"
         class="control-button"
         severity="info"
-        @click="populateAllEnteredFields"
-    />
+        @click="populateAllEnteredFields" />
 </template>
 
 <style scoped>
