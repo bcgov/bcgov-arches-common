@@ -8,6 +8,7 @@ from bcgov_arches_common.views import auth
 from bcgov_arches_common.views.api.map import (
     MapDataAPI,
 )
+from bcgov_arches_common.views.api.edit_log import ResourceEditLogView
 
 uuid_regex = settings.UUID_REGEX
 
@@ -35,6 +36,11 @@ urlpatterns = [
     ),
     # Map Libre stuff from Rascolls
     path("api/map-data", MapDataAPI.as_view(), name="api-map-data"),
+    path(
+        "api/resources/<str:graph>/<str:pk>/edit-log/",
+        ResourceEditLogView.as_view(),
+        name="resource_edit_log",
+    ),
 ]
 
 # Adds URL pattern to serve media files during development
