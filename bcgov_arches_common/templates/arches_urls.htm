@@ -8,6 +8,6 @@
 {{ block.super }}
 <div class="arches-urls"
     api-map-data="{% url 'api-map-data' %}"
-    resource-edit-log="{% url 'resource-edit-log' %}"
+    resource_edit_log='(resource_id) => {return "{% url "resource-edit-log" "00000000-0000-0000-0000-000000000000" %}".replace("00000000-0000-0000-0000-000000000000", resource_id)}'
 ></div>
 {% endblock arches_urls %}

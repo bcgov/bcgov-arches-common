@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Button from 'primevue/button';
+import {
+    getEditLogForTile,
+    getEditLogForNodegroupId,
+    getEditLogForNodeAlias,
+    getEditLogForResource,
+} from '@/bcgov_arches_common/components/EditLog/api.ts';
 import type {
     EditLogResponse,
     EditLogEntry,
@@ -8,9 +14,9 @@ import type {
 
 const props = defineProps<{
     resourceId: string;
-    graph: string;
     tileIds?: string[];
     nodegroupConfigs?: Array<{
+        graphSlug: string;
         alias: string;
         label?: string;
         fetchTiles?: boolean;
@@ -52,39 +58,36 @@ const formatDate = (dateString: string | null): string => {
 
 const loadEditLog = async (
     resourceId: string,
-    graph: string,
     options?: {
         tileId?: string;
+        graphSlug?: string;
         nodegroupId?: string;
         nodegroupAlias?: string;
     },
 ): Promise<EditLogResponse | null> => {
     try {
-        const params = new URLSearchParams();
-
         if (options?.tileId) {
-            params.append('tile_id', options.tileId);
-        }
-        if (options?.nodegroupId) {
-            params.append('nodegroup_id', options.nodegroupId);
-        }
-        if (options?.nodegroupAlias) {
-            params.append('nodegroup_alias', options.nodegroupAlias);
-        }
-
-        const queryString = params.toString();
-        const url = `/bcap/api/resources/edit-log/${graph}/${resourceId}/${queryString ? `?${queryString}` : ''}`;
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(
-                `Failed to load edit information: ${response.status}`,
+            return await getEditLogForTile(resourceId, options.tileId);
+        } else if (options?.nodegroupId) {
+            return await getEditLogForNodegroupId(
+                resourceId,
+                options.nodegroupId,
             );
+        } else if (options?.nodegroupAlias) {
+            if (!options?.graphSlug) {
+                throw new Error(
+                    'Must provide graphSlug when using nodegroupAlias',
+                );
+            } else {
+                return await getEditLogForNodeAlias(
+                    resourceId,
+                    options.graphSlug,
+                    options.nodegroupAlias,
+                );
+            }
+        } else {
+            return await getEditLogForResource(resourceId);
         }
-
-        const result: EditLogResponse = await response.json();
-        return result;
     } catch (err) {
         const errorMessage =
             err instanceof Error ? err.message : 'Unknown error occurred';
@@ -102,13 +105,9 @@ const populateAllEnteredFields = async () => {
         // If specific tile IDs are provided, fetch data for each
         if (props.tileIds && props.tileIds.length > 0) {
             const promises = props.tileIds.map(async (tileId) => {
-                const result = await loadEditLog(
-                    props.resourceId,
-                    props.graph,
-                    {
-                        tileId: tileId,
-                    },
-                );
+                const result = await loadEditLog(props.resourceId, {
+                    tileId: tileId,
+                });
 
                 if (result) {
                     return {
@@ -133,13 +132,10 @@ const populateAllEnteredFields = async () => {
         // If nodegroup configs provided
         else if (props.nodegroupConfigs && props.nodegroupConfigs.length > 0) {
             const promises = props.nodegroupConfigs.map(async (config) => {
-                const result = await loadEditLog(
-                    props.resourceId,
-                    props.graph,
-                    {
-                        nodegroupAlias: config.alias,
-                    },
-                );
+                const result = await loadEditLog(props.resourceId, {
+                    nodegroupAlias: config.alias,
+                    graphSlug: config.graphSlug,
+                });
 
                 if (result) {
                     return {
@@ -164,7 +160,7 @@ const populateAllEnteredFields = async () => {
         }
         // Fetch resource-level data
         else {
-            const result = await loadEditLog(props.resourceId, props.graph);
+            const result = await loadEditLog(props.resourceId);
             if (result) {
                 results['resource'] = {
                     entered_on: formatDate(result.modified_on),

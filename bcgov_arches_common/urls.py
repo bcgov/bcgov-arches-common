@@ -37,7 +37,7 @@ urlpatterns = [
     # Map Libre stuff from Rascolls
     path("api/map-data", MapDataAPI.as_view(), name="api-map-data"),
     path(
-        "api/resources/edit-log/<str:graph>/<str:resource_id>/",
+        "api/edit-log/<str:resource_id>",
         ResourceEditLogView.as_view(),
         name="resource-edit-log",
     ),

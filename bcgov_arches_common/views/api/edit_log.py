@@ -20,16 +20,19 @@ class ResourceEditLogView(APIView):
     permission_classes: ClassVar = [ResourceEditor | ReadOnly]
     parser_classes: ClassVar = [JSONParser, MultiPartJSONParser]
 
-    def get(self, request: Any, graph: str, resource_id: str) -> Response:
+    def get(self, request: Any, resource_id: str) -> Response:
         """Get edit log information for a resource."""
 
         try:
             tile_id = request.GET.get("tile_id")
             nodegroup_id = request.GET.get("nodegroup_id")
             nodegroup_alias = request.GET.get("nodegroup_alias")
+            graph_slug = request.GET.get("graph_slug")
 
-            if nodegroup_alias and not nodegroup_id:
-                nodegroup_id = self._get_nodegroup_id_from_alias(graph, nodegroup_alias)
+            if nodegroup_alias and graph_slug and not nodegroup_id:
+                nodegroup_id = self._get_nodegroup_id_from_alias(
+                    graph_slug, nodegroup_alias
+                )
 
                 if not nodegroup_id:
                     return Response(
@@ -59,10 +62,10 @@ class ResourceEditLogView(APIView):
                 {"modified_on": None, "modified_by": None, "error": error}, status=500
             )
 
-    def _get_nodegroup_id_from_alias(self, graph: str, alias: str) -> str | None:
+    def _get_nodegroup_id_from_alias(self, graph_slug: str, alias: str) -> str | None:
         try:
             nodes = Node.objects.filter(
-                graph__slug=graph, alias=alias, pk=F("nodegroup_id")
+                graph__slug=graph_slug, alias=alias, pk=F("nodegroup_id")
             ).values("nodegroup_id")
             if arches_version >= (8, 0):
                 nodes = nodes.filter(source_identifier=None)
