@@ -9,25 +9,24 @@ from bcgov_arches_common.util.auth.oauth_session_control import log_user_out
 logger = logging.getLogger(__name__)
 
 
-OAUTH_CONFIG = settings.AUTHLIB_OAUTH_CLIENTS["default"]
-HOME_PAGE = OAUTH_CONFIG["urls"]["home_page"]
-UNAUTHORIZED_PAGE = OAUTH_CONFIG["urls"]["unauthorized_page"]
-AUTH_REQUIRED = (
-    OAUTH_CONFIG["auth_required"] if "auth_required" in OAUTH_CONFIG else True
-)
-EXEMPT_PATHS = OAUTH_CONFIG["urls"]["auth_exempt_pages"]
+def get_oauth_config():
+    """Load OAuth config from settings dynamically."""
+    return settings.AUTHLIB_OAUTH_CLIENTS["default"]
 
 
 def bypass_auth(request):
+    oauth_config = get_oauth_config()
+    exempt_paths = oauth_config["urls"]["auth_exempt_pages"]
+
     request_source = (
         request.META.get("REMOTE_ADDR")
         if request.META.get("HTTP_X_FORWARDED_FOR") is None
         else request.META.get("HTTP_X_FORWARDED_FOR")
-    )  # return True
+    )
 
     user_agent = request.META.get("HTTP_USER_AGENT", "")
 
-    return request.path.rstrip("/") in EXEMPT_PATHS or (
+    return request.path.rstrip("/") in exempt_paths or (
         request_source in settings.AUTH_BYPASS_HOSTS
         and user_agent.startswith("node-fetch/1.0")
     )
@@ -36,11 +35,15 @@ def bypass_auth(request):
 class OAuthTokenRefreshMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.oauth_config = OAUTH_CONFIG
 
     def __call__(self, request):
         if bypass_auth(request):
             return self.get_response(request)
+
+        oauth_config = get_oauth_config()
+        home_page = oauth_config["urls"]["home_page"]
+        unauthorized_page = oauth_config["urls"]["unauthorized_page"]
+        auth_required = oauth_config.get("auth_required", True)
 
         if logger.isEnabledFor(logging.DEBUG):
             expiry_timestamp = request.session.get_expiry_date().timestamp()
@@ -62,19 +65,19 @@ class OAuthTokenRefreshMiddleware:
                     logger.info("[Token] Expired — attempting refresh")
                     try:
                         session = OAuth2Session(
-                            client_id=self.oauth_config["client_id"],
-                            client_secret=self.oauth_config["client_secret"],
+                            client_id=oauth_config["client_id"],
+                            client_secret=oauth_config["client_secret"],
                             token=token,
                             update_token=save_token,
-                            refresh_token_url=self.oauth_config["access_token_url"],
-                            token_endpoint=self.oauth_config["access_token_url"],
-                            token_endpoint_auth_method=self.oauth_config.get(
+                            refresh_token_url=oauth_config["access_token_url"],
+                            token_endpoint=oauth_config["access_token_url"],
+                            token_endpoint_auth_method=oauth_config.get(
                                 "token_endpoint_auth_method", "client_secret_basic"
                             ),
                         )
 
                         new_token = session.refresh_token(
-                            self.oauth_config["access_token_url"]
+                            oauth_config["access_token_url"]
                         )
                         request.session["oauth_token"] = new_token
                         logger.info("[Token] Successfully refreshed token")
@@ -82,13 +85,13 @@ class OAuthTokenRefreshMiddleware:
                     except Exception as e:
                         logger.error(f"[Token] Failed to refresh: {e}")
                         log_user_out(request)
-                        return redirect(UNAUTHORIZED_PAGE)
+                        return redirect(unauthorized_page)
         else:
             if request.user.is_authenticated:
                 logger.warning(f"[Token] No token - logging user out.")
                 log_user_out(request)
 
-        if AUTH_REQUIRED and not request.user.is_authenticated:
-            return redirect(HOME_PAGE)
+        if auth_required and not request.user.is_authenticated:
+            return redirect(home_page)
 
         return self.get_response(request)
