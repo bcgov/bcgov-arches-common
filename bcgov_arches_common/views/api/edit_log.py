@@ -20,7 +20,7 @@ class ResourceEditLogView(APIView):
     permission_classes: ClassVar = [ResourceEditor | ReadOnly]
     parser_classes: ClassVar = [JSONParser, MultiPartJSONParser]
 
-    def get(self, request: Any, graph: str, pk: str) -> Response:
+    def get(self, request: Any, graph: str, resource_id: str) -> Response:
         """Get edit log information for a resource."""
 
         try:
@@ -41,11 +41,13 @@ class ResourceEditLogView(APIView):
                     )
 
             if tile_id:
-                modification_data = self._get_tile_modification(pk, tile_id)
+                modification_data = self._get_tile_modification(resource_id, tile_id)
             elif nodegroup_id:
-                modification_data = self._get_nodegroup_modification(pk, nodegroup_id)
+                modification_data = self._get_nodegroup_modification(
+                    resource_id, nodegroup_id
+                )
             else:
-                modification_data = self._get_resource_modification(pk)
+                modification_data = self._get_resource_modification(resource_id)
 
             return Response(modification_data)
 
