@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 from typing import Any, ClassVar
 from arches.app.models.models import TileModel, EditLog, Node
+from arches import VERSION as arches_version
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from arches_querysets.rest_framework.permissions import ReadOnly, ResourceEditor
@@ -20,7 +21,6 @@ class ResourceEditLogView(APIView):
     parser_classes: ClassVar = [JSONParser, MultiPartJSONParser]
 
     def get(self, request: Any, graph: str, pk: str) -> Response:
-        print("In ResourceEditLogView.get")
         """Get edit log information for a resource."""
 
         try:
@@ -59,13 +59,12 @@ class ResourceEditLogView(APIView):
 
     def _get_nodegroup_id_from_alias(self, graph: str, alias: str) -> str | None:
         try:
-            node = (
-                Node.objects.filter(
-                    graph__slug=graph, alias=alias, pk=F("nodegroup_id")
-                )
-                .values("nodegroup_id")
-                .first()
-            )
+            nodes = Node.objects.filter(
+                graph__slug=graph, alias=alias, pk=F("nodegroup_id")
+            ).values("nodegroup_id")
+            if arches_version >= (8, 0):
+                nodes = nodes.filter(source_identifier=None)
+            node = nodes.get()
 
             return str(node["nodegroup_id"]) if node else None
         except Exception:
