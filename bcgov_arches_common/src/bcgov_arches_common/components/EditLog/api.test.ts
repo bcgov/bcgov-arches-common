@@ -33,7 +33,7 @@ function makeFetchResponse(
 }
 
 // We'll install a typed global fetch mock for each test
-const fetchMock = vi.fn<Parameters<typeof fetch>, ReturnType<typeof fetch>>();
+const fetchMock = vi.fn<typeof fetch>();
 
 describe('EditLog API', () => {
     beforeEach(() => {
@@ -44,7 +44,6 @@ describe('EditLog API', () => {
 
     afterEach(() => {
         // Clean up to avoid cross-test leakage
-        // @ts-expect-error: allow removing the test-installed fetch
         delete (globalThis as Record<string, unknown>).fetch;
     });
 
