@@ -63,6 +63,12 @@ const getCellValue = (row: AliasedTileDataWithAudit, field: string): string => {
 const columnTitle = function (colDef: ColumnDefinition) {
     return colDef.label ?? labelize(colDef.field);
 };
+
+const visibleColumns = computed(() =>
+    columnDefinitions.filter(
+        (col) => typeof col.visible === 'undefined' || col.visible,
+    ),
+);
 </script>
 
 <template>
@@ -76,7 +82,7 @@ const columnTitle = function (colDef: ColumnDefinition) {
                 :sort-field="initialSortField"
                 :sort-order="-1">
                 <Column
-                    v-for="col in columnDefinitions"
+                    v-for="col in visibleColumns"
                     :key="col.field"
                     :header="columnTitle(col)"
                     :field="getSortField(col.field)"

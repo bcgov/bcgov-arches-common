@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Button from 'primevue/button';
 import {
     getEditLogForTile,
@@ -15,6 +15,7 @@ import type {
 const props = defineProps<{
     resourceId: string;
     tileIds?: string[];
+    auditFieldsVisible?: boolean;
     nodegroupConfigs?: Array<{
         graphSlug: string;
         alias: string;
@@ -23,10 +24,11 @@ const props = defineProps<{
     }>;
 }>();
 
+const auditFieldsVisible = ref(props?.auditFieldsVisible ?? false);
 const emit = defineEmits<{
     loaded: [data: EditLogResponse];
     error: [error: string];
-    populateAllFields: [results: Record<string, EditLogEntry>];
+    showAuditFields: [results: Record<string, EditLogEntry>];
 }>();
 
 const loading = ref(false);
@@ -97,7 +99,23 @@ const loadEditLog = async (
     }
 };
 
-const populateAllEnteredFields = async () => {
+const showAllFields = () => {
+    if (!dataLoaded.value) {
+        populateAllEnteredFields().then((data) => {
+            if (data) {
+                auditFieldsVisible.value = !auditFieldsVisible.value;
+                emit('showAuditFields', data);
+            }
+        });
+    } else {
+        auditFieldsVisible.value = !auditFieldsVisible.value;
+        emit('showAuditFields', {} as Record<string, EditLogEntry>);
+    }
+};
+
+const populateAllEnteredFields = async (): Promise<
+    Record<string, EditLogEntry> | undefined
+> => {
     loading.value = true;
     const results: Record<string, EditLogEntry> = {};
 
@@ -169,8 +187,8 @@ const populateAllEnteredFields = async () => {
             }
         }
 
-        emit('populateAllFields', results);
         dataLoaded.value = true;
+        return results;
     } catch (err) {
         console.error('Error loading edit logs:', err);
         error.value = err instanceof Error ? err.message : 'Unknown error';
@@ -178,16 +196,31 @@ const populateAllEnteredFields = async () => {
         loading.value = false;
     }
 };
+const buttonLabel = computed(() => {
+    return loading.value
+        ? 'Loading...'
+        : auditFieldsVisible.value
+          ? 'Hide Audit Info'
+          : 'Show Audit Info';
+});
+
+const buttonIcon = computed(() => {
+    return loading.value
+        ? 'pi pi-spinner pi-spin'
+        : auditFieldsVisible.value
+          ? 'pi pi-eye-slash'
+          : 'pi pi-eye';
+});
 </script>
 
 <template>
     <Button
-        :label="loading ? 'Loading...' : 'Audit info'"
-        :icon="loading ? 'pi pi-spinner pi-spin' : 'pi pi-eye'"
+        :label="buttonLabel"
+        :icon="buttonIcon"
         :disabled="loading"
         class="control-button"
         severity="info"
-        @click="populateAllEnteredFields" />
+        @click="showAllFields" />
 </template>
 
 <style scoped>
