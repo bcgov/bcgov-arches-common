@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie';
 import type { Ref } from 'vue';
-import { type ResourceSearchResults } from '@/bcgov_arches_common/types.ts';
 
 // @todo Initialize these from sever API call?
 export const arches = {
@@ -50,7 +49,7 @@ export function getToken() {
     if (!token) {
         throw new Error('Missing csrftoken');
     }
-    return null;
+    return token;
 }
 
 export const fetchUser = async () => {
@@ -99,13 +98,4 @@ export const fetchConcepts = function (concept_id: string, concepts: Ref) {
     fetch(formatUrl(`${arches.urls.paged_dropdown}?${params.toString()}`))
         .then((response) => response.json())
         .then((data) => (concepts.value = data.results));
-};
-
-const getNodeConfig = async function (
-    graphSlug: string,
-    nodeAlias: string,
-): Promise<Response> {
-    return fetch(
-        formatUrl(`${arches.urls.get_node_config}/${graphSlug}/${nodeAlias}`),
-    ).then((urlResponse) => urlResponse.json());
 };
