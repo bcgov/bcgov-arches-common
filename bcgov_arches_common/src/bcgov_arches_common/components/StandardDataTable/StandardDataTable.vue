@@ -97,8 +97,11 @@ const visibleColumns = computed(() =>
                         <span
                             v-if="col.isHtml"
                             class="html-content"
-                            v-html="sanitizeHtml(getCellValue(slotProps.data, col.field))"
-                        ></span>
+                            v-html="
+                                sanitizeHtml(
+                                    getCellValue(slotProps.data, col.field),
+                                )
+                            "></span>
                         <span v-else>
                             {{ getCellValue(slotProps.data, col.field) }}
                         </span>
