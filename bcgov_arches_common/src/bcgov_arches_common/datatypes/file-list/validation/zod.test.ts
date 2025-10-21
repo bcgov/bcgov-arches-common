@@ -93,7 +93,7 @@ describe('FileListValueSchema', () => {
         const bad = validValue({
             node_value: [validFile({ type: 'image/unknown' as any })],
         });
-        expect(() => FileListValueSchema.parse(bad)).toThrow(/invalid enum/i);
+        expect(() => FileListValueSchema.parse(bad)).toThrow(/invalid_value/i);
     });
 
     it('rejects non-blob or malformed URLs', () => {
