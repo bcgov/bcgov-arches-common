@@ -76,7 +76,6 @@ describe('FileListValueSchema', () => {
         );
         expect(asNull.display_value).toBeNull();
 
-        // @ts-expect-error verifying undefined is allowed at runtime
         const asUndefined = FileListValueSchema.parse(
             validValue({ display_value: undefined }),
         );
