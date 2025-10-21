@@ -1,4 +1,4 @@
-import type { FileListValue } from "@/arches_component_lab/datatypes/file-list/types.ts";
+import type { FileListValue } from '@/arches_component_lab/datatypes/file-list/types.ts';
 
 // This should probably be in arches-component-lab, or the FileReference there should
 // potentially be modified
