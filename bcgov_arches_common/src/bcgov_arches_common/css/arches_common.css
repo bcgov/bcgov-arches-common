@@ -80,7 +80,13 @@
         height: auto;
     }
 }
-.p-select-option-label {
+.p-tree-node-label {
     font-size: 0.9rem;
+}
+.p-virtualscroller-content {
+    font-size: 0.9rem;
+}
+.ql-editor {
+    min-height: 200px;
 }
 @layer utilities;
