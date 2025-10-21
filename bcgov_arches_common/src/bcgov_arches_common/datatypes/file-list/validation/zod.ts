@@ -4,7 +4,7 @@ import { MimeType } from '@/bcgov_arches_common/datatypes/file-list/validation/c
 const blobUrlFormat = z
     .string()
     .regex(
-        /^blob:https?:\/\/[a-zA-Z0-9.\-]+(?::\d+)?\/[0-9a-fA-F\-]{36}$/,
+        /^blob:https?:\/\/[a-zA-Z0-9.-]+(?::\d+)?\/[0-9a-fA-F-]{36}$/,
         'Invalid blob URL format',
     );
 
