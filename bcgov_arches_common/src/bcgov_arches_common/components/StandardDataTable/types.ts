@@ -3,4 +3,5 @@ export type ColumnDefinition = {
     label?: string;
     sortable?: boolean;
     visible?: boolean | (() => boolean);
+    isHtml?: boolean;
 };

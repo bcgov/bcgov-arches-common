@@ -24,12 +24,13 @@
         "@turf/centroid": "^7.2.0",
         "arches": "bcgov/arches#stable/8.0.3_bcgov_12377_12434",
         "arches-component-lab": "archesproject/arches-component-lab#main",
+        "dompurify": "^3.3.0",
         "maplibre-gl": "^5.7.1",
         "primevue": "^4.3.9",
         "typescript": "^5.6.2",
         "vue-router": "^4.4.3",
         "vue3-gettext": "^4.0.0-beta.1",
-         "zod": "^4.1.5"
+        "zod": "^4.1.5"
     },
     "devDependencies": {
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",

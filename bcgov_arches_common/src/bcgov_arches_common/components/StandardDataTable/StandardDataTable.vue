@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import type { ColumnDefinition } from '@/bcgov_arches_common/components/StandardDataTable/types.ts';
@@ -60,6 +61,10 @@ const getCellValue = (row: AliasedTileDataWithAudit, field: string): string => {
     return getNodeDisplayValue(row, field);
 };
 
+const sanitizeHtml = (html: string): string => {
+    return DOMPurify.sanitize(html);
+};
+
 const columnTitle = function (colDef: ColumnDefinition) {
     return colDef.label ?? labelize(colDef.field);
 };
@@ -88,10 +93,48 @@ const visibleColumns = computed(() =>
                     :field="getSortField(col.field)"
                     :sortable="isSortable(col)">
                     <template #body="slotProps">
-                        {{ getCellValue(slotProps.data, col.field) }}
+                        <!-- eslint-disable-next-line vue/no-v-html -->
+                        <span
+                            v-if="col.isHtml"
+                            class="html-content"
+                            v-html="
+                                sanitizeHtml(
+                                    getCellValue(slotProps.data, col.field),
+                                )
+                            "></span>
+                        <span v-else>
+                            {{ getCellValue(slotProps.data, col.field) }}
+                        </span>
                     </template>
                 </Column>
             </DataTable>
         </dd>
     </dl>
 </template>
+
+<style scoped>
+.html-content :deep(p) {
+    margin: 0.5rem 0;
+}
+
+.html-content :deep(p:first-child) {
+    margin-top: 1rem;
+}
+
+.html-content :deep(p:last-child) {
+    margin-bottom: 0;
+}
+
+.html-content :deep(strong) {
+    margin-right: 0.25rem;
+}
+
+.html-content {
+    display: block;
+    line-height: 1.5;
+}
+
+.html-content :deep(p:not(:first-child)) {
+    margin-top: 1rem;
+}
+</style>
