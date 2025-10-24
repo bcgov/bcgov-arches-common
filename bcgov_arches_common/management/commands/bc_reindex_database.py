@@ -114,6 +114,7 @@ class Command(BaseCommand):
 
         # Process each resource type individually to maintain ordering
         for i, resource_type_uuid in enumerate(ordered_resource_types):
+            print(f"{i+1}/{len(index_order)} Reindexing resources: {index_order[0]}")
             index_resources_by_type(
                 [resource_type_uuid],
                 clear_index=(clear_index and i == 0),
