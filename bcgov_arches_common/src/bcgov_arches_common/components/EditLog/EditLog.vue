@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import arches from 'arches';
 import Button from 'primevue/button';
 import {
     getEditLogForTile,
@@ -214,8 +215,8 @@ const buttonIcon = computed(() => {
 });
 
 const goToAuditLog = (): void => {
-    const auditLogUrl = `${window.location.origin}/bcap/resource/${props.resourceId}/history`;
-    window.location.href = auditLogUrl;
+    const auditLogUrl = arches.urls.get_resource_edit_log(props.resourceId);
+    window.open(auditLogUrl, '_blank', 'noopener,noreferrer');
 };
 </script>
 

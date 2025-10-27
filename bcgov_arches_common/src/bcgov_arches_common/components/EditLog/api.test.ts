@@ -12,7 +12,7 @@ import {
 vi.mock('arches', () => ({
     default: {
         urls: {
-            resource_edit_log: (resourceId: string) =>
+            get_api_resource_edit_log: (resourceId: string) =>
                 `https://example.test/resources/${resourceId}/edit-log`,
         },
     },
