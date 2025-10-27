@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeEditorContent } from '@/bcgov_arches_common/validation-utils.ts';
 
 /* Internal StringValue types */
 /* @todo - Make languanges configurable */
@@ -53,6 +54,53 @@ export function getStringValueRequiredSchema(maxLength: number = 0) {
                       .string()
                       .min(1, { message: 'Value is required.' })
                       .max(maxLength, {
+                          message: `Maximum length is ${maxLength} characters`,
+                      })
+                      .nullable(),
+              }),
+          });
+
+    return StringValueRequiredSchema.extend({
+        node_value: nodeSchema,
+    });
+}
+
+export function getRichTextValueSchema(maxLength: number = 0) {
+    const nodeSchema = !maxLength
+        ? StringNodeValueSchema
+        : StringNodeValueSchema.safeExtend({
+              en: LanguageValueSchema.safeExtend({
+                  value: z
+                      .string()
+                      .transform((value: string) =>
+                          normalizeEditorContent(value),
+                      )
+                      .refine((value: string) => value.length <= maxLength, {
+                          message: `Maximum length is ${maxLength} characters`,
+                      })
+                      .nullable(),
+              }),
+          });
+
+    return StringValueSchema.safeExtend({
+        node_value: nodeSchema,
+    });
+}
+
+export function getRichTextValueRequiredSchema(maxLength: number = 0) {
+    const nodeSchema = !maxLength
+        ? StringNodeValueRequiredSchema
+        : StringNodeValueRequiredSchema.extend({
+              en: LanguageValueSchema.safeExtend({
+                  value: z
+                      .string()
+                      .transform((value: string) =>
+                          normalizeEditorContent(value),
+                      )
+                      .refine((value: string) => value !== '', {
+                          message: 'Value is required.',
+                      })
+                      .refine((value: string) => value.length <= maxLength, {
                           message: `Maximum length is ${maxLength} characters`,
                       })
                       .nullable(),
