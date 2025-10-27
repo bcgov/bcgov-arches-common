@@ -11,7 +11,7 @@ const props = defineProps({
 });
 </script>
 <template>
-    <Card :class="['dashboard-card', props.class]">
+    <Card :class="props.class">
         <template #title>
             <p class="dashboard-card-title">
                 {{ props.label }}
@@ -45,17 +45,14 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.dashboard-card {
-    min-width: 29%;
-    height: 100%;
-}
 .card-router-link {
     text-decoration: none;
 }
 .dashboard-card.ipa {
     border: 1px solid #7847ce;
     border-radius: 0%;
-    max-width: 275px;
+    width: 275px;
+    height: 250px;
     margin: 5px;
     text-align: center;
     background: #8bc3eb;
