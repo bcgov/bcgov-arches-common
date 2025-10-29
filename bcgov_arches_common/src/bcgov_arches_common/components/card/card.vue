@@ -4,6 +4,7 @@ import Card from 'primevue/card';
 const props = defineProps({
     label: { type: String, default: '' },
     description: { type: String, default: '' },
+    subtitle: { type: String, default: '' },
     icon: { type: String, default: '' },
     class: { type: String, default: '' },
     routeName: { type: String, default: '' },
@@ -17,10 +18,17 @@ const props = defineProps({
             </p>
         </template>
         <template #content>
-            <i
-                :class="props.icon"
-                class="dashboard-card-icon">
-            </i>
+            <div class="dashboard-card-content">
+                <i
+                    :class="props.icon"
+                    class="dashboard-card-icon">
+                </i>
+            </div>
+            <div class="dashboard-card-subtitle-container">
+                <p class="dashboard-card-subtitle">
+                    {{ props.subtitle }}
+                </p>
+            </div>
         </template>
         <template #footer>
             <router-link
@@ -37,16 +45,14 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.dashboard-card {
-    min-width: 33%;
-}
 .card-router-link {
     text-decoration: none;
 }
 .dashboard-card.ipa {
     border: 1px solid #7847ce;
     border-radius: 0%;
-    max-width: 275px;
+    width: 275px;
+    height: 250px;
     margin: 5px;
     text-align: center;
     background: #8bc3eb;
@@ -69,13 +75,21 @@ const props = defineProps({
     text-align: center;
     overflow-wrap: break-word;
     margin-top: 1rem;
+    font-size: 1rem;
 }
 .dashboard-card-icon {
     color: #fff;
-    font-size: 2.8rem;
+    font-size: 1.8rem;
     line-height: 32px;
     padding: 1rem;
     margin-bottom: 3rem;
+    width: 75px;
+    height: 75px;
+    text-align: center;
+    padding: 18px;
+    border-radius: 50%;
+    background: #bfe0f7;
+    border: 1px solid #454545;
 }
 .dashboard-card-description {
     height: 55px;
@@ -99,5 +113,18 @@ const props = defineProps({
 }
 .dashboard-card.collection-event {
     border: solid thick rgba(50, 50, 50, 0.7);
+}
+.dashboard-card-content {
+    max-height: 4rem;
+}
+.dashboard-card-subtitle-container {
+    padding: 0px 5px;
+}
+.dashboard-card-subtitle {
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.7rem;
 }
 </style>
