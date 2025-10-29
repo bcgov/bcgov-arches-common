@@ -6,7 +6,8 @@ export async function getEditLogForTile(
     tileId: string,
 ): Promise<EditLogResponse> {
     const url =
-        arches.urls.resource_edit_log(resourceId) + `?tile_id=${tileId}`;
+        arches.urls.get_api_resource_edit_log(resourceId) +
+        `?tile_id=${tileId}`;
 
     return getEditLog(url);
 }
@@ -16,7 +17,7 @@ export async function getEditLogForNodegroupId(
     nodegroupId: string,
 ): Promise<EditLogResponse> {
     const url =
-        arches.urls.resource_edit_log(resourceId) +
+        arches.urls.get_api_resource_edit_log(resourceId) +
         `?nodegroup_id=${nodegroupId}`;
     return getEditLog(url);
 }
@@ -27,7 +28,7 @@ export async function getEditLogForNodeAlias(
     nodeAlias: string,
 ): Promise<EditLogResponse> {
     const url =
-        arches.urls.resource_edit_log(resourceId) +
+        arches.urls.get_api_resource_edit_log(resourceId) +
         `?graph_slug=${graphSlug}&node_alias=${nodeAlias}`;
 
     return getEditLog(url);
@@ -36,7 +37,7 @@ export async function getEditLogForNodeAlias(
 export async function getEditLogForResource(
     resourceId: string,
 ): Promise<EditLogResponse> {
-    return getEditLog(arches.urls.resource_edit_log(resourceId));
+    return getEditLog(arches.urls.get_api_resource_edit_log(resourceId));
 }
 
 async function getEditLog(url: string): Promise<EditLogResponse> {

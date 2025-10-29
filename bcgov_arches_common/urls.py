@@ -39,7 +39,7 @@ urlpatterns = [
     path(
         "api/edit-log/<str:resource_id>",
         ResourceEditLogView.as_view(),
-        name="resource-edit-log",
+        name="api-resource-edit-log",
     ),
 ]
 

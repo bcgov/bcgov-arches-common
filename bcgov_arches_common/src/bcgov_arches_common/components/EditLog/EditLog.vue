@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import arches from 'arches';
 import Button from 'primevue/button';
 import {
     getEditLogForTile,
@@ -196,6 +197,7 @@ const populateAllEnteredFields = async (): Promise<
         loading.value = false;
     }
 };
+
 const buttonLabel = computed(() => {
     return loading.value
         ? 'Loading...'
@@ -211,6 +213,11 @@ const buttonIcon = computed(() => {
           ? 'pi pi-eye-slash'
           : 'pi pi-eye';
 });
+
+const goToAuditLog = (): void => {
+    const auditLogUrl = arches.urls.get_resource_edit_log(props.resourceId);
+    window.open(auditLogUrl, '_blank', 'noopener,noreferrer');
+};
 </script>
 
 <template>
@@ -221,6 +228,12 @@ const buttonIcon = computed(() => {
         class="control-button"
         severity="info"
         @click="showAllFields" />
+    <Button
+        label="Go to Audit Log"
+        icon="pi pi-history"
+        class="control-button"
+        severity="secondary"
+        @click="goToAuditLog" />
 </template>
 
 <style scoped>

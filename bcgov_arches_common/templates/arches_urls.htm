@@ -1,13 +1,7 @@
-{% extends "arches_urls.htm" %}
-
-{% load static %}
-{% load l10n %}
-{% load i18n %}
-
-{% block arches_urls %}
-{{ block.super }}
-<div class="arches-urls"
+{% extends "arches_urls.htm" %} {% load static %} {% load l10n %} {% load i18n
+%} {% block arches_urls %} {{ block.super }}
+<div
+    class="arches-urls"
     api-map-data="{% url 'api-map-data' %}"
-    resource_edit_log='(resource_id) => {return "{% url "resource-edit-log" "00000000-0000-0000-0000-000000000000" %}".replace("00000000-0000-0000-0000-000000000000", resource_id)}'
-></div>
+    get_api_resource_edit_log='(resource_id) => {return "{% url "api-resource-edit-log" "00000000-0000-0000-0000-000000000000" %}".replace("00000000-0000-0000-0000-000000000000", resource_id)}'></div>
 {% endblock arches_urls %}
