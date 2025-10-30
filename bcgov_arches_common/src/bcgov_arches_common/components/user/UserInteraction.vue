@@ -2,7 +2,7 @@
 import { computed, inject } from 'vue';
 // import { useRouter } from "vue-router";
 import { useGettext } from 'vue3-gettext';
-import { arches } from '@/bcgov_arches_common/api.ts';
+import arches from 'arches';
 
 // import { useToast } from "primevue/usetoast";
 // import { logout } from "@/bcrhp/api.ts";
