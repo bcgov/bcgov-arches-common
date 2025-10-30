@@ -40,10 +40,7 @@ export const getConceptsForNode = function (
     nodeAlias: string,
     concepts: Ref,
 ) {
-    fetch(
-
-            `${arches.urls.api_concepts_for_node}/${graphSlug}/${nodeAlias}`,
-    )
+    fetch(`${arches.urls.api_concepts_for_node}/${graphSlug}/${nodeAlias}`)
         .then((response) => response.json())
         .then((data) => (concepts.value = data));
 };
