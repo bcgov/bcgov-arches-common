@@ -22,7 +22,7 @@
         "@primeuix/styles": "^1.2.3",
         "@turf/bbox": "^7.2.0",
         "@turf/centroid": "^7.2.0",
-        "arches": "bcgov/arches#stable/8.0.3_bcgov_12377_12434_12294_12491",
+        "arches": "bcgov/arches#stable/8.0.6_bcgov_12377",
         "arches-component-lab": "archesproject/arches-component-lab#main",
         "dompurify": "^3.3.0",
         "maplibre-gl": "^5.7.1",
@@ -36,7 +36,7 @@
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",
         "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
-        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.3",
+        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.6",
         "eslint-plugin-prettier": "^5.2.3",
         "prettier": "^3.6.2",
         "vite": "latest"

@@ -24,7 +24,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches@stable/8.0.3_bcgov_12377_12434_12294_12491",
+    "arches @ git+https://github.com/bcgov/arches@stable/8.0.6_bcgov_12377",
     "arches_component_lab",
     "Authlib",
 ]
