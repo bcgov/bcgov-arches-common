@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path
 from bcgov_arches_common.views.api.concept import ConceptsForNode
-from bcgov_arches_common.views.api import user as api_user
+from bcgov_arches_common.views.api import user as api_user, map
 from bcgov_arches_common.views import auth
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
         name="concepts_for_node",
     ),
     path("api/user/", api_user.UserView.as_view(), name="api_user"),
+    path("api/map-data", map.MapDataAPI.as_view(), name="api-map-data"),
     # OAuth views
     # Redirect the admin login page to use OAuth
     path(
