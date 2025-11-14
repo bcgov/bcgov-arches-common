@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
+import maplibregl, {
+    type Map as MapLibreMap,
+    type SourceSpecification,
+} from 'maplibre-gl';
 import {
     watch,
     onMounted,
@@ -28,7 +31,7 @@ import type {
     LayerSpecificationType,
     StyleSpecificationType,
     MapLibreMapSourcesType,
-} from '@/bcgov_arches_common/components/SimpleMap/types.ts';
+} from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { MapFileData } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';
 
@@ -111,8 +114,19 @@ function setupMap(): void {
     const basemap = find(mapData.value.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
-    defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
-    defaultStyle.value.layers.push(...basemap.layerdefinitions);
+    if (
+        basemap &&
+        basemap.source?.source &&
+        basemap.layerdefinitions &&
+        defaultStyle.value?.sources &&
+        defaultStyle.value.sources[basemap.source.name]
+    ) {
+        defaultStyle.value.sources[basemap.source.name] = basemap.source
+            .source as SourceSpecification;
+        defaultStyle.value.layers.push(
+            ...(basemap.layerdefinitions as LayerSpecificationType[]),
+        );
+    }
     if (mapData.value.default_bounds) {
         let c = centroid(mapData.value.default_bounds as unknown as AllGeoJSON)
             .geometry?.coordinates as Position | undefined;
@@ -221,8 +235,11 @@ const updateMapGeometries = (
     });
 
     const allFeaturesCollection = allGeometries.value;
-    if (allFeaturesCollection?.features?.length ?? 0 > 0) {
-        const bounds = bbox(allGeometries.value);
+    if (
+        allFeaturesCollection &&
+        (allFeaturesCollection?.features?.length ?? 0 > 0)
+    ) {
+        const bounds = bbox(allFeaturesCollection);
         map.value.fitBounds(
             [
                 [bounds[0], bounds[1]],
