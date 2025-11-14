@@ -19,7 +19,6 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "@tmcw/togeojson": "^7.1.2",
         "arches": "github:bcgov/arches#7.6.12+bcgov.1",
         "arches-component-lab": "github:archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
