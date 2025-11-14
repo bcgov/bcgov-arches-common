@@ -15,7 +15,7 @@ import {
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
-import { find } from 'underscore';
+import _ from 'underscore';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
@@ -111,7 +111,7 @@ function setupMap(): void {
     // dataLoaded.value = true;
     if (!mapEl.value || !mapData.value) return;
 
-    const basemap = find(mapData.value.basemaps, (basemap: MapLayer) => {
+    const basemap = _.find(mapData.value.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
     if (
