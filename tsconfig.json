@@ -21,16 +21,16 @@
     "allowImportingTsExtensions": true,
     "paths": {
       "@/arches/*": [
-        "../../arches/arches/app/src/arches/*"
+        "./node_modules/arches/arches/app/src/arches/*"
       ],
       "@/bcgov_arches_common/*": [
         "./bcgov_arches_common/src/bcgov_arches_common/*"
       ],
       "@/arches_component_lab/*": [
-        "../arches-component-lab/arches_component_lab/src/arches_component_lab/*"
+        "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
       ],
       "*": [
-        "../node_modules/*"
+        "./node_modules/*"
       ]
     }
   }
