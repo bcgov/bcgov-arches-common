@@ -114,19 +114,9 @@ function setupMap(): void {
     const basemap = _.find(mapData.value.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
-    if (
-        basemap &&
-        basemap.source?.source &&
-        basemap.layerdefinitions &&
-        defaultStyle.value?.sources &&
-        defaultStyle.value.sources[basemap.source.name]
-    ) {
-        defaultStyle.value.sources[basemap.source.name] = basemap.source
-            .source as SourceSpecification;
-        defaultStyle.value.layers.push(
-            ...(basemap.layerdefinitions as LayerSpecificationType[]),
-        );
-    }
+    defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
+    defaultStyle.value.layers.push(...basemap.layerdefinitions);
+
     if (mapData.value.default_bounds) {
         let c = centroid(mapData.value.default_bounds as unknown as AllGeoJSON)
             .geometry?.coordinates as Position | undefined;
