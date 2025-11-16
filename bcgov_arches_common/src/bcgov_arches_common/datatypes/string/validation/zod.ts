@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { normalizeEditorContent } from '@/bcgov_arches_common/validation-utils.ts';
+import { htmlToPlainText } from '@/bcgov_arches_common/datatypes/string/validation/utils.ts';
 
 /* Internal StringValue types */
 /* @todo - Make languanges configurable */
@@ -72,12 +72,13 @@ export function getRichTextValueSchema(maxLength: number = 0) {
               en: LanguageValueSchema.safeExtend({
                   value: z
                       .string()
-                      .transform((value: string) =>
-                          normalizeEditorContent(value),
+                      .refine(
+                          (value: string) =>
+                              htmlToPlainText(value).length <= maxLength,
+                          {
+                              message: `Maximum length is ${maxLength} characters`,
+                          },
                       )
-                      .refine((value: string) => value.length <= maxLength, {
-                          message: `Maximum length is ${maxLength} characters`,
-                      })
                       .nullable(),
               }),
           });
@@ -94,15 +95,16 @@ export function getRichTextValueRequiredSchema(maxLength: number = 0) {
               en: LanguageValueSchema.safeExtend({
                   value: z
                       .string()
-                      .transform((value: string) =>
-                          normalizeEditorContent(value),
-                      )
                       .refine((value: string) => value !== '', {
                           message: 'Value is required.',
                       })
-                      .refine((value: string) => value.length <= maxLength, {
-                          message: `Maximum length is ${maxLength} characters`,
-                      })
+                      .refine(
+                          (value: string) =>
+                              htmlToPlainText(value).length <= maxLength,
+                          {
+                              message: `Maximum length is ${maxLength} characters`,
+                          },
+                      )
                       .nullable(),
               }),
           });

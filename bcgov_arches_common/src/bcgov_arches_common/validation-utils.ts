@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import DOMPurify from 'dompurify';
 
 export type GenericZodObjectType = typeof z.object;
 export type FieldError = { type?: string; message: string };
@@ -61,9 +60,4 @@ export function getFlattenResolver(
         // Return just the errors bag; PrimeVue derives $form.*.invalid from this
         return { errors };
     };
-}
-export function normalizeEditorContent(value: string | null): string {
-    if (!value) return '';
-
-    return DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
 }
