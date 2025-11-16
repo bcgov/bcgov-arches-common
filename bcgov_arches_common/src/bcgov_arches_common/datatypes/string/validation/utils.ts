@@ -13,7 +13,18 @@ export function htmlToPlainText(html: string): string {
     container.querySelectorAll('br').forEach((br) => {
         br.replaceWith('\n');
     });
-
+    // 2b) Clean up whitespace-only text nodes inside lists so we don't get
+    // extra blank lines or indentation between list items from pretty-printed HTML
+    container.querySelectorAll('ul, ol').forEach((list) => {
+        Array.from(list.childNodes).forEach((node) => {
+            if (
+                node.nodeType === Node.TEXT_NODE &&
+                !(node.textContent || '').trim()
+            ) {
+                list.removeChild(node);
+            }
+        });
+    });
     // 2) Handle list items (<ul>/<ol>/<li>) → bullets / numbers
     container.querySelectorAll('li').forEach((li) => {
         const parent = li.parentElement;
@@ -48,6 +59,7 @@ export function htmlToPlainText(html: string): string {
         .replace(/[ \t]+\n/g, '\n') // trim spaces before newlines
         // .replace(/\n{3,}/g, '\n\n') // collapse >2 consecutive newlines to 2
         // .replace(/[ \t]{2,}/g, ' ') // collapse multiple spaces to one
+        .replace(/[ \t]+•/g, '•') // collapse multiple spaces to one
         .trim();
 
     return text;
