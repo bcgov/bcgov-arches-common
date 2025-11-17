@@ -67,10 +67,14 @@ export function htmlToPlainText(html: string): string {
 
 // Very simple fallback if document is not available (e.g., SSR or tests)
 function stripTagsFallback(html: string): string {
-    return html
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<\/p>/gi, '\n')
-        .replace(/<[^>]+>/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+    let out = html;
+    let prev;
+    do {
+        prev = out;
+        out = out
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/p>/gi, '\n')
+            .replace(/<[^>]+>/g, '');
+    } while (out !== prev);
+    return out.replace(/\s+/g, ' ').trim();
 }
