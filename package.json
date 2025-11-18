@@ -32,6 +32,7 @@
     },
     "devDependencies": {
         "@maplibre/maplibre-gl-style-spec": "^24.3.1",
+        "@types/geojson": "^7946.0.16",
         "@types/shpjs": "^3.4.7",
         "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
