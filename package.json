@@ -22,6 +22,7 @@
         "arches": "github:bcgov/arches#7.6.12+bcgov.1",
         "arches-component-lab": "github:archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
+        "geojson": "0.5.0",
         "maplibre-gl": "^5.10.0",
         "primevue": "^4.2.5",
         "togeojson": "^0.16.0",
@@ -46,7 +47,6 @@
         "@turf/helpers": "7.2.0",
         "@turf/centroid": "7.2.0",
         "@turf/bbox": "7.2.0",
-        "geojson": "0.5.0",
         "underscore": "^1.13.6"
     }
 }
