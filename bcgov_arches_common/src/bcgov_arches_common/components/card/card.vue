@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
+import type { RouteLocationRaw } from 'vue-router';
+import type { PropType } from 'vue';
 
 const props = defineProps({
     label: { type: String, default: '' },
@@ -7,7 +9,7 @@ const props = defineProps({
     subtitle: { type: String, default: '' },
     icon: { type: String, default: '' },
     class: { type: String, default: '' },
-    routeName: { type: String, default: '' },
+    route: { type: Object as PropType<RouteLocationRaw>, default: {} },
 });
 </script>
 <template>
@@ -32,7 +34,7 @@ const props = defineProps({
         </template>
         <template #footer>
             <router-link
-                :to="{ name: props.routeName }"
+                :to="props.route"
                 class="card-router-link">
                 <div class="dashboard-card-link">
                     <p class="dashboard-card-description">
