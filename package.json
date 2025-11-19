@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "arches": "github:bcgov/arches#7.6.12+bcgov.1",
-        "arches-component-lab": "github:archesproject/arches-component-lab#brf/bugfix/allow_partial_override",
+        "arches-component-lab": "github:archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
         "geojson": "0.5.0",
         "maplibre-gl": "^5.10.0",
