@@ -9,7 +9,7 @@ const props = defineProps({
     subtitle: { type: String, default: '' },
     icon: { type: String, default: '' },
     class: { type: String, default: '' },
-    route: { type: Object as PropType<RouteLocationRaw>, default: {} },
+    route: { type: Object as PropType<RouteLocationRaw>, default: () => {} },
 });
 </script>
 <template>

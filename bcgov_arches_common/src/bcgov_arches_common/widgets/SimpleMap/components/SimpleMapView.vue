@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import maplibregl, {
-    type Map as MapLibreMap,
-    type SourceSpecification,
-} from 'maplibre-gl';
+import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import {
     watch,
     onMounted,
@@ -59,9 +56,9 @@ const allGeometries = computed<FeatureCollection | undefined>(() => {
     return { type: 'FeatureCollection', features: geometriesFromFiles };
 });
 
-const hasGeometry = computed<boolean>(() => {
-    return geometry.value !== undefined;
-});
+// const hasGeometry = computed<boolean>(() => {
+//     return geometry.value !== undefined;
+// });
 
 const mapLoaded = ref(false);
 
