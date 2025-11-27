@@ -116,10 +116,8 @@ export interface ConceptOption {
 }
 
 export interface ArchesResourceInstanceData<
-    TAliasedData extends Record<
-        string,
-        AliasedTileData | AliasedTileData[]
-    > = Record<string, AliasedTileData | AliasedTileData[]>,
+    TAliasedData extends Record<string, AliasedTileData | AliasedTileData[]> =
+        Record<string, AliasedTileData | AliasedTileData[]>,
 > {
     resourceinstanceid: string;
     aliased_data: TAliasedData;
@@ -164,8 +162,10 @@ export interface AliasedNodeDataWithAudit extends AliasedNodeData {
     audit?: EditLogEntry;
 }
 
-export interface AliasedTileDataWithAudit
-    extends Omit<AliasedTileData, 'aliased_data'> {
+export interface AliasedTileDataWithAudit extends Omit<
+    AliasedTileData,
+    'aliased_data'
+> {
     audit?: EditLogEntry;
     aliased_data: Record<
         string,
