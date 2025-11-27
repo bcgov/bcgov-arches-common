@@ -115,6 +115,30 @@ export interface ConceptOption {
     text: string;
 }
 
+export interface ArchesResourceInstanceData<
+    TAliasedData extends Record<
+        string,
+        AliasedTileData | AliasedTileData[]
+    > = Record<string, AliasedTileData | AliasedTileData[]>,
+> {
+    resourceinstanceid: string;
+    aliased_data: TAliasedData;
+
+    // extra metadata present in payload
+    graph_has_different_publication: boolean;
+    name: string;
+    descriptors: Record<
+        string,
+        { name: string; map_popup: string; description: string }
+    >;
+    legacyid: string;
+    createdtime: string; // ISO timestamp
+    graph: string;
+    graph_publication: string;
+    resource_instance_lifecycle_state: string;
+    principaluser: string | null;
+}
+
 // Audit/Edit Log Types
 export interface EditLogResponse {
     modified_on: string | null;
