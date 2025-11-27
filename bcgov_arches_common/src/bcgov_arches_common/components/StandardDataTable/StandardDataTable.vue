@@ -62,7 +62,9 @@ const getCellValue = (row: AliasedTileDataWithAudit, field: string): string => {
 };
 
 const sanitizeHtml = (html: string): string => {
-    return DOMPurify.sanitize(html);
+    return DOMPurify.sanitize(html, {
+        ADD_ATTR: ['target', 'rel'],
+    });
 };
 
 const columnTitle = function (colDef: ColumnDefinition) {
