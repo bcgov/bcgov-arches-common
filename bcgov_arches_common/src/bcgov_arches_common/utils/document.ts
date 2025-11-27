@@ -1,8 +1,12 @@
 import type { AliasedTileData } from '@/arches_component_lab/types.ts';
+import type {
+    FileListValue,
+    FileReference,
+} from '@/arches_component_lab/datatypes/file-list/types.ts';
 
-export function formatFileLink(path: string): string {
-    if (!path) return '';
-    return `<a href="${path}" target="_blank" rel="noopener noreferrer">${path}</a>`;
+export function formatFileLink(file: FileReference): string {
+    if (!file?.url) return '';
+    return `<a href="${file.url}" target="_blank" rel="noopener noreferrer">${file.url}</a>`;
 }
 
 export function expandDocumentRows<T extends AliasedTileData>(
@@ -13,30 +17,24 @@ export function expandDocumentRows<T extends AliasedTileData>(
 
     documents.forEach((doc, docIndex) => {
         const aliasedData = doc.aliased_data as Record<string, unknown>;
-        const fieldData = aliasedData?.[fieldName] as
-            | { display_value?: string; node_value?: unknown }
-            | undefined;
-        const pathValue = fieldData?.display_value || '';
+        const fieldData = aliasedData?.[fieldName] as FileListValue | undefined;
+        const files = fieldData?.node_value;
 
-        if (!pathValue || !pathValue.includes(' | ')) {
+        if (!files || !Array.isArray(files) || files.length <= 1) {
             expandedRows.push(doc);
             return;
         }
 
-        const paths = pathValue
-            .split(' | ')
-            .map((p) => p.trim())
-            .filter(Boolean);
-
-        paths.forEach((path, pathIndex) => {
+        files.forEach((file, fileIndex) => {
             expandedRows.push({
                 ...doc,
-                rowKey: `${doc.tileid || docIndex}-${pathIndex}`,
+                rowKey: `${doc.tileid || docIndex}-${fileIndex}`,
                 aliased_data: {
                     ...aliasedData,
                     [fieldName]: {
                         ...fieldData,
-                        display_value: path,
+                        node_value: [file],
+                        display_value: file.url,
                     },
                 },
             } as T);
@@ -52,10 +50,14 @@ export function applyFileLinks<T extends AliasedTileData>(
 ): T[] {
     return documents.map((doc) => {
         const aliasedData = doc.aliased_data as Record<string, unknown>;
-        const fieldData = aliasedData?.[fieldName] as
-            | { display_value?: string }
-            | undefined;
-        const pathValue = fieldData?.display_value || '';
+        const fieldData = aliasedData?.[fieldName] as FileListValue | undefined;
+        const files = fieldData?.node_value;
+
+        if (!files || !Array.isArray(files) || files.length === 0) {
+            return doc;
+        }
+
+        const file = files[0];
 
         return {
             ...doc,
@@ -63,7 +65,7 @@ export function applyFileLinks<T extends AliasedTileData>(
                 ...aliasedData,
                 [fieldName]: {
                     ...fieldData,
-                    display_value: formatFileLink(pathValue),
+                    display_value: formatFileLink(file),
                 },
             },
         } as T;
