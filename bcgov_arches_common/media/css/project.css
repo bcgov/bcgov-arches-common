@@ -336,8 +336,10 @@ img.bc-details-image
 
 .bc-popup-entry
 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     margin-bottom: 1px;
-    overflow: auto;
 }
 
 .bc-popup-label, .bc-popup-value
