@@ -140,8 +140,10 @@ export interface AliasedNodeDataWithAudit extends AliasedNodeData {
     audit?: EditLogEntry;
 }
 
-export interface AliasedTileDataWithAudit
-    extends Omit<AliasedTileData, 'aliased_data'> {
+export interface AliasedTileDataWithAudit extends Omit<
+    AliasedTileData,
+    'aliased_data'
+> {
     audit?: EditLogEntry;
     aliased_data: Record<
         string,
