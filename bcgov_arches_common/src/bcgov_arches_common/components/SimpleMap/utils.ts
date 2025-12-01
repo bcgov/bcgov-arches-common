@@ -1,5 +1,3 @@
-// If you have maplibre-gl types installed:
-import type { Feature, Geometry } from 'geojson';
 import type {
     GeoJsonCardXNodeXWidgetData,
     GeoJsonNodeConfigType,
@@ -31,7 +29,7 @@ function parseColor(input?: string): ParsedColor {
  * Returns layers ordered for proper z-index (halos first).
  */
 export function buildLayersForFeature(
-    feature: Feature,
+    sourceId: string,
     sourceJson: GeoJsonCardXNodeXWidgetData,
 ): LayerSpecification[] {
     const cfg: GeoJsonNodeConfigType = sourceJson?.node?.config ?? {};
@@ -61,118 +59,91 @@ export function buildLayersForFeature(
     const { color: outlineColorRGB, opacity: outlineOpacity } =
         parseColor(outlineColor);
 
-    const src: string = feature.id as string;
-    const baseId = `${feature.id}-site`;
-    const geomType = feature.geometry?.type ?? 'Geometry';
-
-    const isPointLike = /^(Point|MultiPoint)$/i.test(geomType);
-    const isLineLike = /^(LineString|MultiLineString)$/i.test(geomType);
-    const isPolygonLike = /^(Polygon|MultiPolygon)$/i.test(geomType);
-
     const layers: LayerSpecification[] = [];
 
-    if (isPointLike) {
-        layers.push({
-            id: `${baseId}-point`,
-            type: 'circle',
-            source: src,
-            paint: {
-                'circle-radius': Math.max(0, radius) + Math.max(0, haloRadius),
-                'circle-color': pointColorRGB,
-                'circle-opacity': pointOpacity,
-                'circle-stroke-color': pointHaloColorRGB,
-                'circle-stroke-opacity': pointHaloOpacity,
-                'circle-stroke-width': Math.max(0, haloWeight),
-            },
-            // MapLibre type defs for expressions are broad; cast for convenience:
-            filter: [
-                'in',
-                ['geometry-type'],
-                ['literal', ['Point', 'MultiPoint']],
-            ] as any,
-        });
-    }
+    layers.push({
+        id: `${sourceId}-point`,
+        type: 'circle',
+        source: sourceId,
+        paint: {
+            'circle-radius': Math.max(0, radius) + Math.max(0, haloRadius),
+            'circle-color': pointColorRGB,
+            'circle-opacity': pointOpacity,
+            'circle-stroke-color': pointHaloColorRGB,
+            'circle-stroke-opacity': pointHaloOpacity,
+            'circle-stroke-width': Math.max(0, haloWeight),
+        },
+        // MapLibre type defs for expressions are broad; cast for convenience:
+        filter: [
+            'in',
+            ['geometry-type'],
+            ['literal', ['Point', 'MultiPoint']],
+        ] as any,
+    });
 
-    if (isLineLike) {
-        layers.push({
-            id: `${baseId}-line-halo`,
-            type: 'line',
-            source: src,
-            paint: {
-                'line-color': lineHaloColorRGB,
-                'line-opacity': lineHaloOpacity,
-                'line-width': Math.max(0, weight) + Math.max(0, haloWeight),
-                'line-blur': 0.5,
-            },
-            filter: [
-                'in',
-                ['geometry-type'],
-                ['literal', ['LineString', 'MultiLineString']],
-            ] as any,
-        });
+    layers.push({
+        id: `${sourceId}-line-halo`,
+        type: 'line',
+        source: sourceId,
+        paint: {
+            'line-color': lineHaloColorRGB,
+            'line-opacity': lineHaloOpacity,
+            'line-width': Math.max(0, weight) + Math.max(0, haloWeight),
+            'line-blur': 0.5,
+        },
+        filter: [
+            'in',
+            ['geometry-type'],
+            ['literal', ['LineString', 'MultiLineString']],
+        ] as any,
+    });
 
-        layers.push({
-            id: `${baseId}-line`,
-            type: 'line',
-            source: src,
-            paint: {
-                'line-color': lineColorRGB,
-                'line-opacity': lineOpacity,
-                'line-width': Math.max(0, weight),
-            },
-            filter: [
-                'in',
-                ['geometry-type'],
-                ['literal', ['LineString', 'MultiLineString']],
-            ] as any,
-        });
-    }
+    layers.push({
+        id: `${sourceId}-line`,
+        type: 'line',
+        source: sourceId,
+        paint: {
+            'line-color': lineColorRGB,
+            'line-opacity': lineOpacity,
+            'line-width': Math.max(0, weight),
+        },
+        filter: [
+            'in',
+            ['geometry-type'],
+            ['literal', ['LineString', 'MultiLineString']],
+        ] as any,
+    });
 
-    if (isPolygonLike) {
-        layers.push({
-            id: `${baseId}-fill`,
-            type: 'fill',
-            source: src,
-            paint: {
-                'fill-color': fillColorRGB,
-                'fill-opacity': fillOpacity,
-            },
-            filter: [
-                'in',
-                ['geometry-type'],
-                ['literal', ['Polygon', 'MultiPolygon']],
-            ] as any,
-        });
+    layers.push({
+        id: `${sourceId}-fill`,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+            'fill-color': fillColorRGB,
+            'fill-opacity': fillOpacity,
+        },
+        filter: [
+            'in',
+            ['geometry-type'],
+            ['literal', ['Polygon', 'MultiPolygon']],
+        ] as any,
+    });
 
-        layers.push({
-            id: `${baseId}-outline`,
-            type: 'line',
-            source: src,
-            paint: {
-                'line-color': outlineColorRGB,
-                'line-opacity': outlineOpacity,
-                'line-width': Math.max(0, outlineWeight),
-            },
-            filter: [
-                'in',
-                ['geometry-type'],
-                ['literal', ['Polygon', 'MultiPolygon']],
-            ] as any,
-        });
-    }
-
-    if (!isPointLike && !isLineLike && !isPolygonLike) {
-        layers.push({
-            id: `${baseId}-fallback`,
-            type: 'line',
-            source: src,
-            paint: {
-                'line-color': lineColorRGB,
-                'line-opacity': lineOpacity,
-                'line-width': Math.max(0, weight),
-            },
-        } as LayerSpecification);
-    }
+    layers.push({
+        id: `${sourceId}-outline`,
+        type: 'line',
+        source: sourceId,
+        paint: {
+            'line-color': outlineColorRGB,
+            'line-opacity': outlineOpacity,
+            'line-width': Math.max(0, outlineWeight),
+        },
+        filter: [
+            'in',
+            ['geometry-type'],
+            ['literal', ['Polygon', 'MultiPolygon']],
+        ] as any,
+    });
 
     return layers;
 }
