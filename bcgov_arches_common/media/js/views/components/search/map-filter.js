@@ -298,7 +298,7 @@ const viewModel = BaseFilter.extend({
         this.drawModes = _.pluck(this.spatialFilterTypes, 'drawMode');
 
         this.selectedTool.subscribe(function (selectedDrawTool) {
-            if (!!selectedDrawTool) {
+            if (selectedDrawTool) {
                 if (selectedDrawTool === 'extent') {
                     this.searchByExtent();
                 } else {
@@ -570,36 +570,36 @@ const viewModel = BaseFilter.extend({
             searchResults().bulkDisambiguatedResourceInstanceCache;
         searchResults().selectedTab('search-result-details');
         searchResults().details.loading(true);
-        if (!instanceCache()[resourceinstanceid]) {
-            $.getJSON(url, (resp) => {
-                const result = resp.results.hits.hits[0];
-                const graphId = result._source.graph_id;
-                instanceCache()[resourceinstanceid] = result._source;
-                searchResults().bulkDisambiguatedResourceInstanceCache(
-                    instanceCache(),
+        // if (!instanceCache()[resourceinstanceid]) {
+        $.getJSON(url, (resp) => {
+            const result = resp.results.hits.hits[0];
+            const graphId = result._source.graph_id;
+            instanceCache()[resourceinstanceid] = result._source;
+            searchResults().bulkDisambiguatedResourceInstanceCache(
+                instanceCache(),
+            );
+            if (!searchResults().bulkResourceReportCache()[graphId]) {
+                this.getMissingGraphAndShowReport(
+                    graphId,
+                    result,
+                    searchResults(),
                 );
-                if (!searchResults().bulkResourceReportCache()[graphId]) {
-                    this.getMissingGraphAndShowReport(
-                        graphId,
-                        result,
-                        searchResults(),
-                    );
-                } else {
-                    // Otherwise load the details page directly
-                    console.log('Showing details from showDetailsFromFilter');
-                    this.searchFilterVms[
-                        'search-results'
-                    ]().showResourceSummaryReport(result)();
-                }
-            });
-        } else {
-            searchResults().showResourceSummaryReport({
-                _source: instanceCache()[resourceinstanceid],
-            })();
-        }
+            } else {
+                // Otherwise load the details page directly
+                console.log('Showing details from showDetailsFromFilter');
+                this.searchFilterVms[
+                    'search-results'
+                ]().showResourceSummaryReport(result)();
+            }
+        });
+        // } else {
+        //     searchResults().showResourceSummaryReport({
+        //         _source: instanceCache()[resourceinstanceid],
+        //     })();
+        // }
     },
     getMissingGraphAndShowReport: function (graphId, resource, searchResults) {
-        if (!!searchResults.bulkResourceReportCache()[graphId]) {
+        if (searchResults.bulkResourceReportCache()[graphId]) {
             return false;
         }
         let url =
@@ -797,7 +797,7 @@ const viewModel = BaseFilter.extend({
     },
 
     updateResults: function () {
-        if (!!this.searchResults.results) {
+        if (this.searchResults.results) {
             this.searchAggregations({
                 results: this.searchResults.results.hits.hits,
                 geo_aggs:
@@ -806,7 +806,7 @@ const viewModel = BaseFilter.extend({
             });
             this.fitToAggregationBounds();
         }
-        if (!!this.searchResults[componentName]) {
+        if (this.searchResults[componentName]) {
             var buffer = this.searchResults[componentName].search_buffer;
             this.map().getSource('geojson-search-buffer-data').setData({
                 type: 'FeatureCollection',
