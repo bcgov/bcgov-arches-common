@@ -8,7 +8,11 @@ from arches.app.utils.permission_backend import user_can_read_map_layers
 
 class MapDataAPI(View):
     def get(self, request):
-        prefix = settings.BCGOV_PROXY_PREFIX
+        prefix = (
+            settings.BCGOV_PROXY_PREFIX
+            if settings.BCGOV_PROXY_PREFIX
+            else settings.FORCE_SCRIPT_NAME
+        ).strip("/")
         map_layers = user_can_read_map_layers(request.user)
         map_sources = list(models.MapSource.objects.all())
         for map_source in map_sources:
