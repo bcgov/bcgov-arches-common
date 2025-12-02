@@ -30,11 +30,6 @@ function updateGeometries(newValue: GeoJSONFeatureCollectionValue) {
 
 <template>
     <div>
-        <div>
-            Features:
-            {{ aliasedNodeDataForDisplay?.node_value?.features?.length ?? 0 }}
-            Details: {{ aliasedNodeDataForDisplay?.details?.length ?? 0 }}
-        </div>
         <div
             style="
                 display: inline-block;

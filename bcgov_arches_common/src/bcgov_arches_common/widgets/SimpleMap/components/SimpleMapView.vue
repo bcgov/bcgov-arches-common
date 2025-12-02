@@ -261,9 +261,6 @@ watch(
     // () => aliasedNodeData.value?.node_value?.features,
     () => aliasedNodeData.value?.details,
     (features, prevFeature) => {
-        console.log('watch feature');
-        console.log(features);
-        console.log(cardXNodeXWidgetData);
         const prevFeatureIds = prevFeature?.map((f) => f.id) ?? [];
         const newFeatureIds = features?.map((f) => f.id) ?? [];
         const featuresToAdd = features?.filter(
@@ -285,11 +282,6 @@ watch(
 );
 </script>
 <template>
-    <div>
-        Geometries:
-        {{ aliasedNodeData?.node_value?.features?.length ?? 0 }} Details:
-        {{ aliasedNodeData?.details?.length ?? 0 }}
-    </div>
     <div
         class="map-wrap"
         :data-graph-slug="graphSlug"
