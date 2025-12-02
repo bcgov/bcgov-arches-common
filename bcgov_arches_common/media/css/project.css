@@ -381,6 +381,11 @@ img.bc-details-image
    flex-direction: row;
 }
 
+.p-tree-node-content {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 /* End Vue schtuff */
 
 @media only screen and (width >= 600px) {
