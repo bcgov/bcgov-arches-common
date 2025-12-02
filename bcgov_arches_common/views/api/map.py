@@ -8,7 +8,7 @@ from arches.app.utils.permission_backend import user_can_read_map_layers
 
 class MapDataAPI(View):
     def get(self, request):
-        prefix = (
+        prefix = "/" + (
             settings.BCGOV_PROXY_PREFIX
             if settings.BCGOV_PROXY_PREFIX
             else settings.FORCE_SCRIPT_NAME
@@ -18,13 +18,10 @@ class MapDataAPI(View):
         for map_source in map_sources:
             if "tiles" in map_source.source:
                 if not map_source.source["tiles"][0].startswith("http"):
-                    stripped_url = map_source.source["tiles"][0].replace(
-                        f"/{prefix}", ""
+                    stripped_url = map_source.source["tiles"][0].replace(prefix, "")
+                    source = "{}{}".format(
+                        settings.PUBLIC_SERVER_ADDRESS.rstrip("/"), stripped_url
                     )
-                    print(
-                        f'{map_source.source["tiles"][0]} -> {"{}{}".format(settings.PUBLIC_SERVER_ADDRESS, stripped_url)}'
-                    )
-                    source = "{}{}".format(settings.PUBLIC_SERVER_ADDRESS, stripped_url)
                     map_source.source["tiles"][0] = source
 
         return JSONResponse(
