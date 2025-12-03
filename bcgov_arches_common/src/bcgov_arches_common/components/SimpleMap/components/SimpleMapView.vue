@@ -4,6 +4,7 @@ import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
+import { featureCollection } from '@turf/helpers';
 import { find } from 'underscore';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
@@ -11,6 +12,7 @@ import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/componen
 import type {
     MapData,
     MapLayer,
+    FeatureCollection,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
 import type {
@@ -99,9 +101,11 @@ function setupMap(): void {
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
-        if (aliasedNodeData?.node_value?.features?.[0]) {
-            console.log('Adding geometry from load event');
-            addGeometryToMap(aliasedNodeData.node_value.features[0]);
+        const featureColl =
+            aliasedNodeData?.node_value || featureCollection([]);
+        if (featureColl.features.length > 0) {
+            console.log('Adding geometries from load event');
+            addGeometryToMap(featureColl);
         }
     });
 
@@ -128,7 +132,7 @@ onMounted(async () => {
 
 watch(
     () => mapData,
-    (mapData, prevMapData) => {
+    (mapData) => {
         console.log('mapData updaed', mapData);
         console.log('cardXNodeXWidgetData', cardXNodeXWidgetData);
         if (mapData) {
@@ -143,7 +147,7 @@ watch(mapCentre, (val, oldVal) => {
     }
 });
 
-const addGeometryToMap = (feature: Feature) => {
+const addGeometryToMap = (featureCollection: FeatureCollection) => {
     if (
         !map.value ||
         !hasGeometry.value ||
@@ -152,63 +156,68 @@ const addGeometryToMap = (feature: Feature) => {
     )
         return;
 
-    map.value.addSource(feature.id as string, {
-        type: 'geojson',
-        data: feature.geometry,
-    });
+    const featureId = `${featureCollection?.features[0]?.id}`;
 
-    const layers = buildLayersForFeature(
-        feature,
-        cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
-    );
-    layers.forEach((layer) => {
-        map.value?.addLayer(layer);
-    });
+    const existing = map.value.getSource(featureId);
+    if (!existing) {
+        map.value.addSource(featureId as string, {
+            type: 'geojson',
+            data: featureCollection,
+        });
 
-    new maplibregl.Marker({ color: '#d97706' })
-        .setLngLat(mapCentre.value)
-        .setPopup(new maplibregl.Popup().setHTML('<b>Feature centroid</b>'))
-        .addTo(map.value);
+        const layers = buildLayersForFeature(
+            featureId,
+            cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
+        );
+        layers.forEach((layer) => {
+            map.value?.addLayer(layer);
+        });
 
-    const bounds = bbox(feature.geometry);
-    map.value.fitBounds(
-        [
-            [bounds[0], bounds[1]],
-            [bounds[2], bounds[3]],
-        ],
-        {
-            padding: 100,
-            maxZoom: 15,
-        },
-    );
+        new maplibregl.Marker({ color: '#d97706' })
+            .setLngLat(mapCentre.value)
+            .setPopup(new maplibregl.Popup().setHTML('<b>Feature centroid</b>'))
+            .addTo(map.value);
 
-    center.value = mapCentre.value;
-    console.log('New centre value: ', center.value);
+        const bounds = bbox(featureCollection);
+        map.value.fitBounds(
+            [
+                [bounds[0], bounds[1]],
+                [bounds[2], bounds[3]],
+            ],
+            {
+                padding: 100,
+                maxZoom: 15,
+            },
+        );
+
+        center.value = mapCentre.value;
+        console.log('New centre value: ', center.value);
+    }
 };
 
 watch(
     () => cardXNodeXWidgetData,
-    (cardXNodeXWidgetData, prevCardXNodeXWidgetData) => {
+    (cardXNodeXWidgetData) => {
         console.log('cardXNodeXWdigetData updated', cardXNodeXWidgetData);
         if (
             cardXNodeXWidgetData &&
             mapData &&
             aliasedNodeData?.node_value?.features?.[0]
         ) {
-            addGeometryToMap(aliasedNodeData?.node_value?.features?.[0]);
+            addGeometryToMap(aliasedNodeData.node_value);
         }
     },
 );
 
 watch(
-    () => aliasedNodeData?.node_value?.features?.[0],
-    (feature, prevFeature) => {
+    () => aliasedNodeData?.node_value,
+    (featureCollection) => {
         console.log('watch feature');
-        console.log(feature);
+        console.log(featureCollection);
         console.log(cardXNodeXWidgetData);
-        if (feature && map.value) {
+        if (featureCollection && map.value) {
             console.log('Adding geometry from watch event');
-            addGeometryToMap(feature);
+            addGeometryToMap(featureCollection);
         }
     },
 );
