@@ -50,7 +50,16 @@ const getSortField = (field: string): string => {
         : `aliased_data.${field}.display_value`;
 };
 
-const getCellValue = (row: AliasedTileDataWithAudit, field: string): string => {
+const getCellValue = (
+    row: AliasedTileDataWithAudit,
+    field: string,
+    displayFunction?: (
+        row: AliasedTileDataWithAudit,
+        fieldName: string,
+    ) => string,
+): string => {
+    if (displayFunction) return displayFunction(row, field);
+
     // Check for audit fields
     if (isAuditField(field)) {
         const auditValue = row.audit?.[field as keyof typeof row.audit];
@@ -101,11 +110,21 @@ const visibleColumns = computed(() =>
                             class="html-content"
                             v-html="
                                 sanitizeHtml(
-                                    getCellValue(slotProps.data, col.field),
+                                    getCellValue(
+                                        slotProps.data,
+                                        col.field,
+                                        col.displayFunction,
+                                    ),
                                 )
                             "></span>
                         <span v-else>
-                            {{ getCellValue(slotProps.data, col.field) }}
+                            {{
+                                getCellValue(
+                                    slotProps.data,
+                                    col.field,
+                                    col.displayFunction,
+                                )
+                            }}
                         </span>
                     </template>
                 </Column>
