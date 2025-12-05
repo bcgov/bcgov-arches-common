@@ -39,3 +39,9 @@ class BCTileserverProxyView(BCTileserverLocalProxyView):
         ):
             # print("Setting outbound proxy to %s" % settings.TILESERVER_OUTBOUND_PROXY)
             self.http = urllib3.ProxyManager(settings.TILESERVER_OUTBOUND_PROXY)
+
+    def dispatch(self, request, *args, **kwargs):
+        # When hitting /bctileserver/ there is no <path:path> kwarg.
+        # Normalize to empty string so upstream becomes "/" not "None".
+        kwargs["path"] = kwargs.get("path", "")
+        return super().dispatch(request, *args, **kwargs)
