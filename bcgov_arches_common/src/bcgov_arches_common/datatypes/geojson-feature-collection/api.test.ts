@@ -85,13 +85,11 @@ describe('api.ts', () => {
 
         fetchMock.mockResolvedValueOnce({
             ok: true,
-            json: vi
-                .fn()
-                .mockResolvedValueOnce({
-                    overlays: [],
-                    basemaps: [],
-                    default_bounds: {},
-                }),
+            json: vi.fn().mockResolvedValueOnce({
+                overlays: [],
+                basemaps: [],
+                default_bounds: {},
+            }),
             statusText: 'OK',
         });
 
