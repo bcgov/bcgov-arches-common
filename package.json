@@ -37,8 +37,8 @@
         "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/7.6.12",
-        "eslint-plugin-prettier": "^5.2.3",
-        "prettier": "^3.6.2"
+        "eslint-plugin-prettier": "^5.5.4",
+        "prettier": "^3.7.1"
     },
     "nodeModulesPaths": {},
     "overrides": {
