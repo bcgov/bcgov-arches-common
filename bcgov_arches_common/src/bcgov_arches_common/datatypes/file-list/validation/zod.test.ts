@@ -62,7 +62,7 @@ describe('FileListValueSchema', () => {
         const parsed = FileListValueSchema.parse(
             validValue({ node_value: [httpItem] }),
         );
-        expect(parsed.node_value[0].url.startsWith('blob:http://')).toBe(true);
+        expect(parsed.node_value[0].url?.startsWith('blob:http://')).toBe(true);
     });
 
     it('allows display_value to be string, null, or undefined', () => {

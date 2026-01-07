@@ -87,7 +87,8 @@ export type GeometryType =
     | { id: 'Line'; text: 'Line' }
     | { id: 'Polygon'; text: 'Polygon' };
 
-export interface GeoJSONFeatureCollectionCardXNodeXWidgetData extends CardXNodeXWidgetData {
+export interface GeoJSONFeatureCollectionCardXNodeXWidgetData
+    extends CardXNodeXWidgetData {
     config: CardXNodeXWidgetData['config'] & {
         basemap: string;
         bearing: number;
