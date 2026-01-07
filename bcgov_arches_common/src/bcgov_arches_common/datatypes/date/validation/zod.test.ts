@@ -8,12 +8,14 @@ const ISO_DATE = '2024-08-19';
 const validRequired = (overrides: Partial<any> = {}) => ({
     display_value: 'Aug 19, 2024',
     node_value: ISO_DATE,
+    details: [],
     ...overrides,
 });
 
 const validOptional = (overrides: Partial<any> = {}) => ({
     display_value: 'Aug 19, 2024',
     node_value: ISO_DATE,
+    details: [],
     ...overrides,
 });
 
@@ -51,6 +53,7 @@ describe('DateValueSchema (optional node_value)', () => {
         const parsed = DateValueSchema.parse({
             node_value: ISO_DATE,
             display_value: null,
+            details: [],
         });
         expect(parsed.display_value).toBeNull();
     });
