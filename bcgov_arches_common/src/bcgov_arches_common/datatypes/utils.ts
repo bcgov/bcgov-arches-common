@@ -17,7 +17,9 @@ function getNode(row: unknown, key: string): AliasedNodeData | null {
 }
 
 export const getDisplayValue = (value: AliasedNodeData | null | undefined) => {
-    return value?.node_value ? value.display_value : '';
+    return value?.node_value !== null && value?.node_value !== undefined
+        ? value.display_value
+        : '';
 };
 
 export const getNodeDisplayValue = (row: unknown, path: string) => {
