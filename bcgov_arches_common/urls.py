@@ -5,6 +5,7 @@ from django.urls import include, path
 from bcgov_arches_common.views.api.concept import ConceptsForNode
 from bcgov_arches_common.views.api import user as api_user, map
 from bcgov_arches_common.views import auth
+from bcgov_arches_common.views.api.pmbc import PMBCDataView
 
 urlpatterns = [
     path(
@@ -29,6 +30,7 @@ urlpatterns = [
         auth.UnauthorizedView.as_view(),
         name="unauthorized",
     ),
+    path("api/pmbc-parcel/", PMBCDataView.as_view(), name="pmbc_parcel_data"),
 ]
 
 # Adds URL pattern to serve media files during development
