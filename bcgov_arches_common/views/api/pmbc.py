@@ -21,9 +21,9 @@ class PMBCDataView(View):
     - JsonResponse: The data from the ArcGIS REST endpoint
     """
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pid, *args, **kwargs):
         # Get PID from request parameters
-        pid = request.GET.get("pid")
+        # pid = request.GET.get("pid")
 
         # Validate PID parameter
         if not pid or not pid.isdigit():
@@ -43,8 +43,9 @@ class PMBCDataView(View):
         params = {
             "where": f"PID={pid}",
             "returnGeometry": "true",
+            "outSR": "4326",
             "outFields": "*",
-            "f": "pjson",
+            "f": "geojson",
         }
 
         logger.info(f"Requesting PMBC data for PID: {pid}")

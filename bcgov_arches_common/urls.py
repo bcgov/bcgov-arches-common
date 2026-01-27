@@ -30,7 +30,7 @@ urlpatterns = [
         auth.UnauthorizedView.as_view(),
         name="unauthorized",
     ),
-    path("api/pmbc-parcel/", PMBCDataView.as_view(), name="pmbc_parcel_data"),
+    path("api/pmbc-parcel/<slug:pid>", PMBCDataView.as_view(), name="pmbc-parcel-data"),
 ]
 
 # Adds URL pattern to serve media files during development

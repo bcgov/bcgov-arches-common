@@ -2,5 +2,7 @@
 %} {% block arches_urls %} {{ block.super }}
 <div
     class="arches-urls"
-    api-map-data="{% url 'api-map-data' %}"></div>
+    api-map-data="{% url 'api-map-data' %}"
+    pmbc_parcel_data='(pid) => {return "{% url "pmbc-parcel-data" "----p1" %}".replace("----p1", pid)}'
+></div>
 {% endblock arches_urls %}
