@@ -112,7 +112,7 @@ class OAuthTokenRefreshMiddleware:
                         log_user_out(request)
                         return redirect(UNAUTHORIZED_PAGE)
         else:
-            if request.user.is_authenticated:
+            if request.user.is_authenticated and not has_valid_dot_token:
                 logger.warning(f"[Token] No token - logging user out.")
                 log_user_out(request)
 
