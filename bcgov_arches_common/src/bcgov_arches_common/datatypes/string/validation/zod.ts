@@ -126,3 +126,12 @@ export function getBCPostalCodeSchema() {
         }
     );
 }
+
+export function formatBCPostalCode(value: string): string {
+    const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+    if (raw.length > 3) {
+        return (raw.slice(0, 3) + ' ' + raw.slice(3, 6)).slice(0, 7);
+    }
+    return raw.slice(0, 3);
+}
