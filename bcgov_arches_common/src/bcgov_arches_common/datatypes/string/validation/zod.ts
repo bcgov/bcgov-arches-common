@@ -123,7 +123,7 @@ export function getBCPostalCodeSchema() {
         },
         {
             message: 'Invalid format. Please use A1B 2C3',
-        }
+        },
     );
 }
 
