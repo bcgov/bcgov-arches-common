@@ -5,18 +5,21 @@ import {
     ResourceInstanceListValueRequiredSchema,
 } from './zod';
 
-// Reuse the same shapes that ResourceInstanceReferenceSchema / DetailsSchema expect.
-// (We keep these as "realistic" Arches-like objects, but minimal.)
+// Properly formatted reference objects matching ResourceInstanceReferenceSchema
 const validRef = (overrides: Partial<any> = {}) => ({
     resourceId: '3c144c58-3e36-4f1f-965f-2c88f18c2a0d',
-    ontologyClass: 'E18 Physical Thing',
+    ontologyProperty: 'http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by',
+    resourceXresourceId: '12345678-abcd-4321-9876-fedcba987654',
+    inverseOntologyProperty:
+        'http://www.cidoc-crm.org/cidoc-crm/P1i_identifies',
     ...overrides,
 });
 
+// Properly formatted details objects matching ResourceInstanceValueDetailsSchema
 const validDetails = (overrides: Partial<any> = {}) => ({
-    resourceId: '3c144c58-3e36-4f1f-965f-2c88f18c2a0d',
-    displayname: 'Foo Resource',
-    graphid: '7b1f2a9e-4d6c-4a1e-9f18-6c8a0d8e2f77',
+    display_value: 'Foo Resource', // Changed from displayname to display_value
+    resource_id: '3c144c58-3e36-4f1f-965f-2c88f18c2a0d', // Changed from resourceId to resource_id
+    // Removed graphid as it's not in the schema
     ...overrides,
 });
 
@@ -24,13 +27,16 @@ const validResourceInstanceList = (overrides: Partial<any> = {}) => ({
     display_value: 'Foo Resource; Bar Resource',
     node_value: [
         validRef(),
-        validRef({ resourceId: '7b1f2a9e-4d6c-4a1e-9f18-6c8a0d8e2f77' }),
+        validRef({
+            resourceId: '7b1f2a9e-4d6c-4a1e-9f18-6c8a0d8e2f77',
+            resourceXresourceId: '87654321-dcba-4321-9876-abcdef123456',
+        }),
     ],
     details: [
         validDetails(),
         validDetails({
-            resourceId: '7b1f2a9e-4d6c-4a1e-9f18-6c8a0d8e2f77',
-            displayname: 'Bar Resource',
+            resource_id: '7b1f2a9e-4d6c-4a1e-9f18-6c8a0d8e2f77',
+            display_value: 'Bar Resource',
         }),
     ],
     ...overrides,
@@ -62,7 +68,7 @@ describe('ResourceInstanceListValueSchema (ResourceInstanceListValue)', () => {
     });
 
     it('rejects when details contains an invalid details object', () => {
-        const badDetails = { ...validDetails(), displayname: 42 }; // should be string per referenced schema
+        const badDetails = { ...validDetails(), display_value: 42 }; // should be string per referenced schema
         const bad = validResourceInstanceList({ details: [badDetails] });
         expect(() => ResourceInstanceListValueSchema.parse(bad)).toThrow();
     });
