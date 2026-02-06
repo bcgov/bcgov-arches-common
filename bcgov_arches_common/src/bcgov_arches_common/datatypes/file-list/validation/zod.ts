@@ -6,7 +6,8 @@ const blobUrlFormat = z
     .regex(
         /^blob:https?:\/\/[a-zA-Z0-9.-]+(?::\d+)?\/[0-9a-fA-F-]{36}$/,
         'Invalid blob URL format',
-    );
+    )
+    .nullish();
 
 const FileMetadata = z.object({
     name: z.string(),

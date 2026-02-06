@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
-const ResourceInstanceReferenceSchema = z.object({
-    resourceId: z.string().uuidv4(),
+export const ResourceInstanceReferenceSchema = z.object({
+    resourceId: z.uuidv4(),
     ontologyProperty: z.string().nullable(),
     resourceXresourceId: z.string().nullable(),
     inverseOntologyProperty: z.string().nullable(),
 });
 
-const ResourceInstanceValueDetailsSchema = z.object({
+export const ResourceInstanceValueDetailsSchema = z.object({
     display_value: z.string(),
-    resource_id: z.string().uuidv4(),
+    resource_id: z.uuidv4(),
 });
 
 export const ResourceInstanceValueSchema = z.object({

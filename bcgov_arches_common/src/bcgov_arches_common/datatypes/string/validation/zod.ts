@@ -113,3 +113,25 @@ export function getRichTextValueRequiredSchema(maxLength: number = 0) {
         node_value: nodeSchema,
     });
 }
+
+export function getBCPostalCodeSchema() {
+    return StringValueSchema.refine(
+        function (val: any) {
+            const str = val?.display_value || '';
+            if (!str) return true;
+            return /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(str);
+        },
+        {
+            message: 'Invalid format. Please use A1B 2C3',
+        },
+    );
+}
+
+export function formatBCPostalCode(value: string): string {
+    const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+    if (raw.length > 3) {
+        return (raw.slice(0, 3) + ' ' + raw.slice(3, 6)).slice(0, 7);
+    }
+    return raw.slice(0, 3);
+}
