@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from arches.management.commands.es import Command as BaseCommand
 
 from arches.app.models import models
 from arches.app.models.system_settings import settings
@@ -110,6 +110,8 @@ class Command(BaseCommand):
             if key not in index_order:
                 ordered_resource_types.append(value[1])
 
+        self.delete_indexes(name=None)
+        self.setup_indexes(name=None)
         index_concepts(clear_index=clear_index, batch_size=batch_size)
 
         # Process each resource type individually to maintain ordering
