@@ -90,3 +90,22 @@
     min-height: 200px;
 }
 @layer utilities;
+
+/* Force the hint container to be visible and take up space */
+body .p-message.p-message-secondary.label-message {
+    display: flex !important;
+    height: auto !important;
+    min-height: 20px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-top: 0.25rem;
+    overflow: visible !important;
+}
+
+/* Ensure the text inside hint box is visible and readable */
+body .p-message.p-message-secondary.label-message .p-message-text {
+    display: block !important;
+    color: #555 !important;
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
