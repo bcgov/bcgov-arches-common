@@ -112,6 +112,7 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         ];
 
         nodeValue.value.features = [
+            ...(aliasedNodeData?.node_value?.features ?? []),
             ...nodeValue.value.features,
             ...geometries.features,
         ];

@@ -53,7 +53,12 @@ const allGeometries = computed<FeatureCollection | undefined>(() => {
         (coll, file) => [...coll, ...file.geometries.features],
         [],
     );
-    return { type: 'FeatureCollection', features: geometriesFromFiles };
+    const geometriesFromNode =
+        aliasedNodeData?.value?.node_value?.features ?? [];
+    return {
+        type: 'FeatureCollection',
+        features: [...geometriesFromFiles, ...geometriesFromNode],
+    };
 });
 
 // const hasGeometry = computed<boolean>(() => {
@@ -214,12 +219,33 @@ const updateMapGeometries = (
         layers.forEach((layer) => {
             map.value?.addLayer(layer);
         });
-
-        // new maplibregl.Marker({ color: '#d97706' })
-        //     .setLngLat(mapCentre.value)
-        //     .setPopup(new maplibregl.Popup().setHTML('<b>Feature centroid</b>'))
-        //     .addTo(mapInstance);
     });
+
+    if (
+        featuresToAdd.length === 0 &&
+        featuresToRemove.length === 0 &&
+        (aliasedNodeData.value?.node_value?.features?.length ?? 0 > 0)
+    ) {
+        aliasedNodeData.value?.node_value?.features.forEach((feature) => {
+            {
+                const featureid = feature.id;
+                if (featureid && !mapInstance.getSource(`${featureid}`)) {
+                    mapInstance.addSource(`${featureid}`, {
+                        type: 'geojson',
+                        data: feature,
+                    });
+                    const layers = buildLayersForFeature(
+                        `${featureid}`,
+                        feature,
+                        cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
+                    );
+                    layers.forEach((layer) => {
+                        map.value?.addLayer(layer);
+                    });
+                }
+            }
+        });
+    }
 
     const allFeaturesCollection = allGeometries.value;
     if (
@@ -253,6 +279,19 @@ watch(
             aliasedNodeData?.value?.node_value?.features?.[0]
         ) {
             updateMapGeometries(aliasedNodeData?.value?.details ?? [], []);
+        }
+    },
+);
+
+watch(
+    () => aliasedNodeData?.value?.node_value,
+    () => {
+        if (
+            props.cardXNodeXWidgetData &&
+            mapData &&
+            aliasedNodeData?.value?.node_value?.features?.[0]
+        ) {
+            updateMapGeometries([], []);
         }
     },
 );
