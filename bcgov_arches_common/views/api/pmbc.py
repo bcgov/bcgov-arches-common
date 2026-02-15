@@ -3,14 +3,13 @@ import json
 import logging
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views import View
-import requests
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from bcgov_arches_common.views.base import OutboundProxyMixin
+import urllib3
 
 logger = logging.getLogger(__name__)
 
 
-class PMBCDataView(View):
+class PMBCDataView(View, OutboundProxyMixin):
     """
     Class-based view to fetch parcel data from BC Energy Regulator ArcGIS REST service using PID.
 
@@ -51,18 +50,17 @@ class PMBCDataView(View):
         logger.info(f"Requesting PMBC data for PID: {pid}")
 
         try:
+            req = self.get_request_pool_manager()
             # Make the request to the external API
-            response = requests.get(base_url, params=params, timeout=30)
+            response = req.request(method="GET", url=base_url, fields=params)
 
-            # Check for successful response
-            response.raise_for_status()
+            if response.status != 200:
+                raise urllib3.exceptions.HTTPError(f"HTTP error {response.status}")
 
             # Parse JSON data
-            data = response.json()
+            data = json.loads(response.data.decode("utf-8"))
 
-            logger.info(
-                f"Received PMBC data for PID: {pid}, status: {response.status_code}"
-            )
+            logger.info(f"Received PMBC data for PID: {pid}, status: {response.status}")
 
             # Add some metadata to the response
             result = {
@@ -76,19 +74,33 @@ class PMBCDataView(View):
 
             return JsonResponse(result)
 
-        except requests.exceptions.Timeout:
+        except urllib3.exceptions.TimeoutError:
             logger.error(f"Timeout while fetching PMBC data for PID: {pid}")
             return JsonResponse(
                 {"error": "The request to the external API timed out", "pid": pid},
                 status=504,
             )  # Gateway Timeout
-        except requests.exceptions.ConnectionError:
+
+        except urllib3.exceptions.NewConnectionError:
             logger.error(f"Connection error while fetching PMBC data for PID: {pid}")
             return JsonResponse(
                 {"error": "Could not connect to the external API", "pid": pid},
                 status=502,
             )  # Bad Gateway
-        except requests.exceptions.RequestException as e:
+
+        except urllib3.exceptions.HTTPError as e:
+            logger.error(
+                f"HTTP error while fetching PMBC data for PID: {pid}: {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": f"Error fetching data from external API: {str(e)}",
+                    "pid": pid,
+                },
+                status=500,
+            )
+
+        except urllib3.exceptions.RequestError as e:
             logger.error(
                 f"Request error while fetching PMBC data for PID: {pid}: {str(e)}"
             )
@@ -99,9 +111,22 @@ class PMBCDataView(View):
                 },
                 status=500,
             )
+
         except json.JSONDecodeError:
             logger.error(f"JSON decode error while processing PMBC data for PID: {pid}")
             return JsonResponse(
                 {"error": "Error parsing response from external API", "pid": pid},
+                status=500,
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Unexpected error while fetching PMBC data for PID: {pid}: {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": f"Unexpected error: {str(e)}",
+                    "pid": pid,
+                },
                 status=500,
             )
