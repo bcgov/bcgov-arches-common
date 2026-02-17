@@ -36,15 +36,17 @@ class PMBCDataView(View, OutboundProxyMixin):
             )
 
         # Construct the URL to the external API
-        base_url = "https://geoweb-ags.bc-er.ca/arcgis/rest/services/REFERENCE/PMBC/MapServer/4/query"
+
+        base_url = "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows"
 
         # Define parameters for the request
         params = {
-            "where": f"PID={pid}",
-            "returnGeometry": "true",
-            "outSR": "4326",
-            "outFields": "*",
-            "f": "geojson",
+            "service": "WFS",
+            "version": "2.0.0",
+            "request": "GetFeature",
+            "typeNames": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+            "CQL_FILTER": f"PID='{pid}'",
+            "outputFormat": "application/json",
         }
 
         logger.info(f"Requesting PMBC data for PID: {pid}")
@@ -65,7 +67,7 @@ class PMBCDataView(View, OutboundProxyMixin):
             # Add some metadata to the response
             result = {
                 "meta": {
-                    "source": "BC Energy Regulator ArcGIS REST service",
+                    "source": "ParcelMap BC Parcel Fabric",
                     "pid": pid,
                     "timestamp": response.headers.get("Date"),
                 },
