@@ -45,6 +45,7 @@ class PMBCDataView(View, OutboundProxyMixin):
             "version": "2.0.0",
             "request": "GetFeature",
             "typeNames": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+            "srsName": "EPSG:4326",
             "CQL_FILTER": f"PID='{pid}'",
             "outputFormat": "application/json",
         }
