@@ -29,20 +29,23 @@ function updateGeometries(newValue: GeoJSONFeatureCollectionValue) {
     emit('update:value', newValue);
 }
 
-const concatenatedAliasedNodeData = computed(() => {
-    return {
-        ...aliasedNodeDataFromFiles.value,
-        node_value: {
-            ...aliasedNodeDataFromFiles.value?.node_value,
-            type: 'FeatureCollection',
-            // Combine features from both sources
-            features: [
-                ...(aliasedNodeDataFromFiles.value?.node_value?.features || []),
-                ...(props.aliasedNodeData?.node_value?.features || []),
-            ],
-        },
-    };
-});
+const concatenatedAliasedNodeData = computed<GeoJSONFeatureCollectionValue>(
+    () => {
+        return {
+            ...aliasedNodeDataFromFiles.value,
+            node_value: {
+                ...aliasedNodeDataFromFiles.value?.node_value,
+                type: 'FeatureCollection',
+                // Combine features from both sources
+                features: [
+                    ...(aliasedNodeDataFromFiles.value?.node_value?.features ||
+                        []),
+                    ...(props.aliasedNodeData?.node_value?.features || []),
+                ],
+            },
+        };
+    },
+);
 </script>
 
 <template>
