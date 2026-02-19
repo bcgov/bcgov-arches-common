@@ -8,7 +8,7 @@ import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
 import type { WidgetMode } from '@/arches_component_lab/widgets/types.ts';
 
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import { blankGeoJSONValue } from '@/bcrhp/utils.ts';
+import { blankGeoJSONValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/utils.ts';
 
 const props = defineProps<{
     mode: WidgetMode;

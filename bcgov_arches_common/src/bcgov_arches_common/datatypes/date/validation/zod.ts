@@ -12,7 +12,7 @@ export const DateValueRequiredSchema = DateValueSchema.safeExtend({
 
 const baseYearValidator = z
     .string()
-    .transform((val) => (val === '' ? null : parseInt(val, 10)))
+    .transform((val: string) => (val === '' ? null : parseInt(val, 10)))
     .pipe(z.number().int().min(1900).max(2100));
 
 export const YearValueSchema = z.object({
