@@ -8,7 +8,7 @@ import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
 import type { WidgetMode } from '@/arches_component_lab/widgets/types.ts';
 
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import { blankGeoJSONValue } from '@/bcrhp/utils.ts';
+import { blankGeoJSONValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/utils.ts';
 
 const props = defineProps<{
     mode: WidgetMode;
@@ -29,20 +29,23 @@ function updateGeometries(newValue: GeoJSONFeatureCollectionValue) {
     emit('update:value', newValue);
 }
 
-const concatenatedAliasedNodeData = computed(() => {
-    return {
-        ...aliasedNodeDataFromFiles.value,
-        node_value: {
-            ...aliasedNodeDataFromFiles.value?.node_value,
-            type: 'FeatureCollection',
-            // Combine features from both sources
-            features: [
-                ...(aliasedNodeDataFromFiles.value?.node_value?.features || []),
-                ...(props.aliasedNodeData?.node_value?.features || []),
-            ],
-        },
-    };
-});
+const concatenatedAliasedNodeData = computed<GeoJSONFeatureCollectionValue>(
+    () => {
+        return {
+            ...aliasedNodeDataFromFiles.value,
+            node_value: {
+                ...aliasedNodeDataFromFiles.value?.node_value,
+                type: 'FeatureCollection',
+                // Combine features from both sources
+                features: [
+                    ...(aliasedNodeDataFromFiles.value?.node_value?.features ||
+                        []),
+                    ...(props.aliasedNodeData?.node_value?.features || []),
+                ],
+            },
+        };
+    },
+);
 </script>
 
 <template>
