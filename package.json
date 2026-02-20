@@ -19,7 +19,7 @@
         "vitest": "vitest --run --coverage"
     },
     "dependencies": {
-        "arches": "github:bcgov/arches#v7.6.12.2_bcgov",
+        "arches": "github:bcgov/arches#v7.6.12.3_bcgov",
         "arches-component-lab": "github:archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
         "geojson": "0.5.0",
