@@ -5,6 +5,7 @@ from authlib.integrations.requests_client import OAuth2Session
 from django.conf import settings
 from bcgov_arches_common.util.auth.token_store import save_token
 from bcgov_arches_common.util.auth.oauth_session_control import log_user_out
+from oauth2_provider.oauth2_backends import get_oauthlib_core
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +39,36 @@ class OAuthTokenRefreshMiddleware:
         self.get_response = get_response
         self.oauth_config = OAUTH_CONFIG
 
+    @staticmethod
+    def dot_access_token_is_valid(request) -> bool:
+        """
+        Returns True if request includes a valid django-oauth-toolkit Bearer token.
+        Does not raise; safe to call from middleware.
+        """
+        auth = request.headers.get("Authorization", "")
+        if not auth.lower().startswith("bearer "):
+            return False
+
+        # oauthlib core will validate signature/expiry/scope rules etc.
+        core = get_oauthlib_core()
+        valid, oauth2_req = core.verify_request(request, scopes=[])
+
+        if valid:
+            # Optional: make token/user info available downstream
+            request.oauth2_validated = True
+            request.access_token = getattr(oauth2_req, "access_token", None)
+            request.resource_owner = getattr(oauth2_req, "user", None)
+            print("User has a valid DOT access token")
+            return True
+
+        return False
+
     def __call__(self, request):
         if bypass_auth(request):
             return self.get_response(request)
+
+        # If request has a valid DOT bearer token, do NOT redirect to HOME_PAGE
+        has_valid_dot_token = self.dot_access_token_is_valid(request)
 
         if logger.isEnabledFor(logging.DEBUG):
             expiry_timestamp = request.session.get_expiry_date().timestamp()
@@ -84,11 +112,15 @@ class OAuthTokenRefreshMiddleware:
                         log_user_out(request)
                         return redirect(UNAUTHORIZED_PAGE)
         else:
-            if request.user.is_authenticated:
+            if request.user.is_authenticated and not has_valid_dot_token:
                 logger.warning(f"[Token] No token - logging user out.")
                 log_user_out(request)
 
-        if AUTH_REQUIRED and not request.user.is_authenticated:
+        if (
+            AUTH_REQUIRED
+            and not request.user.is_authenticated
+            and not has_valid_dot_token
+        ):
             return redirect(HOME_PAGE)
 
         return self.get_response(request)
