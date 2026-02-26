@@ -8,18 +8,14 @@ from arches.app.search.es_mapping_modifier import EsMappingModifier
 
 class DisplayDescriptorSearchValue(EsMappingModifier):
     """
-    The `DisplayDescriptorSearchValue` class extends the `EsMappingModifier` and is used
-    to modify Elasticsearch mappings and queries to support the custom search functionality
-    for display descriptors. It includes methods for adding search terms, creating nested
-    filters, applying search filters, and returning mapping definitions configured to handle
-    text fields and their variations like raw and folded formats.
+    The DisplayDescriptorSearchValue class extends the EsMappingModifier to make `displayname` text-searchable,
+    allowing for partial matches on the displayname. The default Arches configuration uses term search which requires
+    an exact match on the displayname.
     """
 
-    custom_search_path = "display_descriptors"
-
-    @staticmethod
-    def initialize():
-        pass
+    def __init__(self):
+        super().__init__()
+        self.custom_search_path = "display_descriptors"
 
     @staticmethod
     def add_search_terms(resourceinstance, document, terms):
