@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const CollectionItemSchema = z.object({
+export const CollectionItemSchema = z.object({
     key: z.string(),
     label: z.string(),
     conceptid: z.string(),
@@ -12,10 +12,10 @@ const CollectionItemSchema = z.object({
 
 export const ConceptValueSchema = z.object({
     display_value: z.string(),
-    node_value: z.string().uuidv4().nullable(),
+    node_value: z.uuidv4().nullable(),
     details: z.array(CollectionItemSchema),
 });
 
 export const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({
-    node_value: z.string().uuidv4().min(1, { message: 'Value is required.' }),
+    node_value: z.uuidv4().min(1, { message: 'Value is required.' }),
 });

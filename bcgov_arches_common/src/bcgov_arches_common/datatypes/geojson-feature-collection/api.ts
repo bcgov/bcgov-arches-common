@@ -1,4 +1,7 @@
-export const createRequest = (url: string) => {
+import arches from 'arches';
+
+export const createRequest = (urlName: string) => {
+    const url = arches.urls[urlName];
     return async () => {
         const response = await fetch(url);
         try {
@@ -13,4 +16,4 @@ export const createRequest = (url: string) => {
     };
 };
 
-export const fetchMapData = createRequest('api/map-data');
+export const fetchMapData = createRequest('api-map-data');
