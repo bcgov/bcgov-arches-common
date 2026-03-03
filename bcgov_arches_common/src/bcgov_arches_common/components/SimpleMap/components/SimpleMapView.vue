@@ -5,7 +5,7 @@ import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
-import { find } from 'underscore';
+import _ from 'underscore';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
@@ -70,7 +70,7 @@ function setupMap(): void {
     // dataLoaded.value = true;
     if (!mapEl.value || !mapData) return;
 
-    const basemap = find(mapData.basemaps, (basemap: MapLayer) => {
+    const basemap = _.find(mapData.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
     defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
