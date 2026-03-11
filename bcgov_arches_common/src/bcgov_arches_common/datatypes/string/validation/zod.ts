@@ -135,3 +135,24 @@ export function formatBCPostalCode(value: string): string {
     }
     return raw.slice(0, 3);
 }
+
+export function getBCPostalCodeRequiredSchema() {
+    const postalCodeNodeSchema = StringNodeValueRequiredSchema.extend({
+        en: LanguageValueSchema.safeExtend({
+            value: z
+                .string()
+                .trim()
+                .min(1, { message: 'Value is required.' })
+                .max(7, {
+                    message: `Maximum length is 7 characters`,
+                })
+                .regex(/^[A-Z]\d[A-Z] \d[A-Z]\d$/, {
+                    message: 'Invalid format. Please use A1B 2C3.',
+                }),
+        }),
+    });
+
+    return StringValueRequiredSchema.extend({
+        node_value: postalCodeNodeSchema,
+    });
+}
