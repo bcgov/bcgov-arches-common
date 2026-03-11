@@ -4,13 +4,13 @@ import { htmlToPlainText } from '@/bcgov_arches_common/datatypes/string/validati
 /* Internal StringValue types */
 /* @todo - Make languanges configurable */
 // const languages = ['en'];
-const LanguageValueSchema = z.object({
+export const LanguageValueSchema = z.object({
     value: z.string().nullable(),
     direction: z.enum(['ltr', 'rtl']),
 });
 const StringNodeValueSchema = z.looseObject({ en: LanguageValueSchema });
 
-const StringNodeValueRequiredSchema = z.looseObject({
+export const StringNodeValueRequiredSchema = z.looseObject({
     en: LanguageValueSchema.safeExtend({
         value: z.string().min(1, { message: 'Value is required.' }),
     }),
@@ -134,4 +134,25 @@ export function formatBCPostalCode(value: string): string {
         return (raw.slice(0, 3) + ' ' + raw.slice(3, 6)).slice(0, 7);
     }
     return raw.slice(0, 3);
+}
+
+export function getBCPostalCodeRequiredSchema() {
+    const postalCodeNodeSchema = StringNodeValueRequiredSchema.extend({
+        en: LanguageValueSchema.safeExtend({
+            value: z
+                .string()
+                .trim()
+                .min(1, { message: 'Value is required.' })
+                .max(7, {
+                    message: `Maximum length is 7 characters`,
+                })
+                .regex(/^[A-Z]\d[A-Z] \d[A-Z]\d$/, {
+                    message: 'Invalid format. Please use A1B 2C3.',
+                }),
+        }),
+    });
+
+    return StringValueRequiredSchema.extend({
+        node_value: postalCodeNodeSchema,
+    });
 }

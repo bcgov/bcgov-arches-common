@@ -30,7 +30,9 @@ const isLoading = computed(() => {
 const mapDataLoading = ref(false);
 const widgetConfigLoading = ref(false);
 
-const resolvedCardXNodeXWidgetData = shallowRef(cardXNodeXWidgetData);
+const resolvedCardXNodeXWidgetData = shallowRef<
+    GeoJSONFeatureCollectionCardXNodeXWidgetData | undefined
+>(cardXNodeXWidgetData.value);
 const configurationError = ref<Error>();
 
 watchEffect(async () => {
@@ -58,10 +60,10 @@ watchEffect(async () => {
     widgetConfigLoading.value = true;
 
     try {
-        resolvedCardXNodeXWidgetData.value = await fetchCardXNodeXWidgetData(
+        resolvedCardXNodeXWidgetData.value = (await fetchCardXNodeXWidgetData(
             graphSlug.value,
             nodeAlias.value,
-        );
+        )) as GeoJSONFeatureCollectionCardXNodeXWidgetData;
     } catch (error) {
         console.log(error);
         configurationError.value = error as Error;
