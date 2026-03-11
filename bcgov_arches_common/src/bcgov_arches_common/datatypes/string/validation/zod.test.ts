@@ -94,7 +94,7 @@ describe('getStringValueSchema(maxLength)', () => {
                 en: { value: 'A very very long string', direction: 'ltr' },
             },
         });
-        expect(() => Schema0.parse(ok)).not.toThrow();
+        expect(Schema0.safeParse(ok).success).toBe(true);
     });
 
     it('with maxLength=5, still allows null for en.value (nullable in non-required)', () => {
