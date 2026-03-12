@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@primeuix/styles": "^1.2.3",
-        "arches": "bcgov/arches#stable/8.0.8_bcgov_12377",
+        "arches": "bcgov/arches#stable/8.0.8_bcgov_12377_12600_12616_12502",
         "arches-component-lab": "archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
         "dompurify": "^3.3.0",
