@@ -114,7 +114,7 @@ export const GeoJSONFeatureSchema = z.object({
     id: z.union([z.string(), z.number()]).optional(),
 });
 
-export type GeoJSONFeature = z.infer<typeof GeoJSONFeatureSchema>;
+export type GeoJSONFeature = z.output<typeof GeoJSONFeatureSchema>;
 
 export const GeoJSONFeatureCollectionSchema = z.object({
     type: z.literal('FeatureCollection'),
@@ -122,7 +122,7 @@ export const GeoJSONFeatureCollectionSchema = z.object({
     bbox: z.array(z.number()).optional(),
 });
 
-export type GeoJSONFeatureCollection = z.infer<
+export type GeoJSONFeatureCollection = z.output<
     typeof GeoJSONFeatureCollectionSchema
 >;
 
@@ -132,7 +132,7 @@ export const GeoJSONFeatureCollectionValueSchema = z.object({
     details: z.array(z.object()),
 });
 
-export type GeoJSONFeatureCollectionValue = z.infer<
+export type GeoJSONFeatureCollectionValue = z.output<
     typeof GeoJSONFeatureCollectionValueSchema
 >;
 
