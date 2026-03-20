@@ -27,9 +27,7 @@ class MapDataAPITests(TestCase):
         with (
             patch(f"{MODULE}.settings", mock_settings),
             patch(f"{MODULE}.user_can_read_map_layers", return_value=mock_layers),
-            patch(
-                f"{MODULE}.models.MapSource.objects.all", return_value=mock_sources
-            ),
+            patch(f"{MODULE}.models.MapSource.objects.all", return_value=mock_sources),
         ):
             resp = self.view(req)
         return resp, json.loads(resp.content)
@@ -117,9 +115,7 @@ class MapDataAPITests(TestCase):
 
         _, data = self._get(mock_settings, [], [source])
 
-        self.assertEqual(
-            data["map_sources"][0]["source"]["tiles"][0], original_url
-        )
+        self.assertEqual(data["map_sources"][0]["source"]["tiles"][0], original_url)
 
     def test_source_without_tiles_key_is_unchanged(self):
         """Sources that have no 'tiles' key are passed through untouched."""
@@ -133,9 +129,7 @@ class MapDataAPITests(TestCase):
         _, data = self._get(mock_settings, [], [source])
 
         self.assertNotIn("tiles", data["map_sources"][0]["source"])
-        self.assertEqual(
-            data["map_sources"][0]["source"]["data"], "/api/data.geojson"
-        )
+        self.assertEqual(data["map_sources"][0]["source"]["data"], "/api/data.geojson")
 
     def test_multiple_sources_processed_independently(self):
         """Relative and absolute tile sources in the same request are each handled correctly."""

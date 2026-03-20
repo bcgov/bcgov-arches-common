@@ -15,7 +15,9 @@ def _make_http_response(status=200, body=None, headers=None):
     """Build a minimal urllib3-like response mock."""
     response = MagicMock()
     response.status = status
-    response.data = json.dumps(body or {"type": "FeatureCollection", "features": []}).encode()
+    response.data = json.dumps(
+        body or {"type": "FeatureCollection", "features": []}
+    ).encode()
     response.headers = headers or {"Date": "Wed, 01 Jan 2025 00:00:00 GMT"}
     return response
 
@@ -145,7 +147,9 @@ class PMBCDataViewTests(TestCase):
     def test_http_error_returns_500(self):
         """An HTTPError from urllib3 returns 500."""
         mock_manager = MagicMock()
-        mock_manager.request.side_effect = urllib3.exceptions.HTTPError("upstream error")
+        mock_manager.request.side_effect = urllib3.exceptions.HTTPError(
+            "upstream error"
+        )
 
         resp = self._get("0008746320", mock_manager)
 
