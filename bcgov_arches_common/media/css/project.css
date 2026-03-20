@@ -5,6 +5,23 @@
 
 @font-face {
     font-family: BCSans;
+    font-weight: 100 300;
+    font-style: normal;
+    src: url('../fonts/BCSans/BCSans-Light.woff2') format('woff2'), /* Optimized for very modern browsers */
+    url('../fonts/BCSans/BCSans-Light.woff') format('woff'); /* Modern Browsers */
+}
+
+@font-face {
+    font-family: BCSans;
+    font-weight: 100 300;
+    font-style: italic;
+    src: url('../fonts/BCSans/BCSans-LightItalic.woff2') format('woff2'), /* Optimized for very modern browsers */
+    url('../fonts/BCSans/BCSans-LightItalic.woff') format('woff'); /* Modern Browsers */
+}
+
+@font-face {
+    font-family: BCSans;
+    font-weight: 400 599;
     font-style: normal;
     src: url('../fonts/BCSans/BCSans-Regular.woff2') format('woff2'), /* Optimized for very modern browsers */
     url('../fonts/BCSans/BCSans-Regular.woff') format('woff'); /* Modern Browsers */
@@ -12,6 +29,7 @@
 
 @font-face {
     font-family: BCSans;
+    font-weight: 400 599;
     font-style: italic;
     src: url('../fonts/BCSans/BCSans-Italic.woff2') format('woff2'), /* Optimized for very modern browsers */
     url('../fonts/BCSans/BCSans-Italic.woff') format('woff'); /* Modern Browsers */
@@ -19,15 +37,16 @@
 
 @font-face {
     font-family: BCSans;
-    font-weight: 700;
+    font-weight: 600 900;
+    font-style: normal;
     src: url('../fonts/BCSans/BCSans-Bold.woff2') format('woff2'), /* Optimized for very modern browsers */
     url('../fonts/BCSans/BCSans-Bold.woff') format('woff'); /* Modern Browsers */
 }
 
 @font-face {
     font-family: BCSans;
+    font-weight: 600 900;
     font-style: italic;
-    font-weight: 700;
     src: url('../fonts/BCSans/BCSans-BoldItalic.woff2') format('woff2'), /* Optimized for very modern browsers */
     url('../fonts/BCSans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
