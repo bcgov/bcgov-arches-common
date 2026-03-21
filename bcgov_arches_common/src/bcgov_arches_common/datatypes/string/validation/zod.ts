@@ -156,3 +156,43 @@ export function getBCPostalCodeRequiredSchema() {
         node_value: postalCodeNodeSchema,
     });
 }
+
+export function getURLValueRequiredSchema() {
+    return z
+        .any()
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
+                const url = typeof data === 'string' ? data : data?.url || '';
+                return url.trim().length > 0;
+            },
+            { message: 'URL is required' },
+        )
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
+                const url = typeof data === 'string' ? data : data?.url || '';
+                if (url.trim().length === 0) return true;
+                return !url.includes(' ');
+            },
+            { message: 'URLs cannot contain spaces' },
+        )
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
+                const url = typeof data === 'string' ? data : data?.url || '';
+                if (url.trim().length === 0) return true;
+                return url.includes('.');
+            },
+            { message: 'Please enter a valid domain (e.g., website.ca)' },
+        )
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
+                if (typeof data === 'string') return true;
+                const label = data?.url_label || '';
+                return label.trim().length > 0;
+            },
+            { message: 'URL Label is required' },
+        );
+}
