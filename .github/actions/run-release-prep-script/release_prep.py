@@ -89,7 +89,11 @@ def update_pyproject():
         raise ValueError("GITHUB_REPO environment variable must be set (e.g. bcgov/bcrhp)")
     latest_published_version = get_latest_published_version(github_repo)
     current_toml_version = Version(str(pyproject.project["version"]))
-    if latest_published_version is not None:
+    if current_toml_version.pre:
+        # Pre-release version in pyproject.toml represents explicit developer intent
+        # — use it directly rather than letting a stable GitHub release override it
+        base_version = current_toml_version
+    elif latest_published_version is not None:
         base_version = max(latest_published_version, current_toml_version)
     else:
         base_version = current_toml_version
