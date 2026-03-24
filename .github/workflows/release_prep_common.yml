@@ -43,7 +43,7 @@ jobs:
           with:
             github-repo: ${{ inputs.github-repo }}
             github-token: ${{ github.token }}
-          uses: bcgov/bcgov-arches-common/.github/actions/run-release-prep-script@brf/update_gh_release_automation
+          uses: bcgov/bcgov-arches-common/.github/actions/run-release-prep-script@main
 
         - name: Configure git
           run: |
