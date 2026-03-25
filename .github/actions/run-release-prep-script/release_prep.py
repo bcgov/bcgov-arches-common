@@ -16,7 +16,9 @@ def _auth_headers() -> dict:
 def _get_all_releases(repo: str):
     """Return all GitHub Release tags as Version objects for *repo*."""
     url = f"https://api.github.com/repos/{repo}/releases"
-    resp = requests.get(url, headers=_auth_headers(), params={"per_page": 100}, timeout=10)
+    resp = requests.get(
+        url, headers=_auth_headers(), params={"per_page": 100}, timeout=10
+    )
     if resp.status_code == 404:
         return []
     resp.raise_for_status()
@@ -41,7 +43,8 @@ def get_latest_version_for_minor_stream(repo: str, major: int, minor: int) -> Ve
     """Return the highest stable GitHub Release matching major.minor.*.
     Used to support concurrent stable streams (e.g. 2.1.x while 2.2.x is active)."""
     matching = [
-        v for v in _get_all_releases(repo)
+        v
+        for v in _get_all_releases(repo)
         if v.major == major and v.minor == minor and not v.pre
     ]
     return max(matching) if matching else None
@@ -113,21 +116,33 @@ def update_pyproject():
     pyproject.project["classifiers"][dev_status_index] = dev_status
     github_repo = os.getenv("GITHUB_REPO")
     if not github_repo:
-        raise ValueError("GITHUB_REPO environment variable must be set (e.g. bcgov/bcrhp)")
+        raise ValueError(
+            "GITHUB_REPO environment variable must be set (e.g. bcgov/bcrhp)"
+        )
     current_toml_version = Version(str(pyproject.project["version"]))
     if current_toml_version.pre:
         # Pre-release in pyproject.toml signals explicit developer intent for this stream.
         # Query only releases matching this base version to avoid cross-stream pollution
         # (e.g. 2.1.0a5 should not affect the 2.0.0 stream).
-        stream_version = get_latest_version_for_base(github_repo, current_toml_version.base_version)
-        base_version = max(stream_version, current_toml_version) if stream_version else current_toml_version
+        stream_version = get_latest_version_for_base(
+            github_repo, current_toml_version.base_version
+        )
+        base_version = (
+            max(stream_version, current_toml_version)
+            if stream_version
+            else current_toml_version
+        )
     else:
         # Stable release: scope lookup to same major.minor to avoid cross-stream pollution
         # (e.g. 2.2.0 should not affect a 2.1.x patch stream).
         stream_version = get_latest_version_for_minor_stream(
             github_repo, current_toml_version.major, current_toml_version.minor
         )
-        base_version = max(stream_version, current_toml_version) if stream_version else current_toml_version
+        base_version = (
+            max(stream_version, current_toml_version)
+            if stream_version
+            else current_toml_version
+        )
     pyproject.project["version"] = increment_version(base_version, current_branch)
     pyproject.dump(toml_file)
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
