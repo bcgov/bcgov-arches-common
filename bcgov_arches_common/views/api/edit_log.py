@@ -5,11 +5,13 @@ from django.contrib.auth.models import User
 
 from typing import Any, ClassVar
 from arches.app.models.models import TileModel, EditLog, Node
-from arches import VERSION as arches_version
+from arches import __version__ as arches_version
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from arches_querysets.rest_framework.permissions import ReadOnly, ResourceEditor
 from arches_querysets.rest_framework.multipart_json_parser import MultiPartJSONParser
+
+from packaging.version import Version
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +69,7 @@ class ResourceEditLogView(APIView):
             nodes = Node.objects.filter(
                 graph__slug=graph_slug, alias=alias, pk=F("nodegroup_id")
             ).values("nodegroup_id")
-            if arches_version >= (8, 0):
+            if Version(arches_version) >= Version("8.0"):
                 nodes = nodes.filter(source_identifier=None)
             node = nodes.get()
 

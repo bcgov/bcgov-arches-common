@@ -24,8 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches@stable/8.0.10_bcgov_12578_12377_12616",
-    "arches-component-lab",
+    "arches @ git+https://github.com/bcgov/arches@dev/8.1.x_bcgov",
+    "arches-component-lab==0.0.1a9",
     "authlib",
 ]
 dynamic = []
