@@ -109,6 +109,7 @@ class Command(BaseCommand):
         for key, value in resource_types_lookup.items():
             if key not in index_order:
                 ordered_resource_types.append(value[1])
+                index_order.append(key)
 
         self.delete_indexes(name=None)
         self.setup_indexes(name=None)
