@@ -5,19 +5,46 @@ from packaging.version import Version
 from pyproject_parser import PyProject
 
 
-def get_latest_published_version(repo: str) -> Version:
-    """Return the version of the latest GitHub Release for *repo* (owner/repo)."""
-    url = f"https://api.github.com/repos/{repo}/releases/latest"
+def _auth_headers() -> dict:
     headers = {"Accept": "application/vnd.github+json"}
     token = os.getenv("GH_API_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    resp = requests.get(url, headers=headers, timeout=5)
+    return headers
+
+
+def _get_all_releases(repo: str):
+    """Return all GitHub Release tags as Version objects for *repo*."""
+    url = f"https://api.github.com/repos/{repo}/releases"
+    resp = requests.get(url, headers=_auth_headers(), params={"per_page": 100}, timeout=10)
     if resp.status_code == 404:
-        return None
+        return []
     resp.raise_for_status()
-    tag = resp.json().get("tag_name", "").lstrip("v")
-    return Version(tag) if tag else None
+    versions = []
+    for release in resp.json():
+        tag = release["tag_name"].lstrip("v")
+        try:
+            versions.append(Version(tag))
+        except Exception:
+            pass
+    return versions
+
+
+def get_latest_version_for_base(repo: str, base: str) -> Version:
+    """Return the highest GitHub Release whose base version matches *base* (e.g. '2.0.0').
+    Used to support concurrent pre-release streams without cross-stream pollution."""
+    matching = [v for v in _get_all_releases(repo) if v.base_version == base]
+    return max(matching) if matching else None
+
+
+def get_latest_version_for_minor_stream(repo: str, major: int, minor: int) -> Version:
+    """Return the highest stable GitHub Release matching major.minor.*.
+    Used to support concurrent stable streams (e.g. 2.1.x while 2.2.x is active)."""
+    matching = [
+        v for v in _get_all_releases(repo)
+        if v.major == major and v.minor == minor and not v.pre
+    ]
+    return max(matching) if matching else None
 
 
 def increment_version(current: Version, branch: str) -> str:
@@ -87,16 +114,20 @@ def update_pyproject():
     github_repo = os.getenv("GITHUB_REPO")
     if not github_repo:
         raise ValueError("GITHUB_REPO environment variable must be set (e.g. bcgov/bcrhp)")
-    latest_published_version = get_latest_published_version(github_repo)
     current_toml_version = Version(str(pyproject.project["version"]))
     if current_toml_version.pre:
-        # Pre-release version in pyproject.toml represents explicit developer intent
-        # — use it directly rather than letting a stable GitHub release override it
-        base_version = current_toml_version
-    elif latest_published_version is not None:
-        base_version = max(latest_published_version, current_toml_version)
+        # Pre-release in pyproject.toml signals explicit developer intent for this stream.
+        # Query only releases matching this base version to avoid cross-stream pollution
+        # (e.g. 2.1.0a5 should not affect the 2.0.0 stream).
+        stream_version = get_latest_version_for_base(github_repo, current_toml_version.base_version)
+        base_version = max(stream_version, current_toml_version) if stream_version else current_toml_version
     else:
-        base_version = current_toml_version
+        # Stable release: scope lookup to same major.minor to avoid cross-stream pollution
+        # (e.g. 2.2.0 should not affect a 2.1.x patch stream).
+        stream_version = get_latest_version_for_minor_stream(
+            github_repo, current_toml_version.major, current_toml_version.minor
+        )
+        base_version = max(stream_version, current_toml_version) if stream_version else current_toml_version
     pyproject.project["version"] = increment_version(base_version, current_branch)
     pyproject.dump(toml_file)
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
