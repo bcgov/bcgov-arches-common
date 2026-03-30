@@ -9,7 +9,14 @@ logger = logging.getLogger(__name__)
 
 def _clean_username(username):
     # DLVR: IDIR = <username>@idir, TEST, PROD: IDIR = idir\\<username>
-    return None if username is None else re.sub(r"^idir\\(.*)$", r"\1@idir", username)
+    # DLVR: BCSC = bcsc/<username>, TEST, PROD: ??
+    username = (
+        None
+        if username is None
+        else re.sub(r"^(idir|bcsc)[\\/](.*)$", r"\2@\1", username)
+    )
+    print(username)
+    return username
 
 
 def log_user_out(request):
