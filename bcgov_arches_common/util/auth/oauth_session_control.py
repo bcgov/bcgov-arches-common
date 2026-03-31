@@ -2,9 +2,12 @@ import re
 import logging
 from django.shortcuts import redirect
 from django.contrib.auth import login as system_login, logout as system_logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_GROUPS = ["Resource Exporter"]
 
 
 def _clean_username(username):
@@ -19,6 +22,26 @@ def _clean_username(username):
     return username
 
 
+def _self_register(userinfo):
+    print(userinfo)
+    user = None
+    if (
+        "allowed_self_register_domains" in settings.AUTHLIB_OAUTH_CLIENTS["default"]
+        and userinfo["loginSource"]
+        in settings.AUTHLIB_OAUTH_CLIENTS["default"]["allowed_self_register_domains"]
+    ):
+        user = User(
+            username=_clean_username(userinfo["preferred_username"]),
+            first_name=userinfo["given_name"],
+            last_name=userinfo["family_name"],
+        )
+        user.set_unusable_password()
+        user.save()
+        user.groups.set(Group.objects.filter(name__in=DEFAULT_GROUPS))
+        user.save()
+    return user
+
+
 def log_user_out(request):
     request.session.pop("oauth_token", None)
     system_logout(request)
@@ -30,7 +53,7 @@ def log_user_in(request, token, next_url):
         username = _clean_username(token["userinfo"]["preferred_username"])
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        user = None
+        user = _self_register(token["userinfo"])
 
     if user is not None:
         user.backend = "django.contrib.auth.backends.ModelBackend"
