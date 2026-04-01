@@ -7,7 +7,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_GROUPS = ["Resource Exporter"]
+DEFAULT_GROUPS = ["Guest", "Resource Exporter"]
 
 
 def _clean_username(username):
@@ -27,7 +27,7 @@ def _self_register(userinfo):
     user = None
     if (
         "allowed_self_register_domains" in settings.AUTHLIB_OAUTH_CLIENTS["default"]
-        and userinfo["loginSource"]
+        and userinfo["loginSource"].upper()
         in settings.AUTHLIB_OAUTH_CLIENTS["default"]["allowed_self_register_domains"]
     ):
         user = User(
@@ -53,6 +53,7 @@ def log_user_in(request, token, next_url):
         username = _clean_username(token["userinfo"]["preferred_username"])
         user = User.objects.get(username=username)
     except User.DoesNotExist:
+        print("User does not exist.. trying to self register")
         user = _self_register(token["userinfo"])
 
     if user is not None:
