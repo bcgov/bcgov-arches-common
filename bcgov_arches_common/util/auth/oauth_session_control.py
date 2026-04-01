@@ -19,12 +19,11 @@ def _clean_username(username):
         if username is None
         else re.sub(r"^(idir|bcsc|bceid)[\\/](.*)$", r"\2@\1", username)
     )
-    print(username)
+    logger.debug(username)
     return username
 
 
 def _self_register(userinfo):
-    print(userinfo)
     user = None
     if (
         "allowed_self_register_domains" in settings.AUTHLIB_OAUTH_CLIENTS["default"]
@@ -54,7 +53,7 @@ def log_user_in(request, token, next_url):
         username = _clean_username(token["userinfo"]["preferred_username"])
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        print("User does not exist.. trying to self register")
+        logger.info("User does not exist. Trying to self register.")
         user = _self_register(token["userinfo"])
 
     if user is not None:
