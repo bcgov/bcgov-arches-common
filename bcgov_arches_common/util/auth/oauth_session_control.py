@@ -11,12 +11,13 @@ DEFAULT_GROUPS = ["Guest", "Resource Exporter"]
 
 
 def _clean_username(username):
-    # DLVR: IDIR = <username>@idir, TEST, PROD: IDIR = idir\\<username>
-    # DLVR: BCSC = bcsc/<username>, TEST, PROD: ??
+    # DLVR: IDIR = <username>@idir, TEST, PROD: IDIR = idir\\<username>, first_name, given_name
+    # DLVR: BCSC = bcsc/<username>, TEST, PROD: ??, given_name, family_name
+    # DLVR: BCEID = <username>@bceid, TEST, PROD: ??, given_name <No family_name>
     username = (
         None
         if username is None
-        else re.sub(r"^(idir|bcsc)[\\/](.*)$", r"\2@\1", username)
+        else re.sub(r"^(idir|bcsc|bceid)[\\/](.*)$", r"\2@\1", username)
     )
     print(username)
     return username
@@ -33,7 +34,7 @@ def _self_register(userinfo):
         user = User(
             username=_clean_username(userinfo["preferred_username"]),
             first_name=userinfo["given_name"],
-            last_name=userinfo["family_name"],
+            last_name=userinfo["family_name"] if "family_name" in userinfo else "",
         )
         user.set_unusable_password()
         user.save()
