@@ -54,7 +54,7 @@ label.required::before {
     max-width: 100%;
     margin-bottom: 0;
     font-weight: 500;
-    font-size: 0.8rem;
+    //font-size: 0.8rem;
     margin-top: 1rem;
 }
 </style>
