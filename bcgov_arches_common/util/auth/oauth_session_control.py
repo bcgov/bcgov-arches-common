@@ -7,33 +7,33 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_GROUPS = ["Resource Exporter"]
+DEFAULT_GROUPS = ["Guest", "Resource Exporter"]
 
 
 def _clean_username(username):
-    # DLVR: IDIR = <username>@idir, TEST, PROD: IDIR = idir\\<username>
-    # DLVR: BCSC = bcsc/<username>, TEST, PROD: ??
+    # DLVR: IDIR = <username>@idir, TEST, PROD: IDIR = idir\\<username>, first_name, given_name
+    # DLVR: BCSC = bcsc/<username>, TEST, PROD: ??, given_name, family_name
+    # DLVR: BCEID = <username>@bceid, TEST, PROD: ??, given_name <No family_name>
     username = (
         None
         if username is None
-        else re.sub(r"^(idir|bcsc)[\\/](.*)$", r"\2@\1", username)
+        else re.sub(r"^(idir|bcsc|bceid)[\\/](.*)$", r"\2@\1", username)
     )
-    print(username)
+    logger.debug(username)
     return username
 
 
 def _self_register(userinfo):
-    print(userinfo)
     user = None
     if (
         "allowed_self_register_domains" in settings.AUTHLIB_OAUTH_CLIENTS["default"]
-        and userinfo["loginSource"]
+        and userinfo["loginSource"].upper()
         in settings.AUTHLIB_OAUTH_CLIENTS["default"]["allowed_self_register_domains"]
     ):
         user = User(
             username=_clean_username(userinfo["preferred_username"]),
             first_name=userinfo["given_name"],
-            last_name=userinfo["family_name"],
+            last_name=userinfo["family_name"] if "family_name" in userinfo else "",
         )
         user.set_unusable_password()
         user.save()
@@ -53,6 +53,7 @@ def log_user_in(request, token, next_url):
         username = _clean_username(token["userinfo"]["preferred_username"])
         user = User.objects.get(username=username)
     except User.DoesNotExist:
+        logger.info("User does not exist. Trying to self register.")
         user = _self_register(token["userinfo"])
 
     if user is not None:
