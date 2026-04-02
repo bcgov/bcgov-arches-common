@@ -81,8 +81,9 @@
     }
 }
 .p-tree-node-label {
-    font-size: 0.8rem;
+    font-size: var(--p-standard-font-size, 1.4rem);
 }
+
 .p-virtualscroller-content {
     font-size: 0.9rem;
 }
