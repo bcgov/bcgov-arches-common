@@ -47,7 +47,7 @@ label.required::before {
     max-width: 100%;
     margin-bottom: 0;
     font-weight: 500;
-    font-size: 0.8rem;
+    //font-size: 0.8rem;
     margin-top: 1rem;
 }
 .label-message:deep(:not(:has(.p-message-text:not(:empty)))) {
@@ -59,7 +59,6 @@ label.required::before {
 <style>
 .label-message .p-message-content {
     padding: 0 0.5rem;
-    font-size: 0.6rem;
     background: var(--p-panel-background);
     border: none;
 }
@@ -67,10 +66,6 @@ label.required::before {
 .p-message.label-message {
     outline-style: none;
     box-shadow: none;
-}
-
-.label-message .p-message-text {
-    font-size: 0.6rem !important;
 }
 
 .p-message-secondary {

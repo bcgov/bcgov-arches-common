@@ -380,7 +380,7 @@ img.bc-details-image
 
 /* Vue schtuff */
 .bcgov-vue-mounting-point {
-   font-size: 0.8rem;
+   /*font-size: 0.8rem;*/
 }
 
 .bcgov-vertical-steps > .p-steplist {
