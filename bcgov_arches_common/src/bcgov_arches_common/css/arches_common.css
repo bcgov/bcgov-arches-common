@@ -81,8 +81,9 @@
     }
 }
 .p-tree-node-label {
-    font-size: 0.8rem;
+    font-size: var(--p-standard-font-size, 1.4rem);
 }
+
 .p-virtualscroller-content {
     font-size: 0.9rem;
 }
@@ -106,6 +107,5 @@ body .p-message.p-message-secondary.label-message {
 body .p-message.p-message-secondary.label-message .p-message-text {
     display: block !important;
     color: #555 !important;
-    font-size: 0.85rem;
     line-height: 1.2;
 }
