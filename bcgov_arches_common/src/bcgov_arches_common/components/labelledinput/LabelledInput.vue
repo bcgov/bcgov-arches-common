@@ -59,7 +59,6 @@ label.required::before {
 <style>
 .label-message .p-message-content {
     padding: 0 0.5rem;
-    font-size: 0.6rem;
     background: var(--p-panel-background);
     border: none;
 }
@@ -69,9 +68,6 @@ label.required::before {
     box-shadow: none;
 }
 
-.label-message .p-message-text {
-    font-size: 0.6rem !important;
-}
 
 .p-message-secondary {
     background: unset;
