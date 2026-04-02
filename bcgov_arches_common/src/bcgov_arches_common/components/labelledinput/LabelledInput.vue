@@ -68,7 +68,6 @@ label.required::before {
     box-shadow: none;
 }
 
-
 .p-message-secondary {
     background: unset;
 }
