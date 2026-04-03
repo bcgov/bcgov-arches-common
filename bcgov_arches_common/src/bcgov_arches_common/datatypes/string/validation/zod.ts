@@ -157,6 +157,9 @@ export function getBCPostalCodeRequiredSchema() {
     });
 }
 
+/**
+ * @deprecated - Use getURLValueSchema instead
+ */
 export function getURLValueRequiredSchema() {
     return z
         .any()
