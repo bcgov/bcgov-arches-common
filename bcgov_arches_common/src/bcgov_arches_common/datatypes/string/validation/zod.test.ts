@@ -148,7 +148,9 @@ describe('getRichTextValueSchema(maxLength)', () => {
     it('with no maxLength, accepts any html string', () => {
         const Schema = getRichTextValueSchema();
         const ok = base({
-            node_value: { en: { value: '<p>Hello world</p>', direction: 'ltr' } },
+            node_value: {
+                en: { value: '<p>Hello world</p>', direction: 'ltr' },
+            },
         });
         expect(Schema.safeParse(ok).success).toBe(true);
     });
@@ -245,13 +247,15 @@ describe('getBCPostalCodeSchema()', () => {
     const Schema = getBCPostalCodeSchema();
 
     it('accepts a valid BC postal code (A1B 2C3 format)', () => {
-        expect(Schema.safeParse(base({ display_value: 'V8W 1N3' })).success).toBe(
-            true,
-        );
+        expect(
+            Schema.safeParse(base({ display_value: 'V8W 1N3' })).success,
+        ).toBe(true);
     });
 
     it('accepts empty display_value (postal code is optional)', () => {
-        expect(Schema.safeParse(base({ display_value: '' })).success).toBe(true);
+        expect(Schema.safeParse(base({ display_value: '' })).success).toBe(
+            true,
+        );
     });
 
     it('rejects a postal code missing the space', () => {
@@ -351,11 +355,15 @@ describe('getURLValueRequiredSchema()', () => {
     });
 
     it('accepts a valid https URL with a label', () => {
-        expect(Schema.safeParse(urlVal('https://example.ca')).success).toBe(true);
+        expect(Schema.safeParse(urlVal('https://example.ca')).success).toBe(
+            true,
+        );
     });
 
     it('accepts a valid http URL with a label', () => {
-        expect(Schema.safeParse(urlVal('http://example.ca')).success).toBe(true);
+        expect(Schema.safeParse(urlVal('http://example.ca')).success).toBe(
+            true,
+        );
     });
 
     it('rejects when url is empty', () => {
