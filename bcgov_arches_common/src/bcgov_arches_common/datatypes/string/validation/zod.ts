@@ -189,6 +189,15 @@ export function getURLValueRequiredSchema() {
         .refine(
             (val: any) => {
                 const data = val?.node_value;
+                const url = typeof data === 'string' ? data : data?.url || '';
+                if (url.trim().length === 0) return true;
+                return url.startsWith('http://') || url.startsWith('https://');
+            },
+            { message: 'URL must start with http:// or https://' },
+        )
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
                 if (typeof data === 'string') return true;
                 const label = data?.url_label || '';
                 return label.trim().length > 0;
