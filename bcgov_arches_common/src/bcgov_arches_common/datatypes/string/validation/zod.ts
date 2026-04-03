@@ -157,6 +157,9 @@ export function getBCPostalCodeRequiredSchema() {
     });
 }
 
+/**
+ * @deprecated - Use getURLValueSchema instead
+ */
 export function getURLValueRequiredSchema() {
     return z
         .any()
@@ -185,6 +188,15 @@ export function getURLValueRequiredSchema() {
                 return url.includes('.');
             },
             { message: 'Please enter a valid domain (e.g., website.ca)' },
+        )
+        .refine(
+            (val: any) => {
+                const data = val?.node_value;
+                const url = typeof data === 'string' ? data : data?.url || '';
+                if (url.trim().length === 0) return true;
+                return url.startsWith('http://') || url.startsWith('https://');
+            },
+            { message: 'URL must start with http:// or https://' },
         )
         .refine(
             (val: any) => {
