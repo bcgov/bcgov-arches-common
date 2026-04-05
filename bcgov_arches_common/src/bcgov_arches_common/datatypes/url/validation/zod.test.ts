@@ -10,14 +10,14 @@ import {
 // Helpers
 const base = (overrides: Record<string, unknown> = {}) => ({
     display_value: null,
-    node_value: { url: 'https://example.com', label: null },
+    node_value: { url: 'https://example.com', url_label: null },
     details: [] as never[],
     ...overrides,
 });
 
-const node = (url: string, label: string | null = null) => ({
+const node = (url: string, url_label: string | null = null) => ({
     url,
-    label,
+    url_label,
 });
 
 describe('UrlValueSchema (any valid URL, label optional)', () => {

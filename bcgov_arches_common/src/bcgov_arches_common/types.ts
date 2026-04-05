@@ -40,6 +40,12 @@ export interface User {
     username: string;
 }
 
+export type ErrorMessage = {
+    error: string;
+    message: string;
+    type: string;
+};
+
 // Prop injection types
 export interface UserRefAndSetter {
     user: Ref<User | null>;
