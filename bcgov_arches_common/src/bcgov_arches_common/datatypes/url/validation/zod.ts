@@ -7,7 +7,7 @@ export const UrlValueSchema = z.object({
         url: z
             .url({ message: 'Please enter a valid URL.' })
             .min(1, { message: 'URL is required.' }),
-        label: z.string().nullish(),
+        url_label: z.string().nullish(),
     }),
     details: z.array(z.never()),
 });
@@ -18,7 +18,7 @@ export const UrlValueLabelRequiredSchema = z.object({
         url: z
             .url({ message: 'Please enter a valid URL.' })
             .min(1, { message: 'URL is required.' }),
-        label: z.string().min(1, { message: 'URL label is required.' }),
+        url_label: z.string().min(1, { message: 'URL label is required.' }),
     }),
     details: z.array(z.never()),
 });
@@ -32,7 +32,7 @@ export const HttpUrlValueSchema = z.object({
                     'Please enter a valid URL starting with http:// or https://.',
             })
             .min(1, { message: 'URL is required.' }),
-        label: z.string().nullish(),
+        url_label: z.string().nullish(),
     }),
     details: z.array(z.never()),
 });
@@ -46,7 +46,7 @@ export const HttpUrlValueLabelRequiredSchema = z.object({
                     'Please enter a valid URL starting with http:// or https://.',
             })
             .min(1, { message: 'URL is required.' }),
-        label: z.string().min(1, { message: 'URL label is required.' }),
+        url_label: z.string().min(1, { message: 'URL label is required.' }),
     }),
     details: z.array(z.never()),
 });
