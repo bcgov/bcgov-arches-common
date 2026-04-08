@@ -419,3 +419,9 @@ export const FeatureCollectionWithNonEmptyGeometriesSchema =
                 },
             ),
     });
+
+export const GeoJSONFeatureCollectionRequiredValueSchema = z.object({
+    display_value: z.string(),
+    node_value: FeatureCollectionWithNonEmptyGeometriesSchema,
+    details: z.array(z.object()),
+});
