@@ -45,7 +45,8 @@ const center = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, l
 const mapCentre = computed<[number, number]>(() => {
     return (
         aliasedNodeData?.node_value && geometry.value
-            ? (centroid(geometry.value as unknown as AllGeoJSON)?.geometry?.coordinates ?? center.value)
+            ? (centroid(geometry.value as unknown as AllGeoJSON)?.geometry
+                  ?.coordinates ?? center.value)
             : center.value
     ) as [number, number];
 });
