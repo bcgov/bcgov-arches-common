@@ -68,9 +68,9 @@ const concatenatedAliasedNodeData = computed<GeoJSONFeatureCollectionValue>(
         <div
             style="
                 display: inline-block;
-                width: 75%;
-                max-height: 500px;
-                max-width: 750px;
+                width: var(--map-width, 75%);
+                max-height: var(--map-max-height, 500px);
+                max-width: var(--map-max-width, 750px);
                 vertical-align: top;
                 overflow: clip;
             ">
