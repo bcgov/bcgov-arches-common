@@ -100,7 +100,9 @@ describe('buildLayersForFeature', () => {
             expect(types).toEqual(['line', 'line']);
             const ids = layers.map((l) => l.id);
             expect(ids.some((id) => id.includes('halo'))).toBe(true);
-            expect(ids.some((id) => id.includes('line') && !id.includes('halo'))).toBe(true);
+            expect(
+                ids.some((id) => id.includes('line') && !id.includes('halo')),
+            ).toBe(true);
         });
 
         it('returns fill + outline layers for a Polygon feature', () => {
@@ -121,7 +123,11 @@ describe('buildLayersForFeature', () => {
                 geometry: { type: 'GeometryCollection', geometries: [] },
                 properties: {},
             };
-            const layers = buildLayersForFeature('src-4', unknown, sourceJson());
+            const layers = buildLayersForFeature(
+                'src-4',
+                unknown,
+                sourceJson(),
+            );
             expect(layers).toHaveLength(1);
             expect(layers[0].id).toContain('fallback');
         });
@@ -129,20 +135,30 @@ describe('buildLayersForFeature', () => {
         it('returns all relevant layers for a mixed FeatureCollection', () => {
             const layers = buildLayersForFeature(
                 'src-5',
-                featureCollection([pointFeature(), lineFeature(), polygonFeature()]),
+                featureCollection([
+                    pointFeature(),
+                    lineFeature(),
+                    polygonFeature(),
+                ]),
                 sourceJson(),
             );
             const types = layers.map((l) => l.type);
             expect(types).toContain('circle');
             expect(types).toContain('fill');
-            expect(types.filter((t) => t === 'line').length).toBeGreaterThanOrEqual(3);
+            expect(
+                types.filter((t) => t === 'line').length,
+            ).toBeGreaterThanOrEqual(3);
         });
     });
 
     describe('source assignment', () => {
         it('assigns the provided id as the source on all layers', () => {
             const id = 'my-source-id';
-            const layers = buildLayersForFeature(id, polygonFeature(), sourceJson());
+            const layers = buildLayersForFeature(
+                id,
+                polygonFeature(),
+                sourceJson(),
+            );
             layers.forEach((l) => {
                 expect((l as any).source).toBe(id);
             });
@@ -156,8 +172,9 @@ describe('buildLayersForFeature', () => {
                 lineFeature(),
                 sourceJson({ lineColor: 'rgba(0,255,0,0.5)' }),
             );
-            const linePaint = (layers.find((l) => !l.id.includes('halo')) as any)
-                ?.paint;
+            const linePaint = (
+                layers.find((l) => !l.id.includes('halo')) as any
+            )?.paint;
             expect(linePaint['line-color']).toBe('rgb(0, 255, 0)');
             expect(linePaint['line-opacity']).toBeCloseTo(0.5);
         });
@@ -265,7 +282,7 @@ describe('removeLayersUsingSource', () => {
         ]);
         removeLayersUsingSource(map as any, 'my-source');
         expect(map.removeLayer).toHaveBeenCalledWith('layer-a');
-        expect(map.removeLayer).not.toHaveBeenCalledWith('layer-b');
+        expect(map.removeLayer).toHaveBeenCalledTimes(1);
     });
 
     it('removes the source by default after removing layers', () => {
@@ -277,7 +294,7 @@ describe('removeLayersUsingSource', () => {
     it('does not remove the source when removeSource is false', () => {
         const map = makeMap([{ id: 'layer-a', source: 'my-source' }]);
         removeLayersUsingSource(map as any, 'my-source', false);
-        expect(map.removeSource).not.toHaveBeenCalled();
+        expect(map.removeSource.mock.calls).toHaveLength(0);
     });
 
     it('handles a map with no style gracefully', () => {
@@ -288,10 +305,9 @@ describe('removeLayersUsingSource', () => {
             getSource: vi.fn(),
             removeSource: vi.fn(),
         };
-        expect(() =>
-            removeLayersUsingSource(map as any, 'my-source'),
-        ).not.toThrow();
-        expect(map.removeLayer).not.toHaveBeenCalled();
+        // should not throw — test fails automatically if it does
+        removeLayersUsingSource(map as any, 'my-source');
+        expect(map.removeLayer.mock.calls).toHaveLength(0);
     });
 
     it('handles a style with no layers gracefully', () => {
@@ -302,9 +318,8 @@ describe('removeLayersUsingSource', () => {
             getSource: vi.fn(),
             removeSource: vi.fn(),
         };
-        expect(() =>
-            removeLayersUsingSource(map as any, 'my-source'),
-        ).not.toThrow();
+        // should not throw — test fails automatically if it does
+        removeLayersUsingSource(map as any, 'my-source');
     });
 
     it('skips a layer if getLayer returns falsy', () => {
@@ -318,6 +333,6 @@ describe('removeLayersUsingSource', () => {
             removeSource: vi.fn(),
         };
         removeLayersUsingSource(map as any, 'my-source');
-        expect(map.removeLayer).not.toHaveBeenCalled();
+        expect(map.removeLayer.mock.calls).toHaveLength(0);
     });
 });
