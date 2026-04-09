@@ -36,3 +36,7 @@ export type GeoJsonNodeConfigType = {
 export type GeoJsonCardXNodeXWidgetData = Omit<CardXNodeXWidgetData, 'node'> & {
     node: GeoJsonNode;
 };
+
+export type SimpleMapConfiguration = {
+    showCentroidMarker?: boolean;
+};
