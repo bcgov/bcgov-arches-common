@@ -4,7 +4,8 @@ import type {
     GeoJsonCardXNodeXWidgetData,
     GeoJsonNodeConfigType,
 } from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
-import type { LayerSpecification } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
+import type { LayerSpecification, LngLatLike } from 'maplibre-gl';
 
 type ParsedColor = { color: string; opacity: number };
 
@@ -202,6 +203,15 @@ export function buildLayersForFeature(
     }
 
     return layers;
+}
+
+export function getCentroidMarker(
+    mapCentre: LngLatLike,
+    popupText: string = 'Feature centroid',
+) {
+    return new maplibregl.Marker({ color: '#d97706' })
+        .setLngLat(mapCentre)
+        .setPopup(new maplibregl.Popup().setHTML(`<b>${popupText}</b>`));
 }
 
 export function removeLayersUsingSource(

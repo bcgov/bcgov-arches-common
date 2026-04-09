@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
 import {
     watch,
     onMounted,
@@ -19,6 +21,7 @@ import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/widgets/
 import {
     buildLayersForFeature,
     removeLayersUsingSource,
+    getCentroidMarker,
 } from '@/bcgov_arches_common/widgets/SimpleMap/utils.ts';
 import type {
     MapData,
@@ -40,9 +43,16 @@ const props = defineProps<{
         | undefined;
     mapData: MapData | undefined | null;
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
+    markCentroid?: boolean;
 }>();
-const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
-    toRefs(props);
+const {
+    graphSlug,
+    nodeAlias,
+    cardXNodeXWidgetData,
+    mapData,
+    aliasedNodeData,
+    markCentroid,
+} = toRefs(props);
 
 const geometry = computed<Feature | undefined>(() => {
     return aliasedNodeData?.value?.node_value?.features?.[0];
@@ -66,6 +76,10 @@ const allGeometries = computed<FeatureCollection | undefined>(() => {
 // });
 
 const mapLoaded = ref(false);
+const centroidMarker = shallowRef<maplibregl.Marker | null>(null);
+
+const addedDetails = new Map<string, MapFileData>();
+const addedFeatureIds = new Set<string>();
 
 // const defaultCenter = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, lat)
 const defaultCenter = computed<[number, number]>(() => {
@@ -154,12 +168,12 @@ function setupMap(): void {
         }
     });
 
-    // map.value.on('moveend', () => {
-    //     if (!map.value) return;
-    //     const c = map.value.getCenter();
-    //     center.value = [Number(c.lng.toFixed(5)), Number(c.lat.toFixed(5))];
-    //     zoom.value = Number(map.value.getZoom().toFixed(2));
-    // });
+    map.value.on('moveend', () => {
+        if (!map.value) return;
+        // const c = map.value.getCenter();
+        // center.value = [Number(c.lng.toFixed(5)), Number(c.lat.toFixed(5))];
+        zoom.value = Number(map.value.getZoom().toFixed(2));
+    });
 
     const onResize = () => {
         console.log('Resizing');
@@ -265,6 +279,17 @@ const updateMapGeometries = (
         );
     }
 
+    if (markCentroid.value) {
+        if (!centroidMarker.value) {
+            centroidMarker.value = getCentroidMarker(
+                mapCentre.value,
+                'Feature centroid',
+            );
+            centroidMarker.value.addTo(map.value);
+        } else {
+            centroidMarker.value.setLngLat(mapCentre.value);
+        }
+    }
     center.value = mapCentre.value;
     console.log('New centre value: ', center.value);
 };
@@ -284,38 +309,44 @@ watch(
 );
 
 watch(
-    () => aliasedNodeData?.value?.node_value,
-    () => {
-        if (
-            props.cardXNodeXWidgetData &&
-            mapData &&
-            aliasedNodeData?.value?.node_value?.features?.[0]
-        ) {
-            updateMapGeometries([], []);
-        }
-    },
-);
+    () => aliasedNodeData?.value,
+    (newVal) => {
+        if (!props.cardXNodeXWidgetData || !mapData.value || !newVal) return;
 
-watch(
-    // () => aliasedNodeData.value?.node_value?.features,
-    () => aliasedNodeData.value?.details,
-    (features, prevFeature) => {
-        const prevFeatureIds = prevFeature?.map((f) => f.id) ?? [];
-        const newFeatureIds = features?.map((f) => f.id) ?? [];
-        const featuresToAdd = features?.filter(
-            (feature) => !prevFeatureIds.includes(feature.id),
+        const newDetails = newVal.details ?? [];
+        const newDetailIds = new Set(
+            newDetails.map((d) => d.geometrySourceId as string),
         );
-        const featuresToRemove = prevFeature?.filter(
-            (feature) => !newFeatureIds.includes(feature.id),
+
+        const toAdd = newDetails.filter(
+            (d) => !addedDetails.has(d.geometrySourceId as string),
         );
-        console.log(featuresToAdd);
-        if (
-            ((featuresToAdd?.length ?? 0) || (featuresToRemove?.length ?? 0)) &&
-            map.value &&
-            aliasedNodeData.value?.node_value
-        ) {
-            console.log('Updating geometry from watch event');
-            updateMapGeometries(featuresToAdd ?? [], featuresToRemove ?? []);
+        const toRemove = [...addedDetails.values()].filter(
+            (d) => !newDetailIds.has(d.geometrySourceId as string),
+        );
+
+        toAdd.forEach((d) => {
+            addedDetails.set(d.geometrySourceId as string, d);
+            d.geometries.features.forEach((f: Feature) =>
+                addedFeatureIds.add(String(f.id)),
+            );
+        });
+        toRemove.forEach((d) => {
+            addedDetails.delete(d.geometrySourceId as string);
+            d.geometries.features.forEach((f) =>
+                addedFeatureIds.delete(String(f.id)),
+            );
+        });
+
+        if (toAdd.length || toRemove.length) {
+            updateMapGeometries(toAdd, toRemove);
+        } else {
+            const unaddedNodeFeatures = (
+                newVal.node_value?.features ?? []
+            ).filter((f) => f.id && !addedFeatureIds.has(String(f.id)));
+            if (unaddedNodeFeatures.length) {
+                updateMapGeometries([], []);
+            }
         }
     },
 );
@@ -328,7 +359,12 @@ watch(
         <div
             ref="mapEl"
             class="map"
-            style="min-height: 300px; max-height: 500px"></div>
+            style="
+                min-height: var(--map-height, 550px);
+                height: var(--map-height, 550px);
+                max-height: var(--map-max-height, 550px);
+                max-width: var(--map-max-width, 700px);
+            "></div>
         <div class="panel">
             <!--button @click="flyVancouver">Vancouver</button>
             <button @click="flyParis">Paris</button-->
@@ -340,3 +376,8 @@ watch(
         </div>
     </div>
 </template>
+<style>
+.map-wrap > .panel {
+    background-color: transparent;
+}
+</style>
