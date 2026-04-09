@@ -1,6 +1,7 @@
 import json
 from unittest.mock import MagicMock, patch
 
+from django.http import JsonResponse
 from django.test import RequestFactory, TestCase
 
 
@@ -13,6 +14,24 @@ class MapDataAPITest(TestCase):
         obj = MagicMock()
         obj.source = source_dict
         return obj
+
+    @staticmethod
+    def _fake_json_response(data):
+        """Replace Arches' JSONResponse with a plain Django JsonResponse.
+
+        MagicMock source objects cannot be serialized by Arches'
+        betterJSONSerializer.  We reconstruct a safe payload using only the
+        real `.source` dict that was set on each mock, which is what the tests
+        actually care about.
+        """
+        safe = {
+            "map_layers": data.get("map_layers", []),
+            "map_sources": [
+                {"source": s.source} for s in (data.get("map_sources") or [])
+            ],
+            "default_bounds": data.get("default_bounds"),
+        }
+        return JsonResponse(safe)
 
     def _get(self, map_sources, settings_overrides=None):
         defaults = {
@@ -39,6 +58,10 @@ class MapDataAPITest(TestCase):
             patch(
                 "bcgov_arches_common.views.api.map.user_can_read_map_layers",
                 return_value=["layer1"],
+            ),
+            patch(
+                "bcgov_arches_common.views.api.map.JSONResponse",
+                side_effect=self._fake_json_response,
             ),
         ):
             mock_settings.BCGOV_PROXY_PREFIX = defaults["BCGOV_PROXY_PREFIX"]
