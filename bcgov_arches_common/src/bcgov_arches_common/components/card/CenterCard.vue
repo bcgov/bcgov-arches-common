@@ -81,7 +81,7 @@ const props = defineProps({
     padding: 0.5rem 1.25rem;
     /* Reduced from 700 to 500 for a medium, less heavy look */
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 1.7rem;
     margin: 0;
     line-height: 1.3;
     text-align: center;
@@ -120,14 +120,14 @@ const props = defineProps({
 
 .description {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 1.5rem;
     line-height: 1.4;
     color: #333333;
 }
 
 .subtitle {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 1.2rem;
     color: #666666;
     overflow: hidden;
     text-overflow: ellipsis;
