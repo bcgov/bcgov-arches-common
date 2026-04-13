@@ -93,21 +93,21 @@ const props = defineProps({
 .theme-card-title {
     margin: 0 0 0.75rem 0;
     color: #1a5a96;
-    font-size: 1.125rem;
+    font-size: 1.7rem;
     font-weight: 700;
     line-height: 1.2;
 }
 
 .theme-card-description {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #313132;
     line-height: 1.5;
 }
 
 .theme-card-subtitle {
     margin: 0.5rem 0 0 0;
-    font-size: 0.875rem;
+    font-size: 1.2rem;
     color: #555555;
     overflow: hidden;
     text-overflow: ellipsis;
