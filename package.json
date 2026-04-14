@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@primeuix/styles": "^1.2.3",
-        "arches": "github:bcgov/arches#stable/8.0.10_bcgov_12578_12377_12616_12502_12697",
+        "arches": "github:bcgov/arches#stable/8.0.10_bcgov_12578_12377_12616_12502_12697_12610",
         "arches-component-lab": "archesproject/arches-component-lab#main",
         "arches-querysets": "github:archesproject/arches-querysets#main",
         "dompurify": "^3.3.0",
@@ -39,7 +39,7 @@
         "@types/geojson": "^7946.0.16",
         "@types/shpjs": "^3.4.7",
         "@vue/eslint-config-prettier": "^10.2.0",
-        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.8",
+        "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.10",
         "eslint-plugin-prettier": "^5.5.4",
         "prettier": "^3.7.1"
     },
