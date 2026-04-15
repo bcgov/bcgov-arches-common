@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { fetchSystemMapData } from '@/bcgov_arches_common/widgets/SimpleMap/api.ts';
-import { computed, ref, toRefs, shallowRef, watchEffect } from 'vue';
+import { type SimpleMapConfiguration } from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
+import { computed, inject, ref, toRefs, shallowRef, watchEffect } from 'vue';
 
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import { VIEW } from '@/arches_component_lab/widgets/constants.ts';
@@ -23,6 +24,7 @@ const props = defineProps<{
 const { graphSlug, nodeAlias, mode, cardXNodeXWidgetData, aliasedNodeData } =
     toRefs(props);
 
+const simpleMapConfig = inject('simpleMapConfig', {} as SimpleMapConfiguration);
 // From GenericWidget
 const isLoading = computed(() => {
     return mapDataLoading.value || widgetConfigLoading.value;
@@ -82,5 +84,7 @@ watchEffect(async () => {
         :node-alias="nodeAlias"
         :map-data="mapData"
         :card-x-node-x-widget-data="resolvedCardXNodeXWidgetData"
-        :aliased-node-data="aliasedNodeData"></MapView>
+        :aliased-node-data="aliasedNodeData"
+        :mark-centroid="simpleMapConfig.showCentroidMarker">
+    </MapView>
 </template>

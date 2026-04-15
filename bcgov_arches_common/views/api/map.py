@@ -17,10 +17,15 @@ class MapDataAPI(View):
         map_sources = list(models.MapSource.objects.all())
         for map_source in map_sources:
             if "tiles" in map_source.source:
+                should_add_prefix = not settings.PUBLIC_SERVER_ADDRESS.rstrip(
+                    "/"
+                ).endswith(prefix)
                 if not map_source.source["tiles"][0].startswith("http"):
                     stripped_url = map_source.source["tiles"][0].replace(prefix, "")
-                    source = "{}{}".format(
-                        settings.PUBLIC_SERVER_ADDRESS.rstrip("/"), stripped_url
+                    source = "{}{}{}".format(
+                        settings.PUBLIC_SERVER_ADDRESS.rstrip("/"),
+                        prefix if should_add_prefix else "",
+                        stripped_url,
                     )
                     map_source.source["tiles"][0] = source
 
