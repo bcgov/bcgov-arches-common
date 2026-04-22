@@ -29,6 +29,7 @@ const props = defineProps({
     // Core Card Props
     class: { type: String, default: '' },
     route: { type: Object as PropType<RouteLocationRaw>, default: () => ({}) },
+    searchQuery: { type: String, default: '' },
 
     // Urgency Level (0: None, 1: Yellow, 2: Orange, 3: Red)
     urgency: { type: Number, default: 0 },
@@ -58,6 +59,28 @@ const formatBodyLine = (text: string) => {
     }
     return text;
 };
+
+// Highlights search terms in the text
+const highlightText = (text: string) => {
+    if (!text) return '';
+    if (!props.searchQuery) return text;
+
+    const escapedQuery = props.searchQuery.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&',
+    );
+    const regex = new RegExp(`(${escapedQuery})(?![^<]*>)`, 'gi');
+
+    return text.replace(regex, '<mark class="highlight">$1</mark>');
+};
+
+// Checks if the special "priority" keyword is actively being searched
+const isPrioritySearched = computed(() => {
+    return (
+        props.capPriority &&
+        props.searchQuery.toLowerCase().trim() === 'priority'
+    );
+});
 </script>
 
 <template>
@@ -72,14 +95,17 @@ const formatBodyLine = (text: string) => {
                 <div class="cap-left">
                     <i
                         v-if="props.capPriority"
-                        class="fa-solid fa-star priority-star"></i>
-                    {{ props.capLabel }}
+                        class="fa-solid fa-star priority-star"
+                        :class="{ 'star-highlighted': isPrioritySearched }">
+                    </i>
+
+                    <span v-html="highlightText(props.capLabel)"></span>
                 </div>
+
                 <div
                     v-if="props.capDate"
-                    class="cap-date">
-                    {{ props.capDate }}
-                </div>
+                    class="cap-date"
+                    v-html="highlightText(props.capDate)"></div>
             </div>
 
             <div class="bcgov-card-body">
@@ -105,17 +131,17 @@ const formatBodyLine = (text: string) => {
                     <div
                         class="main-content-area"
                         :class="{ 'no-icon': !props.icon }">
-                        <p class="project-name">{{ props.projectName }}</p>
+                        <p
+                            class="project-name"
+                            v-html="highlightText(props.projectName)"></p>
                         <p
                             v-if="props.projectId"
-                            class="project-id">
-                            {{ props.projectId }}
-                        </p>
+                            class="project-id"
+                            v-html="highlightText(props.projectId)"></p>
                         <p
                             v-if="props.sector"
-                            class="project-sector">
-                            {{ props.sector }}
-                        </p>
+                            class="project-sector"
+                            v-html="highlightText(props.sector)"></p>
                     </div>
                 </div>
 
@@ -123,32 +149,32 @@ const formatBodyLine = (text: string) => {
                     <p
                         v-if="props.body1"
                         class="body-text"
-                        v-html="formatBodyLine(props.body1)"></p>
+                        v-html="highlightText(formatBodyLine(props.body1))"></p>
                     <p
                         v-if="props.body2"
                         class="body-text"
-                        v-html="formatBodyLine(props.body2)"></p>
+                        v-html="highlightText(formatBodyLine(props.body2))"></p>
                     <p
                         v-if="props.body3"
                         class="body-text"
-                        v-html="formatBodyLine(props.body3)"></p>
+                        v-html="highlightText(formatBodyLine(props.body3))"></p>
                     <p
                         v-if="props.body4"
                         class="body-text"
-                        v-html="formatBodyLine(props.body4)"></p>
+                        v-html="highlightText(formatBodyLine(props.body4))"></p>
                     <p
                         v-if="props.body5"
                         class="body-text"
-                        v-html="formatBodyLine(props.body5)"></p>
+                        v-html="highlightText(formatBodyLine(props.body5))"></p>
                 </div>
 
                 <div class="bcgov-card-footer">
-                    <div class="footer-left">
-                        {{ props.footerDate }}
-                    </div>
-                    <div class="footer-right">
-                        {{ props.footerName }}
-                    </div>
+                    <div
+                        class="footer-left"
+                        v-html="highlightText(props.footerDate)"></div>
+                    <div
+                        class="footer-right"
+                        v-html="highlightText(props.footerName)"></div>
                 </div>
             </div>
         </div>
@@ -349,5 +375,19 @@ const formatBodyLine = (text: string) => {
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: right;
+}
+
+/* Search term highlight */
+:deep(.highlight) {
+    background-color: #fef08a;
+    color: #000000;
+    border-radius: 2px;
+    padding: 0 2px;
+    font-weight: inherit;
+}
+.star-highlighted {
+    background-color: #fef08a; /* Same yellow as the text highlight */
+    border-radius: 2px;
+    padding: 2px 4px;
 }
 </style>
