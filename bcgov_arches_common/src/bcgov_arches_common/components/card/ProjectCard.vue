@@ -49,17 +49,6 @@ const urgencyClass = computed(() => {
     }
 });
 
-// Automatically bolds the text before a colon and turns it black
-const formatBodyLine = (text: string) => {
-    if (!text) return '';
-    const parts = text.split(':');
-    if (parts.length > 1) {
-        const label = parts.shift();
-        return `<strong>${label}:</strong>${parts.join(':')}`;
-    }
-    return text;
-};
-
 // Highlights search terms in the text
 const highlightText = (text: string) => {
     if (!text) return '';
@@ -149,23 +138,23 @@ const isPrioritySearched = computed(() => {
                     <p
                         v-if="props.body1"
                         class="body-text"
-                        v-html="highlightText(formatBodyLine(props.body1))"></p>
+                        v-html="highlightText(props.body1)"></p>
                     <p
                         v-if="props.body2"
                         class="body-text"
-                        v-html="highlightText(formatBodyLine(props.body2))"></p>
+                        v-html="highlightText(props.body2)"></p>
                     <p
                         v-if="props.body3"
                         class="body-text"
-                        v-html="highlightText(formatBodyLine(props.body3))"></p>
+                        v-html="highlightText(props.body3)"></p>
                     <p
                         v-if="props.body4"
                         class="body-text"
-                        v-html="highlightText(formatBodyLine(props.body4))"></p>
+                        v-html="highlightText(props.body4)"></p>
                     <p
                         v-if="props.body5"
                         class="body-text"
-                        v-html="highlightText(formatBodyLine(props.body5))"></p>
+                        v-html="highlightText(props.body5)"></p>
                 </div>
 
                 <div class="bcgov-card-footer">
@@ -268,7 +257,6 @@ const isPrioritySearched = computed(() => {
     overflow: hidden;
 }
 
-/* Title Grid (Stays at the top) */
 .title-grid {
     display: grid;
     grid-template-columns: 55px 1fr;
@@ -386,7 +374,7 @@ const isPrioritySearched = computed(() => {
     font-weight: inherit;
 }
 .star-highlighted {
-    background-color: #fef08a; /* Same yellow as the text highlight */
+    background-color: #fef08a;
     border-radius: 2px;
     padding: 2px 4px;
 }
