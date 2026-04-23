@@ -42,6 +42,20 @@ body, h1, h2, h3, h4, h5
     font-family: BCSans, 'Open Sans', 'Noto Sans', Verdana, Arial, sans-serif !important;
 }
 
+/* Counteract nifty */
+fieldset a {
+    text-decoration: none;
+    color: #337ab7;
+    outline: 0;
+}
+
+fieldset a:hover,a:focus {
+    text-decoration: none;
+    color: #000099;
+    outline: 0!important
+}
+/* End Counteract nifty */
+
 .hover-feature-nav-right + .hover-feature-title {
     width: 100%;
 }
