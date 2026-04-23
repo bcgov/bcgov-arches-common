@@ -70,16 +70,21 @@ describe('ProjectCard', () => {
             capPriority: true,
             searchQuery: 'other',
         });
-        expect(wrapper.find('i.priority-star').classes()).not.toContain(
-            'star-highlighted',
-        );
+        expect(
+            wrapper
+                .find('i.priority-star')
+                .classes()
+                .includes('star-highlighted'),
+        ).toBe(false);
     });
 
     // ── Body title block ─────────────────────────────────────────────────────
 
     it('renders projectName in .project-name', () => {
         const wrapper = mountCard({ projectName: 'Coastal Restoration' });
-        expect(wrapper.find('.project-name').text()).toBe('Coastal Restoration');
+        expect(wrapper.find('.project-name').text()).toBe(
+            'Coastal Restoration',
+        );
     });
 
     it('shows .project-id when projectId is set', () => {
@@ -110,7 +115,9 @@ describe('ProjectCard', () => {
 
     it('renders an <img> when icon contains a "/"', () => {
         const wrapper = mountCard({ icon: '/images/logo.png' });
-        expect(wrapper.find('.logo-area img.body-icon-img').exists()).toBe(true);
+        expect(wrapper.find('.logo-area img.body-icon-img').exists()).toBe(
+            true,
+        );
         expect(wrapper.find('.logo-area i.body-icon-class').exists()).toBe(
             false,
         );
@@ -118,7 +125,9 @@ describe('ProjectCard', () => {
 
     it('renders an <img> when icon contains a "."', () => {
         const wrapper = mountCard({ icon: 'logo.svg' });
-        expect(wrapper.find('.logo-area img.body-icon-img').exists()).toBe(true);
+        expect(wrapper.find('.logo-area img.body-icon-img').exists()).toBe(
+            true,
+        );
     });
 
     it('renders an <i> element when icon is a CSS class string', () => {
@@ -143,9 +152,9 @@ describe('ProjectCard', () => {
 
     it('does not apply no-icon class when icon is provided', () => {
         const wrapper = mountCard({ icon: 'fa-solid fa-star' });
-        expect(wrapper.find('.main-content-area').classes()).not.toContain(
-            'no-icon',
-        );
+        expect(
+            wrapper.find('.main-content-area').classes().includes('no-icon'),
+        ).toBe(false);
     });
 
     // ── Body lines ───────────────────────────────────────────────────────────
@@ -192,10 +201,10 @@ describe('ProjectCard', () => {
 
     it('applies no urgency class by default', () => {
         const wrapper = mountCard();
-        const card = wrapper.find('.bcgov-custom-card');
-        expect(card.classes()).not.toContain('urgency-level-1');
-        expect(card.classes()).not.toContain('urgency-level-2');
-        expect(card.classes()).not.toContain('urgency-level-3');
+        const classes = wrapper.find('.bcgov-custom-card').classes();
+        expect(classes.includes('urgency-level-1')).toBe(false);
+        expect(classes.includes('urgency-level-2')).toBe(false);
+        expect(classes.includes('urgency-level-3')).toBe(false);
     });
 
     it('applies urgency-level-1 class when urgency is 1', () => {
@@ -236,9 +245,9 @@ describe('ProjectCard', () => {
             projectName: 'Coastal Restoration',
             searchQuery: '',
         });
-        expect(wrapper.find('.project-name').element.innerHTML).not.toContain(
-            '<mark',
-        );
+        expect(
+            wrapper.find('.project-name').element.innerHTML.includes('<mark'),
+        ).toBe(false);
     });
 
     it('highlights capLabel when searchQuery matches', () => {
@@ -246,9 +255,9 @@ describe('ProjectCard', () => {
             capLabel: 'Environment',
             searchQuery: 'Env',
         });
-        expect(
-            wrapper.find('.cap-left span').element.innerHTML,
-        ).toContain('<mark class="highlight">Env</mark>');
+        expect(wrapper.find('.cap-left span').element.innerHTML).toContain(
+            '<mark class="highlight">Env</mark>',
+        );
     });
 
     it('highlights capDate when searchQuery matches', () => {
