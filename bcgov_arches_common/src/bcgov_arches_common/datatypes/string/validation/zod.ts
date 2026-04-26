@@ -95,9 +95,12 @@ export function getRichTextValueRequiredSchema(maxLength: number = 0) {
               en: LanguageValueSchema.safeExtend({
                   value: z
                       .string()
-                      .refine((value: string) => value !== '', {
-                          message: 'Value is required.',
-                      })
+                      .refine(
+                          (value: string) => htmlToPlainText(value).length > 0,
+                          {
+                              message: 'Value is required.',
+                          },
+                      )
                       .refine(
                           (value: string) =>
                               htmlToPlainText(value).length <= maxLength,
