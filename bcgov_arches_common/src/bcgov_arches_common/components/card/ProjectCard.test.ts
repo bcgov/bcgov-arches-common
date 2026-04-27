@@ -230,21 +230,21 @@ describe('ProjectCard', () => {
 
     it('wraps matching search terms in a highlight mark', () => {
         const wrapper = mountCard({
-            projectName: 'Coastal Restoration',
+            bodyTitle: 'Coastal Restoration',
             searchQuery: 'Coastal',
         });
-        expect(wrapper.find('.project-name').element.innerHTML).toContain(
+        expect(wrapper.find('.bodyTitle').element.innerHTML).toContain(
             '<mark class="highlight">Coastal</mark>',
         );
     });
 
     it('does not add highlight marks when searchQuery is empty', () => {
         const wrapper = mountCard({
-            projectName: 'Coastal Restoration',
+            bodyTitle: 'Coastal Restoration',
             searchQuery: '',
         });
         expect(
-            wrapper.find('.project-name').element.innerHTML.includes('<mark'),
+            wrapper.find('.bodyTitle').element.innerHTML.includes('<mark'),
         ).toBe(false);
     });
 
