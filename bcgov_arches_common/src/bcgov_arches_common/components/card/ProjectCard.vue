@@ -121,15 +121,17 @@ const isPrioritySearched = computed(() => {
                         class="main-content-area"
                         :class="{ 'no-icon': !props.icon }">
                         <p
-                            class="project-title"
+                            class="bodyTitle"
                             v-html="highlightText(props.bodyTitle)"></p>
+
                         <p
                             v-if="props.bodySubtitle1"
-                            class="project-subtitle1"
+                            class="bodySubtitle1"
                             v-html="highlightText(props.bodySubtitle1)"></p>
+
                         <p
                             v-if="props.bodySubtitle2"
-                            class="project-subtitle2"
+                            class="bodySubtitle2"
                             v-html="highlightText(props.bodySubtitle2)"></p>
                     </div>
                 </div>
@@ -291,7 +293,7 @@ const isPrioritySearched = computed(() => {
     grid-column: 1 / span 2;
 }
 
-.project-title {
+.bodyTitle {
     margin: 0 0 0.1rem 0;
     font-size: 1.6rem;
     line-height: 1.1;
@@ -304,14 +306,14 @@ const isPrioritySearched = computed(() => {
     overflow: hidden;
 }
 
-.project-subtitle1 {
+.bodySubtitle1 {
     margin: 0;
     font-size: 1.2rem;
     color: #333333;
     font-weight: 500;
 }
 
-.project-subtitle2 {
+.bodySubtitle2 {
     margin: 0;
     font-size: 1.1rem;
     color: #777777;
