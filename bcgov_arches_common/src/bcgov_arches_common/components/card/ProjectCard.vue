@@ -11,9 +11,9 @@ const props = defineProps({
 
     // Body - Body Titles
     icon: { type: String, default: '' },
-    projectName: { type: String, required: true },
-    projectId: { type: String, default: '' },
-    sector: { type: String, default: '' },
+    bodyTitle: { type: String, required: true },
+    bodySubtitle1: { type: String, default: '' },
+    bodySubtitle2: { type: String, default: '' },
 
     // Body - Main Content
     body1: { type: String, default: '' },
@@ -121,16 +121,16 @@ const isPrioritySearched = computed(() => {
                         class="main-content-area"
                         :class="{ 'no-icon': !props.icon }">
                         <p
-                            class="project-name"
-                            v-html="highlightText(props.projectName)"></p>
+                            class="project-title"
+                            v-html="highlightText(props.bodyTitle)"></p>
                         <p
-                            v-if="props.projectId"
-                            class="project-id"
-                            v-html="highlightText(props.projectId)"></p>
+                            v-if="props.bodySubtitle1"
+                            class="project-subtitle1"
+                            v-html="highlightText(props.bodySubtitle1)"></p>
                         <p
-                            v-if="props.sector"
-                            class="project-sector"
-                            v-html="highlightText(props.sector)"></p>
+                            v-if="props.bodySubtitle2"
+                            class="project-subtitle2"
+                            v-html="highlightText(props.bodySubtitle2)"></p>
                     </div>
                 </div>
 
@@ -291,7 +291,7 @@ const isPrioritySearched = computed(() => {
     grid-column: 1 / span 2;
 }
 
-.project-name {
+.project-title {
     margin: 0 0 0.1rem 0;
     font-size: 1.6rem;
     line-height: 1.1;
@@ -304,14 +304,14 @@ const isPrioritySearched = computed(() => {
     overflow: hidden;
 }
 
-.project-id {
+.project-subtitle1 {
     margin: 0;
     font-size: 1.2rem;
     color: #333333;
     font-weight: 500;
 }
 
-.project-sector {
+.project-subtitle2 {
     margin: 0;
     font-size: 1.1rem;
     color: #777777;
