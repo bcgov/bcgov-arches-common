@@ -80,35 +80,33 @@ describe('ProjectCard', () => {
 
     // ── Body title block ─────────────────────────────────────────────────────
 
-    it('renders projectName in .project-name', () => {
-        const wrapper = mountCard({ projectName: 'Coastal Restoration' });
-        expect(wrapper.find('.project-name').text()).toBe(
-            'Coastal Restoration',
-        );
+    it('renders bodyTitle in .bodyTitle', () => {
+        const wrapper = mountCard({ bodyTitle: 'Coastal Restoration' });
+        expect(wrapper.find('.bodyTitle').text()).toBe('Coastal Restoration');
     });
 
-    it('shows .project-id when projectId is set', () => {
-        const wrapper = mountCard({ projectId: 'PROJ-001' });
-        const el = wrapper.find('.project-id');
+    it('shows .bodySubtitle1 when bodySubtitle1 is set', () => {
+        const wrapper = mountCard({ bodySubtitle1: 'PROJ-001' });
+        const el = wrapper.find('.bodySubtitle1');
         expect(el.exists()).toBe(true);
         expect(el.text()).toBe('PROJ-001');
     });
 
-    it('does not render .project-id when projectId is empty', () => {
-        const wrapper = mountCard({ projectId: '' });
-        expect(wrapper.find('.project-id').exists()).toBe(false);
+    it('does not render .bodySubtitle1 when bodySubtitle1 is empty', () => {
+        const wrapper = mountCard({ bodySubtitle1: '' });
+        expect(wrapper.find('.bodySubtitle1').exists()).toBe(false);
     });
 
-    it('shows .project-sector when sector is set', () => {
-        const wrapper = mountCard({ sector: 'Forestry' });
-        const el = wrapper.find('.project-sector');
+    it('shows .bodySubtitle2 when bodySubtitle2 is set', () => {
+        const wrapper = mountCard({ bodySubtitle2: 'Forestry' });
+        const el = wrapper.find('.bodySubtitle2');
         expect(el.exists()).toBe(true);
         expect(el.text()).toBe('Forestry');
     });
 
-    it('does not render .project-sector when sector is empty', () => {
-        const wrapper = mountCard({ sector: '' });
-        expect(wrapper.find('.project-sector').exists()).toBe(false);
+    it('does not render .bodySubtitle2 when bodySubtitle2 is empty', () => {
+        const wrapper = mountCard({ bodySubtitle2: '' });
+        expect(wrapper.find('.bodySubtitle2').exists()).toBe(false);
     });
 
     // ── Icon ─────────────────────────────────────────────────────────────────
