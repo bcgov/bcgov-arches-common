@@ -13,7 +13,7 @@ const RouterLinkStub = {
 
 function mountCard(props: Record<string, unknown> = {}) {
     return mount(ProjectCard, {
-        props: { projectName: 'Default Project', ...props },
+        props: { bodyTitle: 'Default Project', ...props },
         global: { stubs: { RouterLink: RouterLinkStub } },
     });
 }
