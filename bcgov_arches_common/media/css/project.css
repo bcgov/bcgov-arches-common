@@ -51,9 +51,8 @@
     url('../fonts/BCSans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
 
-#main-content
-{
-    overflow: scroll;
+.editor-report .resource-report-abstract-container .resource-component-abstract {
+    height: calc(100vh - 100px);
 }
 
 body, h1, h2, h3, h4, h5
