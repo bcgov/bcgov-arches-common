@@ -225,8 +225,11 @@ export function removeLayersUsingSource(
 
     // Find all layer IDs that reference the given source
     const layersToRemove: string[] = style.layers
-        .filter((layer) => 'source' in layer && layer.source === sourceId)
-        .map((layer) => layer.id);
+        .filter(
+            (layer: LayerSpecification) =>
+                'source' in layer && layer.source === sourceId,
+        )
+        .map((layer: LayerSpecification) => layer.id);
 
     // Remove layers in reverse order to prevent dependency issues
     for (const layerId of [...layersToRemove].reverse()) {
