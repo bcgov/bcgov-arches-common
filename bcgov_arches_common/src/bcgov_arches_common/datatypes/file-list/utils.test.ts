@@ -81,9 +81,8 @@ describe('getFileUrl', () => {
 
     it('deduplicates slashes when url_subpath and URL would produce //', async () => {
         const { getFileUrl } = await import('./utils');
-        // url_subpath ends with '/', URL starts with '/' — should not produce '//'
         const result = getFileUrl('/files/test.png');
-        expect(result).not.toContain('//');
+        expect(result).toBe('/subpath/files/test.png');
     });
 
     it('returns the original URL when called with an empty string', async () => {
@@ -203,7 +202,8 @@ describe('formatFilenameUrl', () => {
             },
         }) as any;
         const result = formatFilenameUrl(row, 'photo');
-        expect(result).toContain('first.png');
-        expect(result).not.toContain('second.png');
+        expect(result).toBe(
+            `<a href="/subpath/files/first.png" target="${fileId}">first.png</a>`,
+        );
     });
 });
