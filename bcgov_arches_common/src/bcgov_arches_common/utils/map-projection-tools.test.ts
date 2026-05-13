@@ -19,7 +19,6 @@ describe('mapProjectionTools (as used by SimpleMapView)', () => {
             [lng, lat],
         );
 
-
         expect(easting).toBeCloseTo(472630, 0);
         expect(northing).toBeCloseTo(5364161, 0);
     });
