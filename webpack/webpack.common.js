@@ -394,21 +394,6 @@ module.exports = () => {
 
         // END create vue filepath lookup
 
-        const archesApplicationsMediaJsPaths = ARCHES_APPLICATIONS.reduce(
-            (acc, archesApplication) => {
-                acc.push(
-                    Path.resolve(
-                        __dirname,
-                        ARCHES_APPLICATIONS_PATHS[archesApplication],
-                        'media',
-                        'js',
-                    ),
-                );
-                return acc;
-            },
-            [],
-        );
-
         // BEGIN create universal constants
 
         const universalConstants = {
@@ -569,7 +554,6 @@ module.exports = () => {
                     '@': [
                         Path.resolve(__dirname, APP_ROOT, 'src'),
                         ...archesApplicationsVuePaths,
-                        ...archesApplicationsMediaJsPaths,
                         Path.resolve(__dirname, ROOT_DIR, 'app', 'src'),
                     ],
                     node_modules: Path.resolve(
