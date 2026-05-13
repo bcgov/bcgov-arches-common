@@ -6,8 +6,12 @@ import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
 import _ from 'underscore';
-import proj4 from 'proj4';
-import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.ts';
+import {
+    getUtmZone,
+    lngLatToNad83Utm,
+    formatLngLat,
+    formatUtmCoords,
+} from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
@@ -53,38 +57,19 @@ const mapCentre = computed<[number, number]>(() => {
     ) as [number, number];
 });
 
-const utmZone = computed<number>(() => {
-    return Math.floor((mapCentre.value[0] + 180) / 6) + 1;
-});
+const utmZone = computed<number>(() => getUtmZone(mapCentre.value[0]));
 
-const utmProjectionKey = computed<string | null>(() => {
-    const key = `NAD83_UTM_${utmZone.value}N`;
-    return key in mapProjectionTools.PROJECTIONS ? key : null;
-});
+const utmCoords = computed<[number, number] | null>(() =>
+    lngLatToNad83Utm(mapCentre.value[0], mapCentre.value[1]),
+);
 
-const utmProjection = computed<string | null>(() => {
-    if (!utmProjectionKey.value) return null;
-    return mapProjectionTools.PROJECTIONS[
-        utmProjectionKey.value as keyof typeof mapProjectionTools.PROJECTIONS
-    ];
-});
+const formattedUtmCoords = computed<[string, string] | null>(() =>
+    utmCoords.value ? formatUtmCoords(utmCoords.value) : null,
+);
 
-const utmCoords = computed<[number, number] | null>(() => {
-    if (!utmProjection.value) return null;
-    return proj4(mapProjectionTools.PROJECTIONS.WGS84, utmProjection.value, [
-        mapCentre.value[0],
-        mapCentre.value[1],
-    ]) as [number, number];
-});
-
-const formattedUtmCoords = computed<[string, string] | null>(() => {
-    if (!utmCoords.value) return null;
-    return [utmCoords.value[0].toFixed(1), utmCoords.value[1].toFixed(1)];
-});
-
-const formattedMapCentre = computed<[string, string]>(() => {
-    return [mapCentre.value[0]?.toFixed(6), mapCentre.value[1]?.toFixed(6)];
-});
+const formattedMapCentre = computed<[string, string]>(() =>
+    formatLngLat(mapCentre.value),
+);
 
 const zoom = ref<number>(3.5);
 
