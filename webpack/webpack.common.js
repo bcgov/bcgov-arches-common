@@ -393,7 +393,6 @@ module.exports = () => {
         );
 
         // END create vue filepath lookup
-
         // BEGIN create universal constants
 
         const universalConstants = {
