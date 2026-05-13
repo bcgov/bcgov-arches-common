@@ -1,0 +1,57 @@
+name: Release application to GitHub
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    if: >
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.title, 'on merge: github release') &&
+      (github.base_ref == 'main' || startsWith(github.base_ref, 'release/'))
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install build
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+
+      - name: Build sdist and wheel
+        run: |
+          python -m build --sdist --wheel
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(python - << 'EOF'
+          import tomllib, pathlib
+          data = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          print(data["project"]["version"])
+          EOF
+          )
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release and upload artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.get_version.outputs.version }}"
+          gh release create "$TAG" dist/* \
+            --title "$TAG" \
+            --target ${{ github.base_ref }} \
+            --generate-notes

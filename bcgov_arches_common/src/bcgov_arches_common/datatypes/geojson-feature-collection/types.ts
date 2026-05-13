@@ -1,4 +1,7 @@
-import type { AliasedNodeData } from '@/arches_component_lab/types.ts';
+import type {
+    AliasedNodeData,
+    CardXNodeXWidgetData,
+} from '@/arches_component_lab/types.ts';
 import type {
     Feature,
     FeatureCollection,
@@ -13,6 +16,12 @@ export type AliasedGeojsonFeatureCollectionNode = Omit<
 > & {
     node_value: FeatureCollection;
 };
+// @todo Remove this when it gets incorporated into arches-component-lab
+export interface GeoJSONFeatureCollectionValue extends AliasedNodeData {
+    display_value: string;
+    node_value: FeatureCollection | null;
+    details: any[];
+}
 
 export type MapData = {
     overlays: MapLayer[];
@@ -77,4 +86,34 @@ export interface MapSource {
         coordinates?: [number, number];
     };
     source_json: string;
+}
+
+export type GeometryType =
+    | { id: 'Point'; text: 'Point' }
+    | { id: 'Line'; text: 'Line' }
+    | { id: 'Polygon'; text: 'Polygon' };
+
+export interface GeoJSONFeatureCollectionCardXNodeXWidgetData extends CardXNodeXWidgetData {
+    config: CardXNodeXWidgetData['config'] & {
+        basemap: string;
+        bearing: number;
+        centerX: number;
+        centerY: number;
+        defaultValueType: string;
+        featureColor: string;
+        featureLineWidth: 1;
+        featurePointSize: 3;
+        geocodePlaceholder: string;
+        geocodeProvider: string;
+        geocoderVisible: true;
+        geometryTypes: GeometryType[];
+        label: string;
+        maxZoom: number;
+        minZoom: number;
+        overlayConfigs: MapLayer[];
+        overlayOpacity: number;
+        pitch: number;
+        rerender: boolean;
+        zoom: number;
+    };
 }

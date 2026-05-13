@@ -5,7 +5,7 @@ import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
-import { find } from 'underscore';
+import { find, _ } from 'underscore';
 import proj4 from 'proj4';
 import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
@@ -47,7 +47,8 @@ const center = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, l
 const mapCentre = computed<[number, number]>(() => {
     return (
         aliasedNodeData?.node_value && geometry.value
-            ? (centroid(geometry.value)?.geometry?.coordinates ?? center.value)
+            ? (centroid(geometry.value as unknown as AllGeoJSON)?.geometry
+                  ?.coordinates ?? center.value)
             : center.value
     ) as [number, number];
 });
@@ -105,7 +106,7 @@ function setupMap(): void {
     // dataLoaded.value = true;
     if (!mapEl.value || !mapData) return;
 
-    const basemap = find(mapData.basemaps, (basemap: MapLayer) => {
+    const basemap = _.find(mapData.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
     defaultStyle.value.sources[basemap.source.name] = basemap.source.source;

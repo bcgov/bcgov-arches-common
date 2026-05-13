@@ -1,0 +1,110 @@
+name: Prepare release
+
+on:
+  workflow_call:
+    inputs:
+      github-repo:
+        description: "GitHub repo slug (owner/repo) used to look up the latest release version (e.g. bcgov/bcrhp)"
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  increment_version_and_pr:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+
+        - name: Set up Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: '3.x'
+
+        - name: Install python dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install pyproject-parser
+            pip install requests
+
+        - name: Increment version in pyproject.toml
+          id: increment_version
+          env:
+            BRANCH_NAME: ${{ github.ref_name }}
+          with:
+            github-repo: ${{ inputs.github-repo }}
+            github-token: ${{ github.token }}
+          uses: bcgov/bcgov-arches-common/.github/actions/run-release-prep-script@main
+
+        - name: Configure git
+          run: |
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        - name: Commit version update
+          run: |
+            git status
+            if git diff --quiet; then
+              echo "No changes to commit."
+              exit 0
+            fi
+            git add pyproject.toml
+            git commit -m "Increment version to ${{ steps.increment_version.outputs.new_version }}"
+            git push
+
+        - name: Install GitHub CLI
+          run: |
+            type -p gh >/dev/null 2>&1 || {
+              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+              sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y gh
+            }
+
+        - name: Create pull request
+          env:
+            GH_TOKEN: ${{ secrets.token }}
+          run: |
+            HEAD_BRANCH="${GITHUB_REF_NAME}"
+
+            if [[ "$HEAD_BRANCH" == "release_alpha" || "$HEAD_BRANCH" == "release_beta" ]]; then
+              BASE_BRANCH=$(git branch -r | grep ' origin/release/' | sed 's/.*origin\///' | while read branch; do
+                mergebase=$(git merge-base HEAD "origin/$branch")
+                date=$(git log -1 --format='%ct' "$mergebase")
+                echo "$date $branch"
+              done | sort -rn | head -1 | awk '{print $2}')
+              if [[ -z "$BASE_BRANCH" ]]; then
+                BASE_BRANCH=${{ github.event.repository.default_branch }}
+              fi
+            else
+              BASE_BRANCH=main
+            fi
+
+            existing_pr=$(gh pr list \
+              --head "$HEAD_BRANCH" \
+              --base "$BASE_BRANCH" \
+              --state open \
+              --json number \
+              --jq '.[0].number' || true)
+
+            if [ -n "$existing_pr" ]; then
+              echo "PR #$existing_pr already exists for $HEAD_BRANCH -> $BASE_BRANCH"
+              exit 0
+            fi
+
+            gh auth setup-git
+            gh pr create \
+              --base "$BASE_BRANCH" \
+              --head "$HEAD_BRANCH" \
+              --title "on merge: github release of version ${{ steps.increment_version.outputs.new_version }}" \
+              --body "Automated release preparation. GitHub release will be published on merge."

@@ -1,0 +1,24 @@
+name: "Release prep action"
+description: "Run a script to update an apps toml file in preparation for a release"
+inputs:
+  github-repo:
+    description: "GitHub repo slug (owner/repo) to check for the latest release version (e.g. bcgov/bcrhp)"
+    required: true
+  github-token:
+    description: "GitHub token for authenticated API calls (avoids rate-limiting)"
+    required: false
+outputs:
+  new_version:
+    description: "New version number for this release"
+    value: ${{ steps.prep_step.outputs.new_version }}
+runs:
+  using: "composite"
+  steps:
+    - name: Prep release
+      id: prep_step
+      shell: bash
+      env:
+        GITHUB_REPO: ${{ inputs.github-repo }}
+        GH_API_TOKEN: ${{ inputs.github-token }}
+      run: |
+        python "${{ github.action_path }}/release_prep.py"

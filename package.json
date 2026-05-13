@@ -1,7 +1,7 @@
 {
     "name": "bcgov-arches-common",
     "license": "AGPL-3.0-only",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "scripts": {
         "build_development": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack --config ./webpack/webpack.config.dev.js",
         "build_production": "npm run eslint:check && npm run ts:check && cross-env NODE_OPTIONS=--max-old-space-size=2048 NODE_ENV=production webpack --config ./webpack/webpack.config.prod.js",
@@ -24,25 +24,32 @@
         "@turf/centroid": "^7.2.0",
         "arches": "bcgov/arches#dev/8.1.x_bcgov",
         "arches-component-lab": "archesproject/arches-component-lab#v0.0.1a9",
+        "arches-querysets": "github:archesproject/arches-querysets#v1.1.0a1",
         "dompurify": "^3.3.0",
-        "maplibre-gl": "^5.7.1",
+        "geojson": "0.5.0",
+        "maplibre-gl": "^5.10.0",
         "primevue": "^4.3.9",
+        "togeojson": "^0.16.0",
         "typescript": "^5.6.2",
+        "vite": "latest",
         "vue-router": "^4.4.3",
         "vue3-gettext": "^4.0.0-beta.1",
         "zod": "^4.1.11"
     },
     "devDependencies": {
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",
+        "@types/geojson": "^7946.0.16",
+        "@types/shpjs": "^3.4.7",
         "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.8",
-        "eslint-plugin-prettier": "^5.2.3",
+        "eslint-plugin-prettier": "^5.5.4",
         "prettier": "^3.7.1",
         "vite": "latest"
     },
     "nodeModulesPaths": {},
     "overrides": {
+        "geojson": "0.5.0",
         "moment-timezone": "^0.5.45",
         "nomnom": "npm:@gerhobbelt/nomnom",
         "rimraf": "^5.0.7",
