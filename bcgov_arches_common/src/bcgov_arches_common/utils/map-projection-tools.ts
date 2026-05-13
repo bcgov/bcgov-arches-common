@@ -1,6 +1,11 @@
+// Typed re-export of the projection helpers that live under media/js so
+// webpack's entry-point lookup can still pick up the raw JS module while
+// callers in `src/` get a clean `@/bcgov_arches_common/utils/...` import.
+// @ts-expect-error - the underlying .js module has no type declarations
+import mapProjectionToolsJs from '../../../media/js/utils/map-projection-tools.js';
 import type { FeatureCollection } from 'geojson';
 
-declare const mapProjectionTools: {
+interface MapProjectionTools {
     PROJECTIONS: {
         WGS84: 'EPSG:4326';
         BC_ALBERS: 'EPSG:3005';
@@ -23,6 +28,8 @@ declare const mapProjectionTools: {
     guessProjectionFromCoords(
         geoJSON: FeatureCollection | null | undefined,
     ): string;
-};
+}
+
+const mapProjectionTools: MapProjectionTools = mapProjectionToolsJs;
 
 export default mapProjectionTools;

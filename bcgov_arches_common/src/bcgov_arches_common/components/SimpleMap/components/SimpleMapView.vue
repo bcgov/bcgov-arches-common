@@ -7,7 +7,7 @@ import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
 import { find } from 'underscore';
 import proj4 from 'proj4';
-import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.js';
+import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
@@ -63,24 +63,22 @@ const utmProjectionKey = computed<string | null>(() => {
 
 const utmProjection = computed<string | null>(() => {
     if (!utmProjectionKey.value) return null;
-    return mapProjectionTools.PROJECTIONS[utmProjectionKey.value as keyof typeof mapProjectionTools.PROJECTIONS];
+    return mapProjectionTools.PROJECTIONS[
+        utmProjectionKey.value as keyof typeof mapProjectionTools.PROJECTIONS
+    ];
 });
 
 const utmCoords = computed<[number, number] | null>(() => {
     if (!utmProjection.value) return null;
-    return proj4(
-        mapProjectionTools.PROJECTIONS.WGS84,
-        utmProjection.value,
-        [mapCentre.value[0], mapCentre.value[1]],
-    ) as [number, number];
+    return proj4(mapProjectionTools.PROJECTIONS.WGS84, utmProjection.value, [
+        mapCentre.value[0],
+        mapCentre.value[1],
+    ]) as [number, number];
 });
 
 const formattedUtmCoords = computed<[string, string] | null>(() => {
     if (!utmCoords.value) return null;
-    return [
-        utmCoords.value[0].toFixed(1),
-        utmCoords.value[1].toFixed(1),
-    ];
+    return [utmCoords.value[0].toFixed(1), utmCoords.value[1].toFixed(1)];
 });
 
 const formattedMapCentre = computed<[string, string]>(() => {
@@ -271,9 +269,9 @@ watch(
         <div class="panel">
             <span class="coords">
                 <template v-if="formattedUtmCoords">
-                    Boundary Centroid UTM Zone {{ utmZone }}N —
-                    Easting: {{ formattedUtmCoords[0] }},
-                    Northing: {{ formattedUtmCoords[1] }} | Zoom:
+                    Boundary Centroid UTM Zone {{ utmZone }}N — Easting:
+                    {{ formattedUtmCoords[0] }}, Northing:
+                    {{ formattedUtmCoords[1] }} | Zoom:
                     {{ zoom }}
                 </template>
                 <template v-else>
