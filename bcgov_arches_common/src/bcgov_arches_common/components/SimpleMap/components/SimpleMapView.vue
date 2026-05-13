@@ -5,7 +5,7 @@ import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
-import { find, _ } from 'underscore';
+import _ from 'underscore';
 import proj4 from 'proj4';
 import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
