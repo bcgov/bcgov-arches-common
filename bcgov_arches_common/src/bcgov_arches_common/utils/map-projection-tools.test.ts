@@ -19,12 +19,12 @@ describe('mapProjectionTools (as used by SimpleMapView)', () => {
             [lng, lat],
         );
 
-        // UTM eastings are roughly 0 to 1,000,000 metres and northings in
-        // BC latitudes are in the millions of metres. Just sanity-check
-        // the result is in that ballpark, not the original degree values.
-        expect(easting).toBeGreaterThan(100_000);
-        expect(easting).toBeLessThan(900_000);
-        expect(northing).toBeGreaterThan(5_000_000);
-        expect(northing).toBeLessThan(6_000_000);
+        // Victoria, BC in NAD83 UTM 10N is approximately
+        // (472630 E, 5364161 N) in metres. Zone 10's central meridian is
+        // -123 with a 500000 false easting, so Victoria at lng=-123.37
+        // (just west of the meridian) sits a bit under 500000 easting,
+        // and northing at lat=48.43 is roughly 5.36 million metres.
+        expect(easting).toBeCloseTo(472630, 0);
+        expect(northing).toBeCloseTo(5364161, 0);
     });
 });
