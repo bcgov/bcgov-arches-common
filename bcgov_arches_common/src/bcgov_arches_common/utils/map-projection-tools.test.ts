@@ -19,11 +19,7 @@ describe('mapProjectionTools (as used by SimpleMapView)', () => {
             [lng, lat],
         );
 
-        // Victoria, BC in NAD83 UTM 10N is approximately
-        // (472630 E, 5364161 N) in metres. Zone 10's central meridian is
-        // -123 with a 500000 false easting, so Victoria at lng=-123.37
-        // (just west of the meridian) sits a bit under 500000 easting,
-        // and northing at lat=48.43 is roughly 5.36 million metres.
+
         expect(easting).toBeCloseTo(472630, 0);
         expect(northing).toBeCloseTo(5364161, 0);
     });
