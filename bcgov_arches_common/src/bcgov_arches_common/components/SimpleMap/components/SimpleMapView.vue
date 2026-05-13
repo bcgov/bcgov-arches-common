@@ -6,6 +6,8 @@ import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
 import { find } from 'underscore';
+import proj4 from 'proj4';
+import mapProjectionTools from '@/bcgov_arches_common/utils/map-projection-tools.js';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
@@ -48,6 +50,41 @@ const mapCentre = computed<[number, number]>(() => {
             ? (centroid(geometry.value)?.geometry?.coordinates ?? center.value)
             : center.value
     ) as [number, number];
+});
+
+const utmZone = computed<number>(() => {
+    return Math.floor((mapCentre.value[0] + 180) / 6) + 1;
+});
+
+const utmProjectionKey = computed<string | null>(() => {
+    const key = `NAD83_UTM_${utmZone.value}N`;
+    return key in mapProjectionTools.PROJECTIONS ? key : null;
+});
+
+const utmProjection = computed<string | null>(() => {
+    if (!utmProjectionKey.value) return null;
+    return mapProjectionTools.PROJECTIONS[utmProjectionKey.value as keyof typeof mapProjectionTools.PROJECTIONS];
+});
+
+const utmCoords = computed<[number, number] | null>(() => {
+    if (!utmProjection.value) return null;
+    return proj4(
+        mapProjectionTools.PROJECTIONS.WGS84,
+        utmProjection.value,
+        [mapCentre.value[0], mapCentre.value[1]],
+    ) as [number, number];
+});
+
+const formattedUtmCoords = computed<[string, string] | null>(() => {
+    if (!utmCoords.value) return null;
+    return [
+        utmCoords.value[0].toFixed(1),
+        utmCoords.value[1].toFixed(1),
+    ];
+});
+
+const formattedMapCentre = computed<[string, string]>(() => {
+    return [mapCentre.value[0]?.toFixed(6), mapCentre.value[1]?.toFixed(6)];
 });
 
 const zoom = ref<number>(3.5);
@@ -232,12 +269,18 @@ watch(
             class="map"
             style="min-height: 300px"></div>
         <div class="panel">
-            <!--button @click="flyVancouver">Vancouver</button>
-            <button @click="flyParis">Paris</button-->
             <span class="coords">
-                Boundary Centroid Lng/Lat: {{ mapCentre?.[0].toFixed(6) }},
-                {{ mapCentre?.[1].toFixed(6) }} | Zoom:
-                {{ zoom }}
+                <template v-if="formattedUtmCoords">
+                    Boundary Centroid UTM Zone {{ utmZone }}N —
+                    Easting: {{ formattedUtmCoords[0] }},
+                    Northing: {{ formattedUtmCoords[1] }} | Zoom:
+                    {{ zoom }}
+                </template>
+                <template v-else>
+                    Boundary Centroid Lng/Lat: {{ formattedMapCentre[0] }},
+                    {{ formattedMapCentre[1] }} | Zoom:
+                    {{ zoom }}
+                </template>
             </span>
         </div>
     </div>

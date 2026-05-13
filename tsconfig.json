@@ -21,7 +21,8 @@
     ],
     "paths": {
       "@/bcgov_arches_common/*": [
-        "./bcgov_arches_common/src/bcgov_arches_common/*"
+        "./bcgov_arches_common/src/bcgov_arches_common/*",
+        "./bcgov_arches_common/media/js/*"
       ],
       "@/arches_component_lab/*": [
         "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
