@@ -1,6 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 
+vi.mock('maplibre-gl', () => ({
+    default: {
+        Map: vi.fn(),
+        NavigationControl: vi.fn(),
+        ScaleControl: vi.fn(),
+        AttributionControl: vi.fn(),
+        Marker: vi.fn(),
+        Popup: vi.fn(),
+    },
+}));
+
 vi.mock('@/bcgov_arches_common/components/SimpleMap/api.ts', () => ({
     fetchSystemMapData: vi.fn().mockResolvedValue({
         basemaps: [],
