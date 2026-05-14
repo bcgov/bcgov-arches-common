@@ -28,14 +28,21 @@ import type {
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 
-const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
-    defineProps<{
-        graphSlug: string;
-        nodeAlias: string;
-        cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
-        mapData: MapData | undefined | null;
-        aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
-    }>();
+const {
+    graphSlug,
+    nodeAlias,
+    cardXNodeXWidgetData,
+    mapData,
+    aliasedNodeData,
+    useUtmCoords = false,
+} = defineProps<{
+    graphSlug: string;
+    nodeAlias: string;
+    cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
+    mapData: MapData | undefined | null;
+    aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
+    useUtmCoords?: boolean;
+}>();
 
 const geometry = computed<Feature | undefined>(() => {
     return aliasedNodeData?.node_value?.features?.[0];
@@ -254,7 +261,7 @@ watch(
             style="min-height: 300px"></div>
         <div class="panel">
             <span class="coords">
-                <template v-if="formattedUtmCoords">
+                <template v-if="useUtmCoords && formattedUtmCoords">
                     Boundary Centroid UTM Zone {{ utmZone }}N — Easting:
                     {{ formattedUtmCoords[0] }}, Northing:
                     {{ formattedUtmCoords[1] }} | Zoom:

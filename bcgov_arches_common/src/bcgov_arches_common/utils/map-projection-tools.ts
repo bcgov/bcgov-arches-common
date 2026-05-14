@@ -53,6 +53,7 @@ export function lngLatToNad83Utm(
     lng: number,
     lat: number,
 ): [number, number] | null {
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
     const projection = getNad83UtmProjection(lng);
     if (!projection) return null;
     return proj4(mapProjectionTools.PROJECTIONS.WGS84, projection, [
@@ -66,7 +67,7 @@ export function formatLngLat(coords: [number, number]): [string, string] {
 }
 
 export function formatUtmCoords(coords: [number, number]): [string, string] {
-    return [coords[0].toFixed(1), coords[1].toFixed(1)];
+    return [coords[0]?.toFixed(1), coords[1]?.toFixed(1)];
 }
 
 export default mapProjectionTools;
