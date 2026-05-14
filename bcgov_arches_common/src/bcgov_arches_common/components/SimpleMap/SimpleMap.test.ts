@@ -34,7 +34,7 @@ async function mountMap(props: Record<string, unknown> = {}) {
             graphSlug: 'test-graph',
             nodeAlias: 'test-node',
             mode: VIEW,
-            cardXNodeXWidgetData: { foo: 'bar' },
+            cardXNodeXWidgetData: undefined,
             aliasedNodeData: undefined,
             ...props,
         },
