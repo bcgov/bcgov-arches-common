@@ -31,14 +31,14 @@ describe('SimpleMapView useUtmCoords prop', () => {
     it('renders Lng/Lat coordinates by default', () => {
         const wrapper = mountView();
         const text = wrapper.find('.coords').text();
-        expect(text).toContain('Lng/Lat');
-        expect(text).not.toContain('UTM Zone');
+        expect(text.includes('Lng/Lat')).toBe(true);
+        expect(text.includes('UTM Zone')).toBe(false);
     });
 
     it('renders UTM coordinates when useUtmCoords is true', () => {
         const wrapper = mountView({ useUtmCoords: true });
         const text = wrapper.find('.coords').text();
-        expect(text).toContain('UTM Zone');
-        expect(text).not.toContain('Lng/Lat');
+        expect(text.includes('UTM Zone')).toBe(true);
+        expect(text.includes('Lng/Lat')).toBe(false);
     });
 });
