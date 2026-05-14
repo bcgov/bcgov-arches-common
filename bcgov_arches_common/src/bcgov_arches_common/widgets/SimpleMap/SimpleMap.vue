@@ -92,7 +92,6 @@ watchEffect(async () => {
         :card-x-node-x-widget-data="resolvedCardXNodeXWidgetData"
         :aliased-node-data="aliasedNodeData"
         :mark-centroid="simpleMapConfig.showCentroidMarker"
-        :use-utm-coords="useUtmCoords"
-        >
+        :use-utm-coords="useUtmCoords">
     </MapView>
 </template>
