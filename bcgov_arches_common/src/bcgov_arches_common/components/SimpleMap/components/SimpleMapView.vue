@@ -262,10 +262,9 @@ watch(
         <div class="panel">
             <span class="coords">
                 <template v-if="useUtmCoords && formattedUtmCoords">
-                    Boundary Centroid UTM Zone {{ utmZone }}N — Easting:
-                    {{ formattedUtmCoords[0] }}, Northing:
-                    {{ formattedUtmCoords[1] }} | Zoom:
-                    {{ zoom }}
+                    Boundary Centroid UTM {{ utmZone }}N
+                    {{ formattedUtmCoords[0] }} {{ formattedUtmCoords[1] }} |
+                    Zoom: {{ zoom }}
                 </template>
                 <template v-else>
                     Boundary Centroid Lng/Lat: {{ formattedMapCentre[0] }},

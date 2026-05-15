@@ -67,7 +67,7 @@ export function formatLngLat(coords: [number, number]): [string, string] {
 }
 
 export function formatUtmCoords(coords: [number, number]): [string, string] {
-    return [coords[0]?.toFixed(1), coords[1]?.toFixed(1)];
+    return [coords[0]?.toFixed(0), coords[1]?.toFixed(0)];
 }
 
 export default mapProjectionTools;

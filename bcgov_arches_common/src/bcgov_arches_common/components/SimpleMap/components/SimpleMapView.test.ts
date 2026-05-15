@@ -32,13 +32,13 @@ describe('SimpleMapView useUtmCoords prop', () => {
         const wrapper = mountView();
         const text = wrapper.find('.coords').text();
         expect(text.includes('Lng/Lat')).toBe(true);
-        expect(text.includes('UTM Zone')).toBe(false);
+        expect(text.includes('Boundary Centroid UTM')).toBe(false);
     });
 
     it('renders UTM coordinates when useUtmCoords is true', () => {
         const wrapper = mountView({ useUtmCoords: true });
         const text = wrapper.find('.coords').text();
-        expect(text.includes('UTM Zone')).toBe(true);
+        expect(text.includes('Boundary Centroid UTM')).toBe(true);
         expect(text.includes('Lng/Lat')).toBe(false);
     });
 });

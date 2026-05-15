@@ -59,17 +59,17 @@ describe('formatting tests', () => {
         expect(formatLngLat([-123, 48])).toEqual(['-123.000000', '48.000000']);
     });
 
-    it('formatUtmCoords formats easting and northing to 1 decimal place', () => {
-        expect(formatUtmCoords([472630.456, 5364161.234])).toEqual([
-            '472630.5',
-            '5364161.2',
+    it('formatUtmCoords rounds easting and northing to whole numbers', () => {
+        expect(formatUtmCoords([472630.456, 5364161.734])).toEqual([
+            '472630',
+            '5364162',
         ]);
     });
 
-    it('formatUtmCoords pads trailing zeros to keep a single decimal', () => {
+    it('formatUtmCoords keeps whole-number inputs without decimals', () => {
         expect(formatUtmCoords([472630, 5364161])).toEqual([
-            '472630.0',
-            '5364161.0',
+            '472630',
+            '5364161',
         ]);
     });
 });
