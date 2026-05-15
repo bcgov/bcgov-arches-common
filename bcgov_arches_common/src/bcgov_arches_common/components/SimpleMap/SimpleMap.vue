@@ -19,8 +19,8 @@ const {
     mode,
     cardXNodeXWidgetData,
     aliasedNodeData,
-    useUtmCoords,
-} = withDefaults(
+    useUtmCoords = false,
+} =
     defineProps<{
         graphSlug: string;
         nodeAlias: string;
@@ -28,11 +28,7 @@ const {
         cardXNodeXWidgetData?: CardXNodeXWidgetData;
         aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
         useUtmCoords?: boolean;
-    }>(),
-    {
-        useUtmCoords: false,
-    },
-);
+    }>();
 
 // From GenericWidget
 const isLoading = computed(() => {
