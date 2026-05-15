@@ -20,15 +20,14 @@ const {
     cardXNodeXWidgetData,
     aliasedNodeData,
     useUtmCoords = false,
-} =
-    defineProps<{
-        graphSlug: string;
-        nodeAlias: string;
-        mode: WidgetMode;
-        cardXNodeXWidgetData?: CardXNodeXWidgetData;
-        aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
-        useUtmCoords?: boolean;
-    }>();
+} = defineProps<{
+    graphSlug: string;
+    nodeAlias: string;
+    mode: WidgetMode;
+    cardXNodeXWidgetData?: CardXNodeXWidgetData;
+    aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
+    useUtmCoords?: boolean;
+}>();
 
 // From GenericWidget
 const isLoading = computed(() => {
