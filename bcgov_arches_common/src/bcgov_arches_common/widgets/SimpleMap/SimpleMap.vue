@@ -14,13 +14,19 @@ import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/Gener
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 const mapData = ref<MapData | null | undefined>(null);
-const props = defineProps<{
-    graphSlug: string;
-    nodeAlias: string;
-    mode: WidgetMode;
-    cardXNodeXWidgetData?: GeoJSONFeatureCollectionCardXNodeXWidgetData;
-    aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
-}>();
+const props = withDefaults(
+    defineProps<{
+        graphSlug: string;
+        nodeAlias: string;
+        mode: WidgetMode;
+        cardXNodeXWidgetData?: GeoJSONFeatureCollectionCardXNodeXWidgetData;
+        aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
+        useUtmCoords?: boolean;
+    }>(),
+    {
+        useUtmCoords: false,
+    },
+);
 const { graphSlug, nodeAlias, mode, cardXNodeXWidgetData, aliasedNodeData } =
     toRefs(props);
 
@@ -85,6 +91,7 @@ watchEffect(async () => {
         :map-data="mapData"
         :card-x-node-x-widget-data="resolvedCardXNodeXWidgetData"
         :aliased-node-data="aliasedNodeData"
-        :mark-centroid="simpleMapConfig.showCentroidMarker">
+        :mark-centroid="simpleMapConfig.showCentroidMarker"
+        :use-utm-coords="useUtmCoords">
     </MapView>
 </template>

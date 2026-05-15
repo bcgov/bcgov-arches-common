@@ -6,6 +6,12 @@ import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import { featureCollection } from '@turf/helpers';
 import _ from 'underscore';
+import {
+    getUtmZone,
+    lngLatToNad83Utm,
+    formatLngLat,
+    formatUtmCoords,
+} from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { AliasedGeojsonFeatureCollectionNode } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
@@ -22,14 +28,21 @@ import type {
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 
-const { graphSlug, nodeAlias, cardXNodeXWidgetData, mapData, aliasedNodeData } =
-    defineProps<{
-        graphSlug: string;
-        nodeAlias: string;
-        cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
-        mapData: MapData | undefined | null;
-        aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
-    }>();
+const {
+    graphSlug,
+    nodeAlias,
+    cardXNodeXWidgetData,
+    mapData,
+    aliasedNodeData,
+    useUtmCoords = false,
+} = defineProps<{
+    graphSlug: string;
+    nodeAlias: string;
+    cardXNodeXWidgetData: CardXNodeXWidgetData | undefined;
+    mapData: MapData | undefined | null;
+    aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
+    useUtmCoords?: boolean;
+}>();
 
 const geometry = computed<Feature | undefined>(() => {
     return aliasedNodeData?.node_value?.features?.[0];
@@ -50,6 +63,20 @@ const mapCentre = computed<[number, number]>(() => {
             : center.value
     ) as [number, number];
 });
+
+const utmZone = computed<number>(() => getUtmZone(mapCentre.value[0]));
+
+const utmCoords = computed<[number, number] | null>(() =>
+    lngLatToNad83Utm(mapCentre.value[0], mapCentre.value[1]),
+);
+
+const formattedUtmCoords = computed<[string, string] | null>(() =>
+    utmCoords.value ? formatUtmCoords(utmCoords.value) : null,
+);
+
+const formattedMapCentre = computed<[string, string]>(() =>
+    formatLngLat(mapCentre.value),
+);
 
 const zoom = ref<number>(3.5);
 
@@ -233,12 +260,17 @@ watch(
             class="map"
             style="min-height: 300px"></div>
         <div class="panel">
-            <!--button @click="flyVancouver">Vancouver</button>
-            <button @click="flyParis">Paris</button-->
             <span class="coords">
-                Boundary Centroid Lng/Lat: {{ mapCentre?.[0].toFixed(6) }},
-                {{ mapCentre?.[1].toFixed(6) }} | Zoom:
-                {{ zoom }}
+                <template v-if="useUtmCoords && formattedUtmCoords">
+                    Boundary Centroid UTM {{ utmZone }}N
+                    {{ formattedUtmCoords[0] }} {{ formattedUtmCoords[1] }} |
+                    Zoom: {{ zoom }}
+                </template>
+                <template v-else>
+                    Boundary Centroid Lng/Lat: {{ formattedMapCentre[0] }},
+                    {{ formattedMapCentre[1] }} | Zoom:
+                    {{ zoom }}
+                </template>
             </span>
         </div>
     </div>

@@ -13,14 +13,21 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
 
 const mapData = ref<MapData | null | undefined>(null);
-const { graphSlug, nodeAlias, mode, cardXNodeXWidgetData, aliasedNodeData } =
-    defineProps<{
-        graphSlug: string;
-        nodeAlias: string;
-        mode: WidgetMode;
-        cardXNodeXWidgetData?: CardXNodeXWidgetData;
-        aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
-    }>();
+const {
+    graphSlug,
+    nodeAlias,
+    mode,
+    cardXNodeXWidgetData,
+    aliasedNodeData,
+    useUtmCoords = false,
+} = defineProps<{
+    graphSlug: string;
+    nodeAlias: string;
+    mode: WidgetMode;
+    cardXNodeXWidgetData?: CardXNodeXWidgetData;
+    aliasedNodeData: AliasedGeojsonFeatureCollectionNode | undefined;
+    useUtmCoords?: boolean;
+}>();
 
 // From GenericWidget
 const isLoading = computed(() => {
@@ -79,5 +86,6 @@ watchEffect(async () => {
         :node-alias="nodeAlias"
         :map-data="mapData"
         :card-x-node-x-widget-data="resolvedCardXNodeXWidgetData"
-        :aliased-node-data="aliasedNodeData"></MapView>
+        :aliased-node-data="aliasedNodeData"
+        :use-utm-coords="useUtmCoords"></MapView>
 </template>
