@@ -25,3 +25,11 @@ export const ENGLISH = {
     name: 'English',
     scope: 'system',
 };
+
+export const EDIT_LOG_FIELDS = {
+    ENTERED_ON: 'entered_on',
+    ENTERED_BY: 'entered_by',
+} as const;
+
+export const DEFAULT_ENTERED_ON_FIELD = EDIT_LOG_FIELDS.ENTERED_ON;
+export const DEFAULT_ENTERED_BY_FIELD = EDIT_LOG_FIELDS.ENTERED_BY;

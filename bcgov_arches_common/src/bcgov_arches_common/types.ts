@@ -1,5 +1,10 @@
 import type { Ref } from 'vue';
 import type { TreeNode } from 'primevue/treenode';
+import type {
+    AliasedNodeData,
+    AliasedNodegroupData,
+    AliasedTileData,
+} from '@/arches_component_lab/types.ts';
 // import type { Label } from "@/arches_vue_utils/types";
 
 // From arches_vue_utils in v8.0.x
@@ -34,6 +39,12 @@ export interface User {
     last_name: string;
     username: string;
 }
+
+export type ErrorMessage = {
+    error: string;
+    message: string;
+    type: string;
+};
 
 // Prop injection types
 export interface UserRefAndSetter {
@@ -87,9 +98,12 @@ export interface ResourceOption {
     label: string;
 }
 
-const resourceOption: ResourceOption = { resourceinstanceid: '', label: '' };
+// const resourceOption: ResourceOption = { resourceinstanceid: '', label: '' };
 
-export type ResourceOptionType = typeof resourceOption;
+export type ResourceOptionType = {
+    resourceinstanceid: string;
+    label: string;
+};
 
 export interface ResourceSearchResults {
     'paging-filter': object;
@@ -97,15 +111,77 @@ export interface ResourceSearchResults {
     results: Array<ResourceOption>;
 }
 
-const resourceSearchResults: ResourceSearchResults = {
-    'paging-filter': {},
-    'total-hits': 0,
-    results: [],
-};
+// const resourceSearchResults: ResourceSearchResults = {
+//     'paging-filter': {},
+//     'total-hits': 0,
+//     results: [],
+// };
 
-export type ResourceSearchResultsType = typeof resourceSearchResults;
+export type ResourceSearchResultsType = {
+    'paging-filter': object;
+    'total-hits': number;
+    results: Array<ResourceOption>;
+};
 
 export interface ConceptOption {
     id: string;
     text: string;
+}
+
+export interface ArchesResourceInstanceData<
+    TAliasedData extends Record<string, AliasedTileData | AliasedTileData[]> =
+        Record<string, AliasedTileData | AliasedTileData[]>,
+> {
+    resourceinstanceid: string;
+    aliased_data: TAliasedData;
+
+    // extra metadata present in payload
+    graph_has_different_publication: boolean;
+    name: string;
+    descriptors: Record<
+        string,
+        { name: string; map_popup: string; description: string }
+    >;
+    legacyid: string;
+    createdtime: string; // ISO timestamp
+    graph: string;
+    graph_publication: string;
+    resource_instance_lifecycle_state: string;
+    principaluser: string | null;
+}
+
+// Audit/Edit Log Types
+export interface EditLogResponse {
+    modified_on: string | null;
+    modified_by: string | null;
+    transaction_id?: string | null;
+    edit_type?: string | null;
+    user_email?: string | null;
+    is_system_edit?: boolean;
+    method_used?: string;
+    error?: string;
+    tile_id?: string | null;
+    nodegroup_id?: string | null;
+}
+
+export interface EditLogEntry {
+    entered_on: string | null;
+    entered_by: string | null;
+}
+
+export type EditLogData = Record<string, EditLogEntry>;
+
+export interface AliasedNodeDataWithAudit extends AliasedNodeData {
+    audit?: EditLogEntry;
+}
+
+export interface AliasedTileDataWithAudit extends Omit<
+    AliasedTileData,
+    'aliased_data'
+> {
+    audit?: EditLogEntry;
+    aliased_data: Record<
+        string,
+        AliasedNodeDataWithAudit | AliasedNodegroupData | null
+    >;
 }

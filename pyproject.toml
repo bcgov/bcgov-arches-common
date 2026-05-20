@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bcgov-arches-common"
-version = "1.2.10"
+version = "2.1.0b4"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = []
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
     "Intended Audience :: Developers",
@@ -24,8 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches@7.6.12+bcgov.1#egg=arches",
-    "arches-component-lab",
+    "arches @ git+https://github.com/bcgov/arches@dev/8.1.x_bcgov",
+    "arches-component-lab>=0.0.1a11",
     "authlib",
 ]
 dynamic = []
