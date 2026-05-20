@@ -12,6 +12,12 @@ export type LayerSpecificationType = LayerSpecification;
 
 export type MapLibreMapSourcesType = { [_: string]: SourceSpecification };
 
+// `arches.mapMarkers` name/url pair seeded from the MapMarker DB table.
+export type ArchesMapMarker = {
+    name: string;
+    url: string;
+};
+
 type GeoJsonNode = {
     alias: string;
     isrequired: boolean;
@@ -31,6 +37,9 @@ export type GeoJsonNodeConfigType = {
     pointHaloColor?: string;
     fillColor?: string;
     outlineColor?: string;
+    advancedStyling?: boolean;
+    // JSON-encoded array of MapLibre layer specifications
+    advancedStyle?: string;
 };
 
 export type GeoJsonCardXNodeXWidgetData = Omit<CardXNodeXWidgetData, 'node'> & {

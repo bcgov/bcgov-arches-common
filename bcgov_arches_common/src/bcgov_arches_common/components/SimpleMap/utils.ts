@@ -24,15 +24,41 @@ function parseColor(input?: string): ParsedColor {
     return { color: s, opacity: 1 };
 }
 
+/** Rebind advancedStyle JSON layers to the local GeoJSON source; null falls back to simple styling. */
+function buildAdvancedLayersFromJson(
+    sourceId: string,
+    cfg: GeoJsonNodeConfigType,
+): LayerSpecification[] | null {
+    if (!cfg.advancedStyling || !cfg.advancedStyle) return null;
+
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(cfg.advancedStyle);
+    } catch (error) {
+        console.warn('Failed to parse advancedStyle config', error);
+        return null;
+    }
+    if (!Array.isArray(parsed) || !parsed.length) return null;
+
+    return parsed.map(({ 'source-layer': _sl, id, ...rest }) => ({
+        ...rest,
+        id: `${sourceId}-${id}`,
+        source: sourceId,
+    })) as LayerSpecification[];
+}
+
 /**
- * Build MapLibre layer definitions from node.config in your JSON.
- * Returns layers ordered for proper z-index (halos first).
+ * Build MapLibre layers from node.config: the node's `advancedStyle` when
+ * `advancedStyling` is set, otherwise a simple color/weight layer set.
  */
 export function buildLayersForFeature(
     sourceId: string,
     sourceJson: GeoJsonCardXNodeXWidgetData,
 ): LayerSpecification[] {
     const cfg: GeoJsonNodeConfigType = sourceJson?.node?.config ?? {};
+
+    const advancedLayers = buildAdvancedLayersFromJson(sourceId, cfg);
+    if (advancedLayers) return advancedLayers;
 
     const {
         weight = 2,
