@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import { watch, onMounted, type Ref, ref, shallowRef, computed } from 'vue';
+import arches from 'arches';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
@@ -25,6 +26,7 @@ import type {
     LayerSpecificationType,
     StyleSpecificationType,
     MapLibreMapSourcesType,
+    ArchesMapMarker,
 } from '@/bcgov_arches_common/components/SimpleMap/types.ts';
 import { buildLayersForFeature } from '@/bcgov_arches_common/components/SimpleMap/utils.ts';
 
@@ -129,6 +131,10 @@ function setupMap(): void {
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
+        // We need this because our map instance doesn't have the patterns required.
+        if (cardXNodeXWidgetData?.node?.config?.advancedStyling) {
+            registerLegacyMapMarkers();
+        }
         const featureColl =
             aliasedNodeData?.node_value || featureCollection([]);
         if (featureColl.features.length > 0) {
@@ -174,6 +180,24 @@ watch(mapCentre, (val, oldVal) => {
         map.value.flyTo({ center: val, zoom: zoom.value, speed: 0.8 });
     }
 });
+
+// Load Arches MapMarker images so advanced styles referencing them
+// (icon-image / fill-pattern, e.g. Borden labels) resolve.
+// MapMarkers are already loaded in as images by Arches for Search and Edit Map views.
+const registerLegacyMapMarkers = () => {
+    if (!map.value) return;
+    const markers = arches.mapMarkers as ArchesMapMarker[];
+    for (const { name, url } of markers) {
+        if (map.value.hasImage(name)) continue;
+        const img = new Image();
+        img.onload = () => {
+            if (map.value && !map.value.hasImage(name)) {
+                map.value.addImage(name, img);
+            }
+        };
+        img.src = url;
+    }
+};
 
 const addGeometryToMap = (featureCollection: FeatureCollection) => {
     if (
