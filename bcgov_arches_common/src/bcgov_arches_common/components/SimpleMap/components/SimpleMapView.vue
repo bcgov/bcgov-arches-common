@@ -132,9 +132,7 @@ function setupMap(): void {
             new maplibregl.AttributionControl({ compact: true }),
         );
         // We need this because our map instance doesn't have the patterns required.
-        if (cardXNodeXWidgetData?.node?.config?.advancedStyling) {
-            registerLegacyMapMarkers();
-        }
+        registerLegacyMapMarkers();
         const featureColl =
             aliasedNodeData?.node_value || featureCollection([]);
         if (featureColl.features.length > 0) {
