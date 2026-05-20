@@ -131,8 +131,7 @@ function setupMap(): void {
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
-        // We need this because our map instance doesn't have the patterns required.
-        registerLegacyMapMarkers();
+        registerMapMarkersAsImages();
         const featureColl =
             aliasedNodeData?.node_value || featureCollection([]);
         if (featureColl.features.length > 0) {
@@ -182,7 +181,7 @@ watch(mapCentre, (val, oldVal) => {
 // Load Arches MapMarker images so advanced styles referencing them
 // (icon-image / fill-pattern, e.g. Borden labels) resolve.
 // MapMarkers are already loaded in as images by Arches for Search and Edit Map views.
-const registerLegacyMapMarkers = () => {
+const registerMapMarkersAsImages = () => {
     if (!map.value) return;
     const markers = arches.mapMarkers as ArchesMapMarker[];
     for (const { name, url } of markers) {
