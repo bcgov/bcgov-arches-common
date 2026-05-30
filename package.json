@@ -20,9 +20,9 @@
     },
     "dependencies": {
         "@primeuix/styles": "^1.2.3",
-        "arches": "github:bcgov/arches#stable/8.0.10_bcgov_12578_12377_12616_12502_12697_12610_12707",
-        "arches-component-lab": "archesproject/arches-component-lab#main",
-        "arches-querysets": "github:archesproject/arches-querysets#main",
+        "arches": "github:bcgov/arches#v8.0.10-bcgov",
+        "arches-component-lab": "bcgov/arches-component-lab#v0.0.1a13-bcgov",
+        "arches-querysets": "bcgov/arches-querysets#v1.1.1-bcgov",
         "dompurify": "^3.3.0",
         "geojson": "0.5.0",
         "maplibre-gl": "^5.10.0",
