@@ -97,7 +97,7 @@ class PMBCDataView(View, OutboundProxyMixin):
             )
             return JsonResponse(
                 {
-                    "error": f"Error fetching data from external API: {str(e)}",
+                    "error": "Error fetching data from external API",
                     "pid": pid,
                 },
                 status=500,
@@ -109,7 +109,7 @@ class PMBCDataView(View, OutboundProxyMixin):
             )
             return JsonResponse(
                 {
-                    "error": f"Error fetching data from external API: {str(e)}",
+                    "error": "Error fetching data from external API",
                     "pid": pid,
                 },
                 status=500,
@@ -128,7 +128,7 @@ class PMBCDataView(View, OutboundProxyMixin):
             )
             return JsonResponse(
                 {
-                    "error": f"Unexpected error: {str(e)}",
+                    "error": "An unexpected internal error occurred while fetching PMBC data.",
                     "pid": pid,
                 },
                 status=500,
