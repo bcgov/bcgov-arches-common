@@ -32,15 +32,28 @@
     url('../fonts/BCSans/BCSans-BoldItalic.woff') format('woff'); /* Modern Browsers */
 }
 
-#main-content
-{
-    overflow: scroll;
+.editor-report .resource-report-abstract-container .resource-component-abstract {
+    height: calc(100vh - 100px);
 }
 
 body, h1, h2, h3, h4, h5
 {
     font-family: BCSans, 'Open Sans', 'Noto Sans', Verdana, Arial, sans-serif !important;
 }
+
+/* Counteract nifty */
+fieldset a {
+    text-decoration: none;
+    color: #337ab7;
+    outline: 0;
+}
+
+fieldset a:hover,a:focus {
+    text-decoration: none;
+    color: #000099;
+    outline: 0!important
+}
+/* End Counteract nifty */
 
 .hover-feature-nav-right + .hover-feature-title {
     width: 100%;
@@ -336,8 +349,10 @@ img.bc-details-image
 
 .bc-popup-entry
 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     margin-bottom: 1px;
-    overflow: auto;
 }
 
 .bc-popup-label, .bc-popup-value
@@ -359,7 +374,7 @@ img.bc-details-image
 
 /* Vue schtuff */
 .bcgov-vue-mounting-point {
-   font-size: 0.8rem;
+   /*font-size: 0.8rem;*/
 }
 
 .bcgov-vertical-steps > .p-steplist {
@@ -379,6 +394,11 @@ img.bc-details-image
 .bcgov-stepper {
    display: flex;
    flex-direction: row;
+}
+
+.p-tree-node-content {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 /* End Vue schtuff */
@@ -577,18 +597,6 @@ img.bc-details-image
 
     dd {
         clear: none !important;
-    }
-
-    /* For displaying long-form text blocks as full width of the page,
-     * some elements are within components and not easy to modify but do have
-     * an id that can be queried.
-     */
-    dd[data-bind*="addressPart"],
-    dd[data-bind*="physical_description"],
-    dd[data-bind*="heritage_value"],
-    dd[data-bind*="defining_elements"] {
-        width: auto !important;
-        display: block !important;
     }
 
     .data-carousel {

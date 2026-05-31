@@ -1,0 +1,135 @@
+# views.py
+import json
+import logging
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views import View
+from bcgov_arches_common.views.base import OutboundProxyMixin
+import urllib3
+
+logger = logging.getLogger(__name__)
+
+
+class PMBCDataView(View, OutboundProxyMixin):
+    """
+    Class-based view to fetch parcel data from BC Energy Regulator ArcGIS REST service using PID.
+
+    GET Parameters:
+    - pid: The PID value to query, e.g., '0008746320'
+
+    Returns:
+    - JsonResponse: The data from the ArcGIS REST endpoint
+    """
+
+    def get(self, request, pid, *args, **kwargs):
+        # Get PID from request parameters
+        # pid = request.GET.get("pid")
+
+        # Validate PID parameter
+        if not pid or not pid.isdigit():
+            return HttpResponseBadRequest(
+                json.dumps(
+                    {
+                        "error": "Invalid or missing PID parameter. PID should be a numeric value."
+                    }
+                ),
+                content_type="application/json",
+            )
+
+        # Construct the URL to the external API
+
+        base_url = "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows"
+
+        # Define parameters for the request
+        params = {
+            "service": "WFS",
+            "version": "2.0.0",
+            "request": "GetFeature",
+            "typeNames": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+            "srsName": "EPSG:4326",
+            "CQL_FILTER": f"PID='{pid}'",
+            "outputFormat": "application/json",
+        }
+
+        logger.info(f"Requesting PMBC data for PID: {pid}")
+
+        try:
+            req = self.get_request_pool_manager()
+            # Make the request to the external API
+            response = req.request(method="GET", url=base_url, fields=params)
+
+            if response.status != 200:
+                raise urllib3.exceptions.HTTPError(f"HTTP error {response.status}")
+
+            # Parse JSON data
+            data = json.loads(response.data.decode("utf-8"))
+
+            logger.info(f"Received PMBC data for PID: {pid}, status: {response.status}")
+
+            # Add some metadata to the response
+            result = {
+                "meta": {
+                    "source": "ParcelMap BC Parcel Fabric",
+                    "pid": pid,
+                    "timestamp": response.headers.get("Date"),
+                },
+                "data": data,
+            }
+
+            return JsonResponse(result)
+
+        except urllib3.exceptions.TimeoutError:
+            logger.error(f"Timeout while fetching PMBC data for PID: {pid}")
+            return JsonResponse(
+                {"error": "The request to the external API timed out", "pid": pid},
+                status=504,
+            )  # Gateway Timeout
+
+        except urllib3.exceptions.NewConnectionError:
+            logger.error(f"Connection error while fetching PMBC data for PID: {pid}")
+            return JsonResponse(
+                {"error": "Could not connect to the external API", "pid": pid},
+                status=502,
+            )  # Bad Gateway
+
+        except urllib3.exceptions.HTTPError as e:
+            logger.error(
+                f"HTTP error while fetching PMBC data for PID: {pid}: {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": "Error fetching data from external API",
+                    "pid": pid,
+                },
+                status=500,
+            )
+
+        except urllib3.exceptions.RequestError as e:
+            logger.error(
+                f"Request error while fetching PMBC data for PID: {pid}: {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": "Error fetching data from external API",
+                    "pid": pid,
+                },
+                status=500,
+            )
+
+        except json.JSONDecodeError:
+            logger.error(f"JSON decode error while processing PMBC data for PID: {pid}")
+            return JsonResponse(
+                {"error": "Error parsing response from external API", "pid": pid},
+                status=500,
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Unexpected error while fetching PMBC data for PID: {pid}: {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": "An unexpected internal error occurred while fetching PMBC data.",
+                    "pid": pid,
+                },
+                status=500,
+            )

@@ -1,0 +1,252 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import arches from 'arches';
+import Button from 'primevue/button';
+import {
+    getEditLogForTile,
+    getEditLogForNodegroupId,
+    getEditLogForNodeAlias,
+    getEditLogForResource,
+} from '@/bcgov_arches_common/components/EditLog/api.ts';
+import type {
+    EditLogResponse,
+    EditLogEntry,
+} from '@/bcgov_arches_common/types.ts';
+
+const props = defineProps<{
+    resourceId: string;
+    tileIds?: string[];
+    auditFieldsVisible?: boolean;
+    nodegroupConfigs?: Array<{
+        graphSlug: string;
+        alias: string;
+        label?: string;
+        fetchTiles?: boolean;
+    }>;
+}>();
+
+const auditFieldsVisible = ref(props?.auditFieldsVisible ?? false);
+const emit = defineEmits<{
+    loaded: [data: EditLogResponse];
+    error: [error: string];
+    showAuditFields: [results: Record<string, EditLogEntry>];
+}>();
+
+const loading = ref(false);
+const error = ref<string | null>(null);
+const dataLoaded = ref(false);
+
+const formatDisplayName = (response: EditLogResponse): string => {
+    if (!response.modified_by) {
+        return 'Unknown';
+    }
+
+    if (response.is_system_edit) {
+        return response.modified_by;
+    }
+
+    return response.modified_by;
+};
+
+const formatDate = (dateString: string | null): string => {
+    if (!dateString) return 'Unknown';
+
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+    } catch {
+        return dateString;
+    }
+};
+
+const loadEditLog = async (
+    resourceId: string,
+    options?: {
+        tileId?: string;
+        graphSlug?: string;
+        nodegroupId?: string;
+        nodegroupAlias?: string;
+    },
+): Promise<EditLogResponse | null> => {
+    try {
+        if (options?.tileId) {
+            return await getEditLogForTile(resourceId, options.tileId);
+        } else if (options?.nodegroupId) {
+            return await getEditLogForNodegroupId(
+                resourceId,
+                options.nodegroupId,
+            );
+        } else if (options?.nodegroupAlias) {
+            if (!options?.graphSlug) {
+                throw new Error(
+                    'Must provide graphSlug when using nodegroupAlias',
+                );
+            } else {
+                return await getEditLogForNodeAlias(
+                    resourceId,
+                    options.graphSlug,
+                    options.nodegroupAlias,
+                );
+            }
+        } else {
+            return await getEditLogForResource(resourceId);
+        }
+    } catch (err) {
+        const errorMessage =
+            err instanceof Error ? err.message : 'Unknown error occurred';
+        error.value = errorMessage;
+        console.error('Error loading edit log:', err);
+        return null;
+    }
+};
+
+const showAllFields = () => {
+    if (!dataLoaded.value) {
+        populateAllEnteredFields().then((data) => {
+            if (data) {
+                auditFieldsVisible.value = !auditFieldsVisible.value;
+                emit('showAuditFields', data);
+            }
+        });
+    } else {
+        auditFieldsVisible.value = !auditFieldsVisible.value;
+        emit('showAuditFields', {} as Record<string, EditLogEntry>);
+    }
+};
+
+const populateAllEnteredFields = async (): Promise<
+    Record<string, EditLogEntry> | undefined
+> => {
+    loading.value = true;
+    const results: Record<string, EditLogEntry> = {};
+
+    try {
+        // If specific tile IDs are provided, fetch data for each
+        if (props.tileIds && props.tileIds.length > 0) {
+            const promises = props.tileIds.map(async (tileId) => {
+                const result = await loadEditLog(props.resourceId, {
+                    tileId: tileId,
+                });
+
+                if (result) {
+                    return {
+                        tileId: tileId,
+                        data: {
+                            entered_on: formatDate(result.modified_on),
+                            entered_by: formatDisplayName(result),
+                        } as EditLogEntry,
+                    };
+                }
+                return null;
+            });
+
+            const responses = await Promise.all(promises);
+
+            responses.forEach((response) => {
+                if (response) {
+                    results[`tile_${response.tileId}`] = response.data;
+                }
+            });
+        }
+        // If nodegroup configs provided
+        else if (props.nodegroupConfigs && props.nodegroupConfigs.length > 0) {
+            const promises = props.nodegroupConfigs.map(async (config) => {
+                const result = await loadEditLog(props.resourceId, {
+                    nodegroupAlias: config.alias,
+                    graphSlug: config.graphSlug,
+                });
+
+                if (result) {
+                    return {
+                        alias: config.alias,
+                        data: {
+                            entered_on: formatDate(result.modified_on),
+                            entered_by: formatDisplayName(result),
+                        } as EditLogEntry,
+                    };
+                }
+
+                return null;
+            });
+
+            const responses = await Promise.all(promises);
+
+            responses.forEach((response) => {
+                if (response) {
+                    results[response.alias] = response.data;
+                }
+            });
+        }
+        // Fetch resource-level data
+        else {
+            const result = await loadEditLog(props.resourceId);
+            if (result) {
+                results['resource'] = {
+                    entered_on: formatDate(result.modified_on),
+                    entered_by: formatDisplayName(result),
+                };
+            }
+        }
+
+        dataLoaded.value = true;
+        return results;
+    } catch (err) {
+        console.error('Error loading edit logs:', err);
+        error.value = err instanceof Error ? err.message : 'Unknown error';
+    } finally {
+        loading.value = false;
+    }
+};
+
+const buttonLabel = computed(() => {
+    return loading.value
+        ? 'Loading...'
+        : auditFieldsVisible.value
+          ? 'Hide Audit Info'
+          : 'Show Audit Info';
+});
+
+const buttonIcon = computed(() => {
+    return loading.value
+        ? 'pi pi-spinner pi-spin'
+        : auditFieldsVisible.value
+          ? 'pi pi-eye-slash'
+          : 'pi pi-eye';
+});
+
+const goToAuditLog = (): void => {
+    const auditLogUrl = arches.urls.get_resource_edit_log(props.resourceId);
+    window.open(auditLogUrl, '_blank', 'noopener,noreferrer');
+};
+</script>
+
+<template>
+    <Button
+        :label="buttonLabel"
+        :icon="buttonIcon"
+        :disabled="loading"
+        class="control-button"
+        severity="info"
+        @click="showAllFields" />
+    <Button
+        label="Go to Audit Log"
+        icon="pi pi-history"
+        class="control-button"
+        severity="secondary"
+        @click="goToAuditLog" />
+</template>
+
+<style scoped>
+.control-button {
+    min-width: 180px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .control-button {
+        width: 100%;
+        min-width: auto;
+    }
+}
+</style>

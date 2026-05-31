@@ -3,8 +3,15 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import include, path
 from bcgov_arches_common.views.api.concept import ConceptsForNode
-from bcgov_arches_common.views.api import user as api_user
+from bcgov_arches_common.views.api import user as api_user, map
 from bcgov_arches_common.views import auth
+from bcgov_arches_common.views.api.map import (
+    MapDataAPI,
+)
+from bcgov_arches_common.views.api.edit_log import ResourceEditLogView
+
+uuid_regex = settings.UUID_REGEX
+from bcgov_arches_common.views.api.pmbc import PMBCDataView
 
 urlpatterns = [
     path(
@@ -13,6 +20,7 @@ urlpatterns = [
         name="concepts_for_node",
     ),
     path("api/user/", api_user.UserView.as_view(), name="api_user"),
+    path("api/map-data", map.MapDataAPI.as_view(), name="api-map-data"),
     # OAuth views
     # Redirect the admin login page to use OAuth
     path(
@@ -28,10 +36,18 @@ urlpatterns = [
         auth.UnauthorizedView.as_view(),
         name="unauthorized",
     ),
+    # Map Libre stuff from Rascolls
+    path("api/map-data", MapDataAPI.as_view(), name="api-map-data"),
+    path(
+        "api/edit-log/<str:resource_id>",
+        ResourceEditLogView.as_view(),
+        name="api-resource-edit-log",
+    ),
+    path("api/pmbc-parcel/<slug:pid>", PMBCDataView.as_view(), name="pmbc-parcel-data"),
 ]
 
 # Adds URL pattern to serve media files during development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Only handle i18n routing in active project. This will still handle the routes provided by Arches core and Arches applications,
 # but handling i18n routes in multiple places causes application errors.

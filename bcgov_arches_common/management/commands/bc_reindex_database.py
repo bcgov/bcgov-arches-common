@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from arches.management.commands.es import Command as BaseCommand
 
 from arches.app.models import models
 from arches.app.models.system_settings import settings
@@ -109,11 +109,18 @@ class Command(BaseCommand):
         for key, value in resource_types_lookup.items():
             if key not in index_order:
                 ordered_resource_types.append(value[1])
+                index_order.append(key)
 
+        self.delete_indexes(name=None)
+        self.setup_indexes(name=None)
         index_concepts(clear_index=clear_index, batch_size=batch_size)
 
         # Process each resource type individually to maintain ordering
         for i, resource_type_uuid in enumerate(ordered_resource_types):
+            print(
+                f"{i+1}/{len(index_order)} Reindexing resources: {index_order[i]}",
+                flush=True,
+            )
             index_resources_by_type(
                 [resource_type_uuid],
                 clear_index=(clear_index and i == 0),

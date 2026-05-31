@@ -3,7 +3,13 @@
 
 import('@/arches/declarations.d.ts');
 
+declare module 'arches';
 declare module 'bcgov_arches_common';
+declare module 'underscore';
+declare module 'togeojson' {
+    export function kml(doc: Document): any;
+}
+
 // declare filetypes used in `./src/` folder
 declare module '*.ts';
 declare module '*.vue';
