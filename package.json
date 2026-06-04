@@ -22,7 +22,7 @@
         "@primeuix/styles": "^1.2.3",
         "@turf/bbox": "^7.2.0",
         "@turf/centroid": "^7.2.0",
-        "arches": "bcgov/arches#dev/8.1.x_bcgov",
+        "arches": "bcgov/arches#stable/8.1.2_bcgov_12776",
         "arches-component-lab": "archesproject/arches-component-lab#v0.0.1a9",
         "arches-querysets": "github:archesproject/arches-querysets#v1.1.0a1",
         "dompurify": "^3.3.0",
