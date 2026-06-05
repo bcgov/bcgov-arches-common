@@ -10,7 +10,8 @@ import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-co
 
 import MapView from '@/bcgov_arches_common/widgets/SimpleMap/components/SimpleMapView.vue';
 import ProgressSpinner from 'primevue/progressspinner';
-import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
+// import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
+import { useWidgetConfigStore } from '@/arches_component_lab/stores/useWidgetConfigStore.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 const mapData = ref<MapData | null | undefined>(null);
@@ -62,10 +63,11 @@ watchEffect(async () => {
     widgetConfigLoading.value = true;
 
     try {
-        resolvedCardXNodeXWidgetData.value = (await fetchCardXNodeXWidgetData(
-            graphSlug.value,
-            nodeAlias.value,
-        )) as GeoJSONFeatureCollectionCardXNodeXWidgetData;
+        resolvedCardXNodeXWidgetData.value =
+            (await useWidgetConfigStore().fetchWidgetConfig(
+                graphSlug.value,
+                nodeAlias.value,
+            )) as GeoJSONFeatureCollectionCardXNodeXWidgetData;
     } catch (error) {
         console.log(error);
         configurationError.value = error as Error;
