@@ -27,7 +27,6 @@
         "geojson": "0.5.0",
         "maplibre-gl": "^5.10.0",
         "primevue": "^4.3.9",
-        "@mapbox/togeojson": "^0.16.2",
         "typescript": "^5.6.2",
         "vite": "latest",
         "vue-router": "^4.4.3",
