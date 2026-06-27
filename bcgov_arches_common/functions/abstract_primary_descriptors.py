@@ -7,10 +7,13 @@ from arches.app.functions.primary_descriptors import (
 
 
 class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
+    _template = "<div class='bc-popup-entry'><div class='bc-popup-label'>%s</div><div class='bc-popup-value'>%s</div></div>"
     _graph_slug = ""
     _name_node_aliases = []
     _card_node_aliases = []
     _popup_node_aliases = []
+
+    _html_nodes = []
 
     _datatype_factory = DataTypeFactory()
 
@@ -31,6 +34,15 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
                         node.datatype
                     )
                 )
+
+        # Get nodes that have HTML representations
+        all_nodes = set(AbstractPrimaryDescriptors._nodes.values())
+        cnws = (
+            models.CardXNodeXWidget.objects.filter(node__in=all_nodes)
+            .filter(widget__name="rich-text-widget")
+            .all()
+        )
+        AbstractPrimaryDescriptors._html_nodes = [cnw.node.alias for cnw in cnws]
 
         AbstractPrimaryDescriptors._initialized = True
 
@@ -72,12 +84,14 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
                         AbstractPrimaryDescriptors._nodes[node_alias].name,
                         value,
                         config,
+                        node_alias in AbstractPrimaryDescriptors._html_nodes,
                     )
                 display_values.append(
                     AbstractPrimaryDescriptors._format_value(
                         AbstractPrimaryDescriptors._nodes[node_alias].name,
                         value,
                         config,
+                        node_alias in AbstractPrimaryDescriptors._html_nodes,
                     )
                 )
         return connector.join(display_values)
@@ -139,18 +153,22 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
         )
 
     @staticmethod
-    def _format_value(name, value, config):
-        if isinstance(value, list):
-            value = set([html.escape(str(v)) for v in value if v != ""])
-            if "" in value:
-                value.remove("")
-            value = ", ".join(sorted(value))
+    def _format_value(name, value, config, is_html=False):
+        def escape_value(val):
+            if not val:
+                return val
+            return html.escape(str(val)) if not is_html else str(val)
 
         if value is None:
             return ""
-        elif config["show_name"]:
-            return (
-                "<div class='bc-popup-entry'><div class='bc-popup-label'>%s</div><div class='bc-popup-value'>%s</div></div>"
-                % (html.escape(name), html.escape(str(value)))
-            )
+        elif isinstance(value, list):
+            value = set([escape_value(v) for v in value if v != ""])
+            if "" in value:
+                value.remove("")
+            value = ", ".join(sorted(value))
+        else:
+            value = escape_value(value)
+
+        if config["show_name"]:
+            return AbstractPrimaryDescriptors._template % (html.escape(name), value)
         return value
