@@ -12,7 +12,8 @@
         "gettext:extract": "vue-gettext-extract",
         "gettext:compile": "vue-gettext-compile",
         "prettier:check": "prettier bcgov_arches_common/src --check",
-        "prettier:fix": "prettier bcgov_arches_common/src --write",
+        "prettier:fix": "prettier --write",
+        "prettier:fix:all": "npm run prettier:fix bcgov_arches_common/src",
         "ts:check": "vue-tsc --noEmit",
         "ts:watch": "vue-tsc --watch --noEmit",
         "start": "cross-env NODE_OPTIONS=--max-old-space-size=2048 webpack serve --config ./webpack/webpack.config.dev.js",
@@ -44,7 +45,7 @@
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.8",
         "eslint-plugin-prettier": "^5.5.4",
-        "prettier": "^3.7.1",
+        "prettier": "3.9.3",
         "vite": "latest"
     },
     "nodeModulesPaths": {},
