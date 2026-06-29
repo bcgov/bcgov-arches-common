@@ -63,6 +63,7 @@ runs:
 
     - name: Check frontend formatting with prettier
       run: |
+        npx prettier --version
         npm run prettier:check
       shell: bash
 
