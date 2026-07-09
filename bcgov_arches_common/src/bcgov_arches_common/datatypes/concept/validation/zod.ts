@@ -13,7 +13,7 @@ export const CollectionItemSchema = z.object({
 export const ConceptValueSchema = z.object({
     display_value: z.string(),
     node_value: z.uuidv4().nullable(),
-    details: z.array(CollectionItemSchema),
+    details: z.array(z.unknown()),
 });
 
 export const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({

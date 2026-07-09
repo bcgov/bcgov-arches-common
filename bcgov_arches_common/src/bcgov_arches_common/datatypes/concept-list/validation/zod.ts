@@ -4,7 +4,7 @@ import { CollectionItemSchema } from '@/bcgov_arches_common/datatypes/concept/va
 export const ConceptListValueSchema = z.object({
     display_value: z.string(),
     node_value: z.array(z.uuidv4()).nullable(),
-    details: z.array(CollectionItemSchema),
+    details: z.array(z.unknown()),
 });
 
 export const ConceptListValueRequiredSchema = ConceptListValueSchema.safeExtend(

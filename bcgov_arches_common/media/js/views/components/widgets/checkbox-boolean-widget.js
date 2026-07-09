@@ -23,6 +23,13 @@ const viewModel = function (params) {
 
     BooleanCheckboxWidgetViewModel.apply(this, [params]);
     var self = this;
+
+    // In the graph designer config form, if defaultValue is null (stale DB record),
+    // correct it to false so the next save persists the right value.
+    if (self.configForm && self.defaultValue && self.defaultValue() === null) {
+        self.defaultValue(false);
+    }
+
     this.setValue = function (val) {
         if (ko.unwrap(self.disabled) === false) {
             if (val === self.value()) {
@@ -49,16 +56,16 @@ const viewModel = function (params) {
         }
     };
 
+    // For a boolean checkbox, null defaultValue means false (unchecked = false, not null)
     var defaultValue = ko.unwrap(this.defaultValue);
-
-    if (self.value() === null && self.defaultValue() !== null) {
-        self.value(self.defaultValue());
+    if (defaultValue === null || defaultValue === undefined) {
+        defaultValue = false;
     }
+
     if (
         this.tile &&
         ko.unwrap(this.tile.tileid) === '' &&
-        defaultValue != null &&
-        defaultValue !== ''
+        self.value() === null
     ) {
         this.value(defaultValue);
     }
