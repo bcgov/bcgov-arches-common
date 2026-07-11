@@ -96,7 +96,7 @@ const center = ref<[number, number]>(defaultCenter.value);
 const mapCentre = computed<[number, number]>(() => {
     return (
         aliasedNodeData?.value?.node_value && geometry.value
-            ? (centroid(geometry.value)?.geometry?.coordinates ??
+            ? (centroid(geometry.value as AllGeoJSON)?.geometry?.coordinates ??
               defaultCenter.value)
             : defaultCenter.value
     ) as [number, number];
