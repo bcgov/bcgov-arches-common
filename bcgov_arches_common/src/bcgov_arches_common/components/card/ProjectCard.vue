@@ -31,6 +31,9 @@ const props = defineProps({
     route: { type: Object as PropType<RouteLocationRaw>, default: () => ({}) },
     searchQuery: { type: String, default: '' },
 
+    // Notification Badge
+    unreadMessages: { type: Number, default: 0 },
+
     // Urgency Level (0: None, 1: Yellow, 2: Orange, 3: Red)
     urgency: { type: Number, default: 0 },
 });
@@ -77,6 +80,12 @@ const isPrioritySearched = computed(() => {
         :to="props.route"
         class="project-card-link"
         :class="props.class">
+        <span
+            v-if="props.unreadMessages && props.unreadMessages > 0"
+            class="message-badge">
+            {{ props.unreadMessages }}
+        </span>
+
         <div
             class="bcgov-custom-card"
             :class="urgencyClass">
@@ -85,8 +94,7 @@ const isPrioritySearched = computed(() => {
                     <i
                         v-if="props.capPriority"
                         class="fa-solid fa-star priority-star"
-                        :class="{ 'star-highlighted': isPrioritySearched }">
-                    </i>
+                        :class="{ 'star-highlighted': isPrioritySearched }"></i>
 
                     <span v-html="highlightText(props.capLabel)"></span>
                 </div>
@@ -113,8 +121,7 @@ const isPrioritySearched = computed(() => {
                         <i
                             v-else
                             :class="props.icon"
-                            class="body-icon-class">
-                        </i>
+                            class="body-icon-class"></i>
                     </div>
 
                     <div
@@ -174,12 +181,34 @@ const isPrioritySearched = computed(() => {
 
 <style scoped>
 .project-card-link {
+    position: relative; /* Required to position the absolute badge correctly */
     text-decoration: none;
     display: block;
     width: 275px;
     height: 275px;
     margin: 10px;
     box-sizing: border-box;
+}
+
+/* --- Notification Badge --- */
+.message-badge {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: #d32f2f;
+    color: #ffffff;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    pointer-events: none;
 }
 
 .bcgov-custom-card {
