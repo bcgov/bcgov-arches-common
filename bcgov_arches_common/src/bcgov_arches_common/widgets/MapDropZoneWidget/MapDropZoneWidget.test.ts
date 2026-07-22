@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import MapDropZoneWidget from './MapDropZoneWidget.vue';
 import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
+import type { WidgetMode } from '@/arches_component_lab/widgets/types.ts';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature } from 'geojson';
@@ -11,14 +11,16 @@ import type { Feature } from 'geojson';
 // Stubs
 // ---------------------------------------------------------------------------
 
-const MapDropZoneWidgetEditorStub = defineComponent({
+// Plain objects avoid vue/one-component-per-file and vue/require-prop-types
+// lint warnings that are triggered by defineComponent() in .ts test files.
+const MapDropZoneWidgetEditorStub = {
     name: 'MapDropZoneWidgetEditor',
     props: ['aliasedNodeData', 'nodeAlias', 'cardXNodeXWidgetData'],
     emits: ['update:value'],
     template: '<div class="editor-stub" />',
-});
+};
 
-const SimpleMapStub = defineComponent({
+const SimpleMapStub = {
     name: 'SimpleMap',
     props: [
         'graphSlug',
@@ -28,7 +30,7 @@ const SimpleMapStub = defineComponent({
         'aliasedNodeData',
     ],
     template: '<div class="simplemap-stub" />',
-});
+};
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -94,7 +96,7 @@ const makeNodeData = (features: Feature[]): GeoJSONFeatureCollectionValue => ({
 
 function mountWidget(
     propsOverride: Partial<{
-        mode: string;
+        mode: WidgetMode;
         aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
     }> = {},
 ) {

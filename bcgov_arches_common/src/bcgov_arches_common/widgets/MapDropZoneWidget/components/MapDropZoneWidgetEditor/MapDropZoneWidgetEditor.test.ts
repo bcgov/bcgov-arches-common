@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { FeatureCollection } from 'geojson';
@@ -27,9 +26,11 @@ import { processFileGeometry } from '@/bcgov_arches_common/widgets/MapDropZoneWi
 // Stubs
 // ---------------------------------------------------------------------------
 
+// Plain objects avoid vue/one-component-per-file and vue/require-prop-types
+// lint warnings that are triggered by defineComponent() in .ts test files.
 // Renders the content slot with a no-op removeFileCallback so MapDropZone and
 // FileList inside the slot are also mounted.
-const FileUploadStub = defineComponent({
+const FileUploadStub = {
     name: 'FileUpload',
     props: [
         'accept',
@@ -48,20 +49,20 @@ const FileUploadStub = defineComponent({
     },
     template:
         '<div class="file-upload-stub"><slot name="content" :remove-file-callback="removeFileCallback" /></div>',
-});
+};
 
-const MapDropZoneStub = defineComponent({
+const MapDropZoneStub = {
     name: 'MapDropZone',
     props: ['openFileChooser', 'cardXNodeXWidgetData'],
     template: '<div class="map-drop-zone-stub" />',
-});
+};
 
-const FileListStub = defineComponent({
+const FileListStub = {
     name: 'FileList',
     props: ['files'],
     emits: ['remove'],
     template: '<div class="file-list-stub" />',
-});
+};
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -153,7 +154,7 @@ describe('MapDropZoneWidgetEditor', () => {
 
     describe('rendering', () => {
         it('mounts without throwing', () => {
-            expect(() => mountEditor()).not.toThrow();
+            mountEditor();
         });
 
         it('renders the FileUpload component', () => {
@@ -265,11 +266,9 @@ describe('MapDropZoneWidgetEditor', () => {
             vi.mocked(processFileGeometry).mockResolvedValue(undefined);
 
             const wrapper = mountEditor();
-            await wrapper
-                .findComponent(FileUploadStub)
-                .vm.$emit('select', {
-                    files: [makeMapFile('unsupported.txt')],
-                });
+            await wrapper.findComponent(FileUploadStub).vm.$emit('select', {
+                files: [makeMapFile('unsupported.txt')],
+            });
             await flushPromises();
 
             const emitted = wrapper.emitted('update:value') as any[][];

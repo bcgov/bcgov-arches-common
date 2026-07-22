@@ -111,7 +111,7 @@ describe('MapDropZone', () => {
             await wrapper
                 .find('.upload-container')
                 .trigger('keydown', { key: 'Tab' });
-            expect(openFileChooser).not.toHaveBeenCalled();
+            expect(openFileChooser).toHaveBeenCalledTimes(0);
         });
     });
 

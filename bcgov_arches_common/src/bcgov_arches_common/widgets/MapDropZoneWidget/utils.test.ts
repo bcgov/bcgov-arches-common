@@ -39,11 +39,11 @@ let mockReadResult: string | ArrayBuffer | null = null;
 class MockFileReader {
     onload: ((e: any) => void) | null = null;
 
-    readAsText(_file: File): void {
+    readAsText(): void {
         this.onload?.({ target: { result: mockReadResult } });
     }
 
-    readAsArrayBuffer(_file: File): void {
+    readAsArrayBuffer(): void {
         this.onload?.({ target: { result: mockReadResult } });
     }
 }

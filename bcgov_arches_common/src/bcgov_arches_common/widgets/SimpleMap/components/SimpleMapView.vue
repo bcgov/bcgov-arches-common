@@ -39,7 +39,8 @@ const props = defineProps<{
     graphSlug: string;
     nodeAlias: string;
     cardXNodeXWidgetData:
-        GeoJSONFeatureCollectionCardXNodeXWidgetData | undefined;
+        | GeoJSONFeatureCollectionCardXNodeXWidgetData
+        | undefined;
     mapData: MapData | undefined | null;
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
     markCentroid?: boolean;
@@ -190,7 +191,7 @@ onMounted(async () => {
 
 watch(
     () => mapData,
-    (mapData, prevMapData) => {
+    (mapData) => {
         console.log('mapData updated', mapData);
         console.log('cardXNodeXWidgetData', cardXNodeXWidgetData);
         if (mapData) {
