@@ -190,7 +190,7 @@ onMounted(async () => {
 
 watch(
     () => mapData,
-    (mapData, prevMapData) => {
+    (mapData) => {
         console.log('mapData updated', mapData);
         console.log('cardXNodeXWidgetData', cardXNodeXWidgetData);
         if (mapData) {
