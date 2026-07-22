@@ -1,37 +1,31 @@
 {
-  "extends": "./frontend_configuration/tsconfig-paths.json",
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "jsx": "preserve",
-    "jsxImportSource": "vue",
-    "strict": true,
-    "noEmit": true,
-    "noImplicitThis": false,
-    "verbatimModuleSyntax": true,
-    "useDefineForClassFields": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "types": [
-      "vitest/globals"
-    ],
-    "allowImportingTsExtensions": true,
-    "paths": {
-      "@/arches/*": [
-        "./node_modules/arches/arches/app/src/arches/*"
-      ],
-      "@/bcgov_arches_common/*": [
-        "./bcgov_arches_common/src/bcgov_arches_common/*"
-      ],
-      "@/arches_component_lab/*": [
-        "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
-      ],
-      "*": [
-        "./node_modules/*"
-      ]
+    "extends": "./frontend_configuration/tsconfig-paths.json",
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "preserve",
+        "jsxImportSource": "vue",
+        "strict": true,
+        "noEmit": true,
+        "noImplicitThis": false,
+        "verbatimModuleSyntax": true,
+        "useDefineForClassFields": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "types": ["vitest/globals", "uuid"],
+        "allowImportingTsExtensions": true,
+        "paths": {
+            "@/arches/*": ["./node_modules/arches/arches/app/src/arches/*"],
+            "@/bcgov_arches_common/*": [
+                "./bcgov_arches_common/src/bcgov_arches_common/*"
+            ],
+            "@/arches_component_lab/*": [
+                "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
+            ],
+            "*": ["./node_modules/*"]
+        }
     }
-  }
 }
