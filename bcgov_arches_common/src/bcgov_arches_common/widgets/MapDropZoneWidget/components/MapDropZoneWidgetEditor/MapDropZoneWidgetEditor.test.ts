@@ -14,7 +14,7 @@ vi.mock('@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts', () => ({
 // Predictable UUIDs: validate() always returns false so every feature gets a
 // freshly generated id; v4() returns a sequential counter string.
 let uuidCounter = 0;
-vi.mock('uuid', () => ({
+vi.mock('uuidesm', () => ({
     v4: vi.fn(() => `uuid-${++uuidCounter}`),
     validate: vi.fn(() => false),
 }));

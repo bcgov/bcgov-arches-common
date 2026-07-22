@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { v4 as uuidGenerate, validate as uuidValidate } from 'uuid';
+import { v4, validate as uuidValidate } from 'uuidesm';
 
 import FileUpload from 'primevue/fileupload';
 
@@ -94,9 +94,9 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
 
         // Ensure each feature has a valid uuid
         geometries.features = geometries.features.map((feature) => {
-            return feature?.id && uuidValidate(feature.id)
+            return uuidValidate(feature?.id)
                 ? feature
-                : { ...feature, id: uuidGenerate() };
+                : { ...feature, id: v4() };
         });
 
         pendingFiles.value = [
@@ -108,7 +108,7 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
                 url: file.objectURL,
                 file,
                 node_id: cardXNodeXWidgetData.node.nodeid, // or cardXNodeXWidgetData.value…
-                geometrySourceId: uuidGenerate(),
+                geometrySourceId: v4(),
                 geometries: geometries as FeatureCollection,
             },
         ];

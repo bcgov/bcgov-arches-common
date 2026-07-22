@@ -25,6 +25,7 @@
             "@/arches_component_lab/*": [
                 "./node_modules/arches-component-lab/arches_component_lab/src/arches_component_lab/*"
             ],
+            "uuidesm": ["./node_modules/uuid/dist"],
             "*": ["./node_modules/*"]
         }
     }

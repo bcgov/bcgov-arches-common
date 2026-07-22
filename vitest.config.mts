@@ -52,6 +52,7 @@ function generateConfig(): Promise<UserConfig> {
             // under /usr/local/lib/...) can still resolve primevue/* imports
             // during Vite's build-time import analysis.
             primevue: path.join(__dirname, 'node_modules', 'primevue'),
+            uuidesm: path.join(__dirname, 'node_modules', 'uuid', 'dist'),
         };
 
         for (const [
