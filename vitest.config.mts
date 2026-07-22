@@ -47,6 +47,11 @@ function generateConfig(): Promise<UserConfig> {
                 'js',
                 'arches.js',
             ),
+            // Pin primevue to the project's own node_modules so that files
+            // located outside the project root (e.g. Python-installed packages
+            // under /usr/local/lib/...) can still resolve primevue/* imports
+            // during Vite's build-time import analysis.
+            primevue: path.join(__dirname, 'node_modules', 'primevue'),
         };
 
         for (const [
@@ -62,6 +67,27 @@ function generateConfig(): Promise<UserConfig> {
                 'src',
                 archesApplicationName,
             );
+        }
+
+        // Mirror webpack's nodeModulesPaths alias resolution so that packages
+        // referenced by their webpack alias name (e.g. "shpjsesm", "togeojson")
+        // resolve correctly in the test environment.  Webpack reads these from
+        // arches' package.json; we do the same here for the installed npm package.
+        const archesNpmPackageJSON = JSON.parse(
+            fs.readFileSync(
+                path.join(__dirname, 'node_modules', 'arches', 'package.json'),
+                'utf-8',
+            ),
+        );
+        for (const [aliasName, subPath] of Object.entries(
+            (archesNpmPackageJSON['nodeModulesPaths'] ?? {}) as Record<
+                string,
+                string
+            >,
+        )) {
+            if (!alias[aliasName]) {
+                alias[aliasName] = path.join(__dirname, subPath);
+            }
         }
 
         resolve({
