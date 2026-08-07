@@ -4,7 +4,8 @@ export type GenericZodObjectType = typeof z.object;
 export type FieldError = { type?: string; message: string };
 type FlattenErrors = Record<string, FieldError[]>;
 
-// Zod reports errors with keys like "project_name.node_value.en.value". Want to flatten them at the top so they can
+// Zod reports errors with keys like "project_name.node_value.en.value".
+// Want to flatten them at the top so they can
 // be applied like $form.project_name.error.message
 function collapseFieldNames(
     nestedErrors: Record<string, FieldError[]>,

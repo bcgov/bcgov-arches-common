@@ -26,6 +26,8 @@ classifiers = [
 dependencies = [
     "arches @ git+https://github.com/bcgov/arches@v8.0.10-bcgov",
     "arches-component-lab @ git+https://github.com/bcgov/arches-component-lab@v0.0.1a13-bcgov",
+    "arches-workflow-stepper @ git+https://github.com/bferguso/arches-workflow-stepper@main",
+    "arches-zod-validation @ git+https://github.com/bferguso/arches-zod-validation@main",
     "authlib",
 ]
 dynamic = []
