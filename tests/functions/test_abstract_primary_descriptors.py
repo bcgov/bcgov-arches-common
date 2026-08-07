@@ -1,5 +1,4 @@
 from unittest.mock import patch, MagicMock
-from django.db.models import Q
 from django.test import TestCase
 
 import arches.app.datatypes.datatypes
@@ -396,9 +395,16 @@ class TilesFetchedOnceTestCase(TestCase):
             resource="res-id",
         )
 
-        mock_tile_model.objects.filter.assert_called_once_with(
-            Q(resourceinstance_id="res-id")
-            & Q(nodegroup_id__in={"ng-alias1", "ng-alias2", "ng-alias3"})
+        mock_tile_model.objects.filter.assert_called_once()
+        # Compared as a dict rather than against a Q: Q equality hashes the
+        # nodegroup set in iteration order, which is not stable.
+        (query,), _ = mock_tile_model.objects.filter.call_args
+        self.assertEqual(
+            dict(query.children),
+            {
+                "resourceinstance_id": "res-id",
+                "nodegroup_id__in": {"ng-alias1", "ng-alias2", "ng-alias3"},
+            },
         )
 
     @patch(
