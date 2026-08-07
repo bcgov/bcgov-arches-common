@@ -3,10 +3,13 @@
 @import url("../fontawesome/css/fontawesome.min.css");
 @import url("../fontawesome/css/solid.min.css");
 
+/* Only Regular and Bold faces ship (no Light), so each declares a weight range
+   rather than a single weight: light weights render Regular and 700+ render
+   Bold, instead of dropping to the fallback stack. */
 @font-face {
   font-family: 'BCSans';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 400;
   src: url('../fonts/BCSans/BCSans-Regular.woff2') format('woff2'),
     /* Optimized for very modern browsers */
       url('../fonts/BCSans/BCSans-Regular.woff') format('woff'),
@@ -16,6 +19,7 @@
 @font-face {
   font-family: 'BCSans';
   font-style: italic;
+  font-weight: 100 400;
   src: url('../fonts/BCSans/BCSans-Italic.woff2') format('woff2'),
     /* Optimized for very modern browsers */
       url('../fonts/BCSans/BCSans-Italic.woff') format('woff'),
@@ -24,7 +28,8 @@
 }
 @font-face {
   font-family: 'BCSans';
-  font-weight: 700;
+  font-style: normal;
+  font-weight: 700 900;
   src: url('../fonts/BCSans/BCSans-Bold.woff2') format('woff2'),
     /* Optimized for very modern browsers */
       url('../fonts/BCSans/BCSans-Bold.woff') format('woff'),
@@ -34,7 +39,7 @@
 @font-face {
   font-family: 'BCSans';
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 900;
   src: url('../fonts/BCSans/BCSans-BoldItalic.woff2') format('woff2'),
     /* Optimized for very modern browsers */
       url('../fonts/BCSans/BCSans-BoldItalic.woff') format('woff'),
