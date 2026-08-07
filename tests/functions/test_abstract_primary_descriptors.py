@@ -1,4 +1,5 @@
 from unittest.mock import patch, MagicMock
+from django.db.models import Q
 from django.test import TestCase
 
 import arches.app.datatypes.datatypes
@@ -83,8 +84,11 @@ class AbstractPrimaryDescriptorsTestCase(TestCase):
 
         self.assertEqual(result, "value_for_alias1")
 
+    @patch.object(AbstractPrimaryDescriptors, "_tiles_by_nodegroup")
     @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
-    def test_get_values_in_order_returns_formatted_html(self, mock_get_value):
+    def test_get_values_in_order_returns_formatted_html(
+        self, mock_get_value, mock_tiles
+    ):
         AbstractPrimaryDescriptors._nodes = {
             "alias1": MagicMock(alias="alias1", name="Mock Node")
         }
@@ -311,9 +315,12 @@ class GetValuesInOrderIsHtmlTestCase(TestCase):
         AbstractPrimaryDescriptors._datatypes = {}
         self.config = {"first_only": False, "show_name": True}
 
+    @patch.object(AbstractPrimaryDescriptors, "_tiles_by_nodegroup")
     @patch.object(AbstractPrimaryDescriptors, "_format_value")
     @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
-    def test_html_node_passes_is_html_true(self, mock_get_value, mock_format):
+    def test_html_node_passes_is_html_true(
+        self, mock_get_value, mock_format, mock_tiles
+    ):
         AbstractPrimaryDescriptors._html_nodes = ["alias1"]
         mock_get_value.return_value = "a value"
         mock_format.return_value = "formatted"
@@ -324,9 +331,12 @@ class GetValuesInOrderIsHtmlTestCase(TestCase):
 
         self.assertTrue(mock_format.call_args[0][3])
 
+    @patch.object(AbstractPrimaryDescriptors, "_tiles_by_nodegroup")
     @patch.object(AbstractPrimaryDescriptors, "_format_value")
     @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
-    def test_non_html_node_passes_is_html_false(self, mock_get_value, mock_format):
+    def test_non_html_node_passes_is_html_false(
+        self, mock_get_value, mock_format, mock_tiles
+    ):
         AbstractPrimaryDescriptors._html_nodes = []
         mock_get_value.return_value = "a value"
         mock_format.return_value = "formatted"
@@ -337,8 +347,11 @@ class GetValuesInOrderIsHtmlTestCase(TestCase):
 
         self.assertFalse(mock_format.call_args[0][3])
 
+    @patch.object(AbstractPrimaryDescriptors, "_tiles_by_nodegroup")
     @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
-    def test_first_only_stops_after_first_matching_value(self, mock_get_value):
+    def test_first_only_stops_after_first_matching_value(
+        self, mock_get_value, mock_tiles
+    ):
         node2 = MagicMock()
         node2.alias = "alias2"
         node2.name = "Node 2"
@@ -354,3 +367,62 @@ class GetValuesInOrderIsHtmlTestCase(TestCase):
 
         self.assertEqual(result, "first value")
         mock_get_value.assert_called_once()
+
+
+class TilesFetchedOnceTestCase(TestCase):
+    """The point of _tiles_by_nodegroup: reading several aliases is one query for
+    the resource's tiles, not a query per alias."""
+
+    def setUp(self):
+        AbstractPrimaryDescriptors._nodes = {
+            alias: MagicMock(alias=alias, name=alias, nodegroup_id=f"ng-{alias}")
+            for alias in ("alias1", "alias2", "alias3")
+        }
+        AbstractPrimaryDescriptors._datatypes = {}
+        AbstractPrimaryDescriptors._html_nodes = []
+        self.config = {"first_only": False, "show_name": False}
+
+    @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
+    @patch(
+        "bcgov_arches_common.functions.abstract_primary_descriptors.models.TileModel"
+    )
+    def test_three_aliases_hit_the_database_once(self, mock_tile_model, mock_get_value):
+        mock_tile_model.objects.filter.return_value = []
+        mock_get_value.return_value = None
+
+        AbstractPrimaryDescriptors().get_values_in_order(
+            aliases=["alias1", "alias2", "alias3"],
+            config=self.config,
+            resource="res-id",
+        )
+
+        mock_tile_model.objects.filter.assert_called_once_with(
+            Q(resourceinstance_id="res-id")
+            & Q(nodegroup_id__in={"ng-alias1", "ng-alias2", "ng-alias3"})
+        )
+
+    @patch(
+        "bcgov_arches_common.functions.abstract_primary_descriptors.models.TileModel"
+    )
+    def test_no_aliases_does_not_query(self, mock_tile_model):
+        AbstractPrimaryDescriptors().get_values_in_order(
+            aliases=[], config=self.config, resource="res-id"
+        )
+
+        mock_tile_model.objects.filter.assert_not_called()
+
+    @patch.object(AbstractPrimaryDescriptors, "_get_value_from_node")
+    @patch(
+        "bcgov_arches_common.functions.abstract_primary_descriptors.models.TileModel"
+    )
+    def test_supplied_tiles_do_not_query(self, mock_tile_model, mock_get_value):
+        mock_get_value.return_value = None
+
+        AbstractPrimaryDescriptors().get_values_in_order(
+            aliases=["alias1"],
+            config=self.config,
+            resource="res-id",
+            tile_data=[MagicMock()],
+        )
+
+        mock_tile_model.objects.filter.assert_not_called()
