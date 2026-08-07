@@ -2,25 +2,20 @@
 import Checkbox from 'primevue/checkbox';
 import { useGettext } from 'vue3-gettext';
 
-import type { BooleanCardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
-import type { BooleanValue } from '@/arches_component_lab/datatypes/boolean/types.ts';
+import type { BooleanCardXNodeXWidgetData } from '@/arches_vue_components/types.ts';
+import type { BooleanAliasedNodeData } from '@/arches_vue_components/datatypes/boolean/types.ts';
 
 const { $gettext } = useGettext();
 
-const {
-    cardXNodeXWidgetData,
-    aliasedNodeData,
-    shouldEmitSimplifiedValue = false,
-} = defineProps<{
+const { cardXNodeXWidgetData, aliasedNodeData } = defineProps<{
     cardXNodeXWidgetData: BooleanCardXNodeXWidgetData;
-    aliasedNodeData: BooleanValue | null;
-    shouldEmitSimplifiedValue?: boolean;
+    aliasedNodeData: BooleanAliasedNodeData | null;
 }>();
 
 const emit = defineEmits<{
     (
-        event: 'update:value',
-        updatedValue: BooleanValue | boolean | undefined | null,
+        event: 'update:aliasedNodeData',
+        updatedValue: BooleanAliasedNodeData,
     ): void;
 }>();
 
@@ -35,15 +30,11 @@ function getDisplayValue(value: boolean | null | undefined): string {
 }
 
 function onUpdateModelValue(updatedValue: boolean | null) {
-    if (shouldEmitSimplifiedValue) {
-        emit('update:value', updatedValue);
-    } else {
-        emit('update:value', {
-            display_value: getDisplayValue(updatedValue),
-            node_value: updatedValue,
-            details: [],
-        });
-    }
+    emit('update:aliasedNodeData', {
+        display_value: getDisplayValue(updatedValue),
+        node_value: updatedValue,
+        details: [],
+    });
 }
 </script>
 

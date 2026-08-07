@@ -6,7 +6,7 @@ import FileUpload from 'primevue/fileupload';
 
 import MapDropZone from '@/bcgov_arches_common/widgets/MapDropZoneWidget/components/MapDropZoneWidgetEditor/components/MapDropZone.vue';
 
-import type { FileReference } from '@/arches_component_lab/datatypes/file-list/types.ts';
+import type { FileReference } from '@/arches_vue_components/datatypes/file-list/types.ts';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type {
     MapFileData,
@@ -15,7 +15,7 @@ import type {
 import type { FeatureCollection, Feature } from 'geojson';
 import { processFileGeometry } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import FileList from '@/arches_component_lab/widgets/FileListWidget/components/FileListWidgetEditor/components/FileList.vue';
+import FileList from '@/arches_vue_components/widgets/FileListWidget/components/FileListWidgetEditor/components/FileList.vue';
 
 const { aliasedNodeData, nodeAlias, cardXNodeXWidgetData } = defineProps<{
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
@@ -24,7 +24,10 @@ const { aliasedNodeData, nodeAlias, cardXNodeXWidgetData } = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (event: 'update:value', updatedValue: GeoJSONFeatureCollectionValue): void;
+    (
+        event: 'update:aliasedNodeData',
+        updatedValue: GeoJSONFeatureCollectionValue,
+    ): void;
 }>();
 
 const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
@@ -71,7 +74,7 @@ function emitUpdatedValue() {
         details: [...pendingFiles.value],
     };
     console.log(`Emitting: ${newValue}`);
-    emit('update:value', newValue);
+    emit('update:aliasedNodeData', newValue);
 }
 
 const nodeValue = ref({

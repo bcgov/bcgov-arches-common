@@ -21,7 +21,7 @@ import type {
     MapLayer,
     FeatureCollection,
 } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
+import type { CardXNodeXWidgetData } from '@/arches_vue_components/types.ts';
 import type {
     LayerSpecificationType,
     StyleSpecificationType,

@@ -17,12 +17,12 @@ import type { AllGeoJSON } from '@turf/helpers';
 import _ from 'underscore';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, FeatureCollection, Position } from 'geojson';
-import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
+import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 import {
     buildLayersForFeature,
     removeLayersUsingSource,
     getCentroidMarker,
-} from '@/bcgov_arches_common/widgets/SimpleMap/utils.ts';
+} from '@/bcgov_arches_common/widgets/SimpleMapWidget/utils.ts';
 import type {
     MapData,
     MapLayer,
@@ -31,7 +31,7 @@ import type {
     LayerSpecificationType,
     StyleSpecificationType,
     MapLibreMapSourcesType,
-} from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
+} from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { MapFileData } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';
 

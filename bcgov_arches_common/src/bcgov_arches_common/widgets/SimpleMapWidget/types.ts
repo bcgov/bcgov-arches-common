@@ -1,4 +1,4 @@
-import type { CardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
+import type { CardXNodeXWidgetData } from '@/arches_vue_components/types.ts';
 import type {
     LayerSpecification,
     SourceSpecification,

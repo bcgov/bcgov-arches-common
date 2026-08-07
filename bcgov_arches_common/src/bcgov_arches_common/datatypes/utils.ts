@@ -1,4 +1,4 @@
-import type { AliasedNodeData } from '@/arches_component_lab/types.ts';
+import type { AliasedNodeData } from '@/arches_vue_components/types.ts';
 
 /** Resolve a key (inside aliased_data) to an AliasedNodeData */
 function getNode(row: unknown, key: string): AliasedNodeData | null {

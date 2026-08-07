@@ -1,7 +1,8 @@
 import type {
     AliasedNodeData,
     CardXNodeXWidgetData,
-} from '@/arches_component_lab/types.ts';
+} from '@/arches_vue_components/types.ts';
+import type { GeoJSONFeatureCollectionAliasedNodeData } from '@/arches_vue_components/datatypes/geojson-feature-collection/types.ts';
 import type {
     Feature,
     FeatureCollection,
@@ -16,10 +17,15 @@ export type AliasedGeojsonFeatureCollectionNode = Omit<
 > & {
     node_value: FeatureCollection;
 };
-// @todo Remove this when it gets incorporated into arches-component-lab
-export interface GeoJSONFeatureCollectionValue extends AliasedNodeData {
-    display_value: string;
-    node_value: FeatureCollection | null;
+
+// Not replaceable by arches-vue-components' GeoJSONFeatureCollectionAliasedNodeData:
+// that one declares `details: never[]`, but MapDropZone stores file and geometry
+// metadata there. Everything else comes from upstream.
+export interface GeoJSONFeatureCollectionValue extends Omit<
+    GeoJSONFeatureCollectionAliasedNodeData,
+    'details'
+> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details: any[];
 }
 
