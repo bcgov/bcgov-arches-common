@@ -73,7 +73,6 @@ function emitUpdatedValue() {
         node_value: nodeValue.value,
         details: [...pendingFiles.value],
     };
-    console.log(`Emitting: ${newValue}`);
     emit('update:aliasedNodeData', newValue);
 }
 
@@ -95,6 +94,8 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
     for (const { file, geometries } of results) {
         if (!geometries) continue;
 
+        const geometrySourceId = uuid.generate();
+
         // Ensure each feature has an id
         geometries.features = geometries.features.map((feature) => {
             return feature?.id ? feature : { ...feature, id: uuid.generate() };
@@ -109,7 +110,8 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
                 url: file.objectURL,
                 file,
                 node_id: cardXNodeXWidgetData.node.nodeid, // or cardXNodeXWidgetData.value…
-                geometrySourceId: uuid.generate(),
+                file_id: geometrySourceId,
+                geometrySourceId,
                 geometries: geometries as FeatureCollection,
             },
         ];

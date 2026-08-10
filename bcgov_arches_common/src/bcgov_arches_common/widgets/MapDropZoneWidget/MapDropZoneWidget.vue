@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import MapDropZoneWidgetEditor from '@/bcgov_arches_common/widgets/MapDropZoneWidget/components/MapDropZoneWidgetEditor/MapDropZoneWidgetEditor.vue';
 import SimpleMapWidget from '@/bcgov_arches_common/widgets/SimpleMapWidget/SimpleMapWidget.vue';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
@@ -26,7 +26,14 @@ const { mode, nodeAlias, graphSlug, cardXNodeXWidgetData } = props;
 const emit = defineEmits<{
     'update:aliasedNodeData': [updatedValue: GeoJSONFeatureCollectionValue];
     'update:value': [updatedValue: FeatureCollection | null];
+    initialized: [updatedValue: GeoJSONFeatureCollectionValue];
 }>();
+
+// GenericWidget keeps the widget behind a skeleton until this fires, and stores
+// the payload as the baseline it diffs against for dirty state. New in arches-vue-components@2.0.2
+onMounted(() =>
+    emit('initialized', props.aliasedNodeData ?? blankGeoJSONValue()),
+);
 
 const aliasedNodeDataFromFiles = ref(blankGeoJSONValue());
 

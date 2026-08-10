@@ -7,6 +7,7 @@ export interface MapFileData {
     url: string;
     file: File;
     node_id: string;
+    file_id: string;
     geometrySourceId: string;
     geometries: FeatureCollection;
 }

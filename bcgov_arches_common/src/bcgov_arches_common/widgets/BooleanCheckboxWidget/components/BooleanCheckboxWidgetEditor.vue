@@ -44,7 +44,7 @@ function onUpdateModelValue(updatedValue: boolean | null) {
         fluid="true"
         :true-value="true"
         :false-value="false"
-        :model-value="aliasedNodeData?.node_value?.toString() || ''"
+        :model-value="aliasedNodeData?.node_value ?? false"
         @update:model-value="onUpdateModelValue($event)">
     </Checkbox>
 </template>
