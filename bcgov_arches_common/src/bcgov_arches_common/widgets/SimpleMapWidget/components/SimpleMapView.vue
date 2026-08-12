@@ -82,6 +82,7 @@ const centroidMarker = shallowRef<maplibregl.Marker | null>(null);
 
 const addedDetails = new Map<string, MapFileData>();
 const addedFeatureIds = new Set<string>();
+const addedNodeFeatureIds = new Set<string>();
 
 // const defaultCenter = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, lat)
 const defaultCenter = computed<[number, number]>(() => {
@@ -295,6 +296,8 @@ const updateMapGeometries = (
             {
                 const featureid = feature.id;
                 if (featureid && !mapInstance.getSource(`${featureid}`)) {
+                    addedNodeFeatureIds.add(String(featureid));
+                    addedFeatureIds.add(String(featureid));
                     mapInstance.addSource(`${featureid}`, {
                         type: 'geojson',
                         data: feature,
@@ -373,13 +376,30 @@ watch(
             );
         });
 
+        // Remove node_value features that are no longer present
+        const newNodeFeatureIds = new Set(
+            (newVal.node_value?.features ?? [])
+                .filter((f) => f.id != null)
+                .map((f) => String(f.id)),
+        );
+        const removedNodeFeatureIds = [...addedNodeFeatureIds].filter(
+            (id) => !newNodeFeatureIds.has(id),
+        );
+        removedNodeFeatureIds.forEach((id) => {
+            addedNodeFeatureIds.delete(id);
+            addedFeatureIds.delete(id);
+            if (map.value && mapLoaded.value) {
+                removeLayersUsingSource(map.value, id, true);
+            }
+        });
+
         if (toAdd.length || toRemove.length) {
             updateMapGeometries(toAdd, toRemove);
         } else {
             const unaddedNodeFeatures = (
                 newVal.node_value?.features ?? []
             ).filter((f) => f.id && !addedFeatureIds.has(String(f.id)));
-            if (unaddedNodeFeatures.length) {
+            if (unaddedNodeFeatures.length || removedNodeFeatureIds.length) {
                 updateMapGeometries([], []);
             }
         }
