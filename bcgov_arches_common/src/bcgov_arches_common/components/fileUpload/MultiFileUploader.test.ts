@@ -1,6 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import MultiFileUploader from './MultiFileUploader.vue';
+
+vi.mock(
+    '@/arches_component_lab/generics/GenericWidget/GenericWidget.vue',
+    () => ({
+        default: {
+            name: 'GenericWidget',
+            template: '<div class="mock-generic-widget"></div>',
+        },
+    }),
+);
 
 const GenericWidgetStub = {
     name: 'GenericWidget',
@@ -24,6 +34,7 @@ describe('MultiFileUploader.vue', () => {
                 props: { ...defaultProps, addingNew: false },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
+            // "+ Add" should exist, "Save Document" should NOT exist
             expect(wrapper.text().includes('+ Add')).toBe(true);
             expect(wrapper.text().includes('Save Document')).toBe(false);
         });
@@ -33,6 +44,7 @@ describe('MultiFileUploader.vue', () => {
                 props: { ...defaultProps, addingNew: true },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
+            // "Save Document" should exist, "+ Add" should NOT exist
             expect(wrapper.text().includes('Save Document')).toBe(true);
             expect(wrapper.text().includes('+ Add')).toBe(false);
         });
