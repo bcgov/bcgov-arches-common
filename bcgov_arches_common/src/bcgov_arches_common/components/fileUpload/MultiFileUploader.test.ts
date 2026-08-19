@@ -24,8 +24,8 @@ describe('MultiFileUploader.vue', () => {
                 props: { ...defaultProps, addingNew: false },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
-            expect(wrapper.text()).toContain('+ Add');
-            expect(wrapper.text()).not.toContain('Save Document');
+            expect(wrapper.text().includes('+ Add')).toBe(true);
+            expect(wrapper.text().includes('Save Document')).toBe(false);
         });
 
         it('renders the "Save" button when addingNew is true', () => {
@@ -33,8 +33,8 @@ describe('MultiFileUploader.vue', () => {
                 props: { ...defaultProps, addingNew: true },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
-            expect(wrapper.text()).toContain('Save Document');
-            expect(wrapper.text()).not.toContain('+ Add');
+            expect(wrapper.text().includes('Save Document')).toBe(true);
+            expect(wrapper.text().includes('+ Add')).toBe(false);
         });
 
         it('disables the Save button when disableAddOrSave is true', async () => {
