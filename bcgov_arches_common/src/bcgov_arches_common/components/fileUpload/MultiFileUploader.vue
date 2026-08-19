@@ -117,8 +117,7 @@ const isImage = (fileData: unknown): boolean => {
         <div class="uploader-container">
             <div
                 v-if="itemsCount >= maxItems && !hasUnsavedFile && addingNew"
-                class="max-limit-message"
-            >
+                class="max-limit-message">
                 <i class="fa fa-ban limit-icon"></i>
                 <div>
                     Maximum of {{ maxItems }} {{ itemTypeLabel.toLowerCase() }}s
@@ -138,13 +137,11 @@ const isImage = (fileData: unknown): boolean => {
                 :should-show-label="false"
                 :mode="EDIT"
                 :aliased-node-data="currentNodeData"
-                @update:value="emit('file-updated', $event)"
-            />
+                @update:value="emit('file-updated', $event)" />
 
             <div
                 v-else
-                class="pending-doc-preview"
-            >
+                class="pending-doc-preview">
                 <GenericWidget
                     v-if="isImage(currentNodeData)"
                     :key="`view-${selectedIndex}`"
@@ -152,20 +149,16 @@ const isImage = (fileData: unknown): boolean => {
                     :node-alias="nodeAlias"
                     :should-show-label="false"
                     :mode="VIEW"
-                    :aliased-node-data="currentNodeData"
-                />
+                    :aliased-node-data="currentNodeData" />
                 <div
                     v-else
-                    class="document-icon-wrapper"
-                >
+                    class="document-icon-wrapper">
                     <i
                         class="fa-regular document-icon"
-                        :class="iconClass"
-                    ></i>
+                        :class="iconClass"></i>
                     <span
                         class="document-name"
-                        :title="getFileName(currentNodeData)"
-                    >
+                        :title="getFileName(currentNodeData)">
                         {{ getFileName(currentNodeData) }}
                     </span>
                 </div>
@@ -173,8 +166,7 @@ const isImage = (fileData: unknown): boolean => {
                     v-if="addingNew"
                     :label="`Remove / Change ${itemTypeLabel}`"
                     icon="fa fa-times"
-                    @click="emit('clear-pending')"
-                />
+                    @click="emit('clear-pending')" />
             </div>
         </div>
 
@@ -184,16 +176,14 @@ const isImage = (fileData: unknown): boolean => {
                     v-if="!addingNew && itemsCount < maxItems"
                     label="+ Add"
                     class="inline-block"
-                    @click="emit('add-new')"
-                />
+                    @click="emit('add-new')" />
                 <Button
                     v-if="addingNew && itemsCount < maxItems"
                     class="inline-block"
                     :aria-disabled="disableAddOrSave"
                     :disabled="disableAddOrSave"
                     :tooltip="`Save the new ${itemTypeLabel.toLowerCase()} before adding another`"
-                    @click="emit('save-item')"
-                >
+                    @click="emit('save-item')">
                     <i class="fa fa-save mr-2"></i>
                     Save {{ itemTypeLabel }}
                 </Button>
@@ -205,13 +195,11 @@ const isImage = (fileData: unknown): boolean => {
                     :key="index"
                     :data-selected="index === selectedIndex"
                     class="doc-placeholder"
-                    @click="emit('select-item', index)"
-                >
+                    @click="emit('select-item', index)">
                     <div
                         class="fa fa-remove doc-delete-icon"
                         :tooltip="`Remove ${itemTypeLabel}`"
-                        @click.stop="emit('delete-item', index)"
-                    ></div>
+                        @click.stop="emit('delete-item', index)"></div>
                     <div class="document-icon-wrapper-small">
                         <GenericWidget
                             v-if="isImage(item.aliased_data[nodeAlias])"
@@ -219,19 +207,16 @@ const isImage = (fileData: unknown): boolean => {
                             :mode="VIEW"
                             :should-show-label="false"
                             :node-alias="nodeAlias"
-                            :aliased-node-data="item.aliased_data[nodeAlias]"
-                        />
+                            :aliased-node-data="item.aliased_data[nodeAlias]" />
                         <template v-else>
                             <i
                                 class="fa-regular document-icon-small"
-                                :class="iconClass"
-                            ></i>
+                                :class="iconClass"></i>
                             <span
                                 class="document-name-small"
                                 :title="
                                     getFileName(item.aliased_data[nodeAlias])
-                                "
-                            >
+                                ">
                                 {{ getFileName(item.aliased_data[nodeAlias]) }}
                             </span>
                         </template>
