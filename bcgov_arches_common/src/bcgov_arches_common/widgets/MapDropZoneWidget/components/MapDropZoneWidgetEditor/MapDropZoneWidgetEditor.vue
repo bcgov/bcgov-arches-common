@@ -96,6 +96,17 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
 
         const geometrySourceId = uuid.generate();
 
+        // Arches does not support GeometryCollection — expand each such feature
+        // into one Feature per contained geometry before storing.
+        geometries.features = geometries.features.flatMap((feature) => {
+            if (feature.geometry?.type !== 'GeometryCollection')
+                return [feature];
+            return feature.geometry.geometries.map((geom) => ({
+                ...feature,
+                geometry: geom,
+            }));
+        });
+
         // Ensure each feature has an id
         geometries.features = geometries.features.map((feature) => {
             return feature?.id ? feature : { ...feature, id: uuid.generate() };
