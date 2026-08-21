@@ -68,7 +68,7 @@ describe('MultiFileUploader.vue', () => {
                 props: {
                     ...defaultProps,
                     addingNew: true,
-                    maxItems: 2,
+                    cardXNodeXWidgetData: { config: { max_items: 2 } },
                     items: [{ aliased_data: {} }, { aliased_data: {} }],
                 },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },

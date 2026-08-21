@@ -1,30 +1,61 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, shallowRef, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import GenericWidget from '@/arches_component_lab/generics/GenericWidget/GenericWidget.vue';
 import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
-import type { AliasedNodeData } from '@/arches_component_lab/types.ts';
+import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
+import type {
+    AliasedNodeData,
+    CardXNodeXWidgetData,
+} from '@/arches_component_lab/types.ts';
 
 const props = withDefaults(
     defineProps<{
-        maxItems?: number;
         addingNew: boolean;
         disableAddOrSave: boolean;
         graphSlug: string;
         nodeAlias: string;
-        currentNodeData: unknown;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        items: any[];
+        currentNodeData: AliasedNodeData | unknown;
+        items: Array<{ aliased_data: Record<string, unknown> }>;
         selectedIndex: number;
         itemTypeLabel?: string;
         iconClass?: string;
     }>(),
     {
-        maxItems: 10,
         itemTypeLabel: 'Document',
         iconClass: 'fa-file',
     },
 );
+
+const resolvedConfig = shallowRef<CardXNodeXWidgetData | undefined>();
+
+watchEffect(async () => {
+    if (props.graphSlug && props.nodeAlias) {
+        try {
+            resolvedConfig.value = await fetchCardXNodeXWidgetData(
+                props.graphSlug,
+                props.nodeAlias,
+            );
+        } catch (error) {
+            console.error('Failed to fetch uploader configuration:', error);
+        }
+    }
+});
+
+const maxItems = computed(() => {
+    const widgetConfig = resolvedConfig.value?.config as
+        | Record<string, unknown>
+        | undefined;
+    const nodeConfig = resolvedConfig.value?.node?.config as
+        | Record<string, unknown>
+        | undefined;
+
+    const limit = (nodeConfig?.maxFiles ??
+        widgetConfig?.maxFiles ??
+        10) as number;
+
+    return limit;
+});
 
 const itemsCount = computed(() => props.items?.length || 0);
 const hasUnsavedFile = computed(
@@ -40,35 +71,32 @@ const emit = defineEmits<{
     (e: 'select-item', index: number): void;
 }>();
 
-const getFileName = (fileData: unknown): string => {
+const getFileName = (fileData: AliasedNodeData | unknown): string => {
     const defaultName = props.itemTypeLabel || 'File';
-    if (!fileData || typeof fileData !== 'object') return defaultName;
-    const typedData = fileData as Record<string, unknown>;
+    if (!fileData) return defaultName;
 
-    if (
-        typedData.node_value &&
-        Array.isArray(typedData.node_value) &&
-        typedData.node_value.length > 0
-    ) {
-        const firstFile = typedData.node_value[0] as Record<string, unknown>;
+    const typedData = fileData as AliasedNodeData;
+    const fileArray = typedData.node_value as Array<
+        Record<string, unknown>
+    > | null;
+
+    if (fileArray && fileArray.length > 0) {
+        const firstFile = fileArray[0];
         const fileName =
             (firstFile.name as string) || (firstFile.file as File)?.name || '';
         if (fileName) return fileName;
     }
 
-    if (typeof typedData.display_value === 'string') {
+    if (typedData.display_value) {
         try {
             const parsed = JSON.parse(typedData.display_value) as Array<
                 Record<string, unknown>
             >;
-            if (
-                Array.isArray(parsed) &&
-                parsed.length > 0 &&
-                typeof parsed[0].name === 'string'
-            ) {
-                return parsed[0].name;
+            if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
+                return parsed[0].name as string;
             }
-        } catch {
+        } catch (error) {
+            console.warn('Failed to parse file display_value:', error);
             return typedData.display_value || defaultName;
         }
     }
@@ -76,25 +104,26 @@ const getFileName = (fileData: unknown): string => {
     return defaultName;
 };
 
-const isImage = (fileData: unknown): boolean => {
-    if (!fileData || typeof fileData !== 'object') return false;
-    const typedData = fileData as Record<string, unknown>;
+const isImage = (fileData: AliasedNodeData | unknown): boolean => {
+    if (!fileData) return false;
+
+    const typedData = fileData as AliasedNodeData;
+    const fileArray = typedData.node_value as Array<
+        Record<string, unknown>
+    > | null;
 
     let firstFile: Record<string, unknown> | undefined;
 
-    if (
-        Array.isArray(typedData.node_value) &&
-        typedData.node_value.length > 0
-    ) {
-        firstFile = typedData.node_value[0] as Record<string, unknown>;
-    } else if (typeof typedData.display_value === 'string') {
+    if (fileArray && fileArray.length > 0) {
+        firstFile = fileArray[0];
+    } else if (typedData.display_value) {
         try {
             const parsed = JSON.parse(typedData.display_value);
             if (Array.isArray(parsed) && parsed.length > 0) {
                 firstFile = parsed[0] as Record<string, unknown>;
             }
-        } catch {
-            /* parse errors */
+        } catch (error) {
+            console.warn('Failed to parse file display_value:', error);
         }
     }
 
