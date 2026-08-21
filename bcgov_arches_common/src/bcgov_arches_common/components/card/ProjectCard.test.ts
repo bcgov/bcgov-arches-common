@@ -185,6 +185,19 @@ describe('ProjectCard', () => {
         expect(wrapper.findAll('.body-lines .body-text')).toHaveLength(0);
     });
 
+    it('drops blank entries but keeps the order of the rest', () => {
+        const wrapper = mountCard({ body: ['One', '', 'Three'] });
+        const lines = wrapper.findAll('.body-lines .body-text');
+        expect(lines.map((l) => l.text())).toEqual(['One', 'Three']);
+    });
+
+    it('renders more than five body entries', () => {
+        const wrapper = mountCard({
+            body: ['1', '2', '3', '4', '5', '6', '7'],
+        });
+        expect(wrapper.findAll('.body-lines .body-text')).toHaveLength(7);
+    });
+
     // ── Footer ───────────────────────────────────────────────────────────────
 
     it('renders footerDate in .footer-left', () => {
