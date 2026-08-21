@@ -44,11 +44,9 @@ watchEffect(async () => {
 
 const maxItems = computed(() => {
     const widgetConfig = resolvedConfig.value?.config as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
     const nodeConfig = resolvedConfig.value?.node?.config as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
 
     const limit = (nodeConfig?.maxFiles ??
         widgetConfig?.maxFiles ??
