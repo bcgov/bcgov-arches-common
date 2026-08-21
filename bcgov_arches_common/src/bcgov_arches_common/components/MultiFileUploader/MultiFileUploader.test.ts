@@ -1,6 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount, flushPromises } from '@vue/test-utils';
 import MultiFileUploader from './MultiFileUploader.vue';
+import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
+
+// 1. Mock the API module so our component doesn't actually hit the network
+vi.mock('@/arches_component_lab/generics/GenericWidget/api.ts', () => ({
+    fetchCardXNodeXWidgetData: vi.fn(),
+}));
 
 vi.mock(
     '@/arches_component_lab/generics/GenericWidget/GenericWidget.vue',
@@ -28,13 +34,21 @@ describe('MultiFileUploader.vue', () => {
         disableAddOrSave: false,
     };
 
+    // 2. Reset the mock before each test so it defaults to 10 maxFiles
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.mocked(fetchCardXNodeXWidgetData).mockResolvedValue({
+            node: { config: { maxFiles: 10 } },
+            config: {},
+        } as any);
+    });
+
     describe('UI Rendering & State', () => {
         it('renders the "+ Add" button when addingNew is false', () => {
             const wrapper = mount(MultiFileUploader, {
                 props: { ...defaultProps, addingNew: false },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
-            // "+ Add" should exist, "Save Document" should NOT exist
             expect(wrapper.text().includes('+ Add')).toBe(true);
             expect(wrapper.text().includes('Save Document')).toBe(false);
         });
@@ -44,7 +58,6 @@ describe('MultiFileUploader.vue', () => {
                 props: { ...defaultProps, addingNew: true },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
-            // "Save Document" should exist, "+ Add" should NOT exist
             expect(wrapper.text().includes('Save Document')).toBe(true);
             expect(wrapper.text().includes('+ Add')).toBe(false);
         });
@@ -63,16 +76,26 @@ describe('MultiFileUploader.vue', () => {
             expect(saveButton.attributes('aria-disabled')).toBe('true');
         });
 
-        it('shows the max limit message when items hit maxItems limit', () => {
+        it('shows the max limit message when items hit maxItems limit', async () => {
+            // 3. Override the mock for this specific test to return a limit of 2
+            vi.mocked(fetchCardXNodeXWidgetData).mockResolvedValueOnce({
+                node: { config: { maxFiles: 2 } },
+                config: {},
+            } as any);
+
             const wrapper = mount(MultiFileUploader, {
                 props: {
                     ...defaultProps,
                     addingNew: true,
-                    cardXNodeXWidgetData: { config: { max_items: 2 } },
+                    // Note: No cardXNodeXWidgetData prop here anymore!
                     items: [{ aliased_data: {} }, { aliased_data: {} }],
                 },
                 global: { stubs: { GenericWidget: GenericWidgetStub } },
             });
+
+            // 4. Wait for the watchEffect and simulated API call to finish
+            await flushPromises();
+
             expect(wrapper.find('.max-limit-message').exists()).toBe(true);
             expect(wrapper.text()).toContain('Maximum of 2 documents reached');
         });
