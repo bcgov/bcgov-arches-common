@@ -157,13 +157,15 @@ describe('ProjectCard', () => {
 
     // ── Body lines ───────────────────────────────────────────────────────────
 
-    it('renders body1 through body5 when all are set', () => {
+    it('renders one line per body entry', () => {
         const wrapper = mountCard({
-            body1: 'Line one',
-            body2: 'Line two',
-            body3: 'Line three',
-            body4: 'Line four',
-            body5: 'Line five',
+            body: [
+                'Line one',
+                'Line two',
+                'Line three',
+                'Line four',
+                'Line five',
+            ],
         });
         const lines = wrapper.findAll('.body-lines .body-text');
         expect(lines).toHaveLength(5);
@@ -172,13 +174,13 @@ describe('ProjectCard', () => {
     });
 
     it('only renders body lines that have content', () => {
-        const wrapper = mountCard({ body1: 'Only this', body2: '' });
+        const wrapper = mountCard({ body: ['Only this', ''] });
         const lines = wrapper.findAll('.body-lines .body-text');
         expect(lines).toHaveLength(1);
         expect(lines[0].text()).toBe('Only this');
     });
 
-    it('renders no body-text elements when all body props are empty', () => {
+    it('renders no body-text elements when body is empty', () => {
         const wrapper = mountCard();
         expect(wrapper.findAll('.body-lines .body-text')).toHaveLength(0);
     });
@@ -270,7 +272,7 @@ describe('ProjectCard', () => {
 
     it('highlights body text when searchQuery matches', () => {
         const wrapper = mountCard({
-            body1: 'Active project',
+            body: ['Active project'],
             searchQuery: 'Active',
         });
         expect(

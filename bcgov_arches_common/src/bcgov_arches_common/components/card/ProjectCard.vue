@@ -15,12 +15,8 @@ const props = defineProps({
     bodySubtitle1: { type: String, default: '' },
     bodySubtitle2: { type: String, default: '' },
 
-    // Body - Main Content
-    body1: { type: String, default: '' },
-    body2: { type: String, default: '' },
-    body3: { type: String, default: '' },
-    body4: { type: String, default: '' },
-    body5: { type: String, default: '' },
+    // Body - Main Content, one line per entry
+    body: { type: Array as PropType<string[]>, default: () => [] },
 
     // Footer Data
     footerDate: { type: String, default: '' },
@@ -145,25 +141,10 @@ const isPrioritySearched = computed(() => {
 
                 <div class="body-lines">
                     <p
-                        v-if="props.body1"
+                        v-for="(line, index) in props.body.filter(Boolean)"
+                        :key="index"
                         class="body-text"
-                        v-html="highlightText(props.body1)"></p>
-                    <p
-                        v-if="props.body2"
-                        class="body-text"
-                        v-html="highlightText(props.body2)"></p>
-                    <p
-                        v-if="props.body3"
-                        class="body-text"
-                        v-html="highlightText(props.body3)"></p>
-                    <p
-                        v-if="props.body4"
-                        class="body-text"
-                        v-html="highlightText(props.body4)"></p>
-                    <p
-                        v-if="props.body5"
-                        class="body-text"
-                        v-html="highlightText(props.body5)"></p>
+                        v-html="highlightText(line)"></p>
                 </div>
 
                 <div class="bcgov-card-footer">
