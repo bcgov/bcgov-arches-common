@@ -44,9 +44,11 @@ watchEffect(async () => {
 
 const maxItems = computed(() => {
     const widgetConfig = resolvedConfig.value?.config as
-        Record<string, unknown> | undefined;
+        | Record<string, unknown>
+        | undefined;
     const nodeConfig = resolvedConfig.value?.node?.config as
-        Record<string, unknown> | undefined;
+        | Record<string, unknown>
+        | undefined;
 
     const limit = (nodeConfig?.maxFiles ??
         widgetConfig?.maxFiles ??
@@ -56,9 +58,7 @@ const maxItems = computed(() => {
 });
 
 const itemsCount = computed(() => props.items?.length || 0);
-const hasUnsavedFile = computed(
-    () => props.currentNodeData !== null && props.currentNodeData !== undefined,
-);
+const hasUnsavedFile = computed(() => Boolean(props.currentNodeData));
 
 const emit = defineEmits<{
     (e: 'file-updated', value: AliasedNodeData): void;
@@ -81,7 +81,8 @@ const getFileName = (fileData: AliasedNodeData | unknown): string => {
     if (fileArray && fileArray.length > 0) {
         const firstFile = fileArray[0];
         const fileName =
-            (firstFile.name as string) || (firstFile.file as File)?.name || '';
+            (firstFile.name as string) || (firstFile.file as File)?.name;
+
         if (fileName) return fileName;
     }
 
