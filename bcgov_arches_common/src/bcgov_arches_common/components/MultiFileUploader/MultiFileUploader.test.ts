@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import MultiFileUploader from './MultiFileUploader.vue';
-import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
 
-vi.mock('@/arches_component_lab/generics/GenericWidget/api.ts', () => ({
-    fetchCardXNodeXWidgetData: vi.fn(),
+const fetchWidgetConfig = vi.fn();
+
+vi.mock('@/arches_vue_components/stores/useWidgetConfigStore.ts', () => ({
+    useWidgetConfigStore: () => ({ fetchWidgetConfig }),
 }));
 
 vi.mock(
-    '@/arches_component_lab/generics/GenericWidget/GenericWidget.vue',
+    '@/arches_vue_components/generics/GenericWidget/GenericWidget.vue',
     () => ({
         default: {
             name: 'GenericWidget',
@@ -46,7 +47,7 @@ describe('MultiFileUploader.vue', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(fetchCardXNodeXWidgetData).mockResolvedValue({
+        fetchWidgetConfig.mockResolvedValue({
             node: { config: { maxFiles: 10 } },
             config: {},
         } as any);
@@ -76,7 +77,7 @@ describe('MultiFileUploader.vue', () => {
         });
 
         it('shows the max limit message when items hit maxItems limit', async () => {
-            vi.mocked(fetchCardXNodeXWidgetData).mockResolvedValueOnce({
+            fetchWidgetConfig.mockResolvedValueOnce({
                 node: { config: { maxFiles: 2 } },
                 config: {},
             } as any);

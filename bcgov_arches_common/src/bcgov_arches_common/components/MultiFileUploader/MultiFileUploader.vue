@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, shallowRef, watchEffect } from 'vue';
+import { computed } from 'vue';
 import Button from 'primevue/button';
-import GenericWidget from '@/arches_component_lab/generics/GenericWidget/GenericWidget.vue';
-import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
-import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
-import type {
-    AliasedNodeData,
-    CardXNodeXWidgetData,
-} from '@/arches_component_lab/types.ts';
+import GenericWidget from '@/arches_vue_components/generics/GenericWidget/GenericWidget.vue';
+import { EDIT, VIEW } from '@/arches_vue_components/widgets/constants.ts';
+import { useWidgetConfig } from '@/bcgov_arches_common/composables/useWidgetConfig.ts';
+import type { AliasedNodeData } from '@/arches_vue_components/types.ts';
 
 const props = withDefaults(
     defineProps<{
@@ -15,8 +12,8 @@ const props = withDefaults(
         disableAddOrSave: boolean;
         graphSlug: string;
         nodeAlias: string;
-        currentNodeData: AliasedNodeData | unknown;
-        items: Array<{ aliased_data: Record<string, unknown> }>;
+        currentNodeData: AliasedNodeData | null;
+        items: Array<{ aliased_data: Record<string, AliasedNodeData> }>;
         selectedIndex: number;
         itemTypeLabel?: string;
         iconClass?: string;
@@ -27,20 +24,10 @@ const props = withDefaults(
     },
 );
 
-const resolvedConfig = shallowRef<CardXNodeXWidgetData | undefined>();
-
-watchEffect(async () => {
-    if (props.graphSlug && props.nodeAlias) {
-        try {
-            resolvedConfig.value = await fetchCardXNodeXWidgetData(
-                props.graphSlug,
-                props.nodeAlias,
-            );
-        } catch (error) {
-            console.error('Failed to fetch uploader configuration:', error);
-        }
-    }
-});
+const { config: resolvedConfig } = useWidgetConfig(
+    () => props.graphSlug,
+    () => props.nodeAlias,
+);
 
 const maxItems = computed(() => {
     const widgetConfig = resolvedConfig.value?.config as
@@ -48,11 +35,7 @@ const maxItems = computed(() => {
     const nodeConfig = resolvedConfig.value?.node?.config as
         Record<string, unknown> | undefined;
 
-    const limit = (nodeConfig?.maxFiles ??
-        widgetConfig?.maxFiles ??
-        10) as number;
-
-    return limit;
+    return (nodeConfig?.maxFiles ?? widgetConfig?.maxFiles ?? 10) as number;
 });
 
 const itemsCount = computed(() => props.items?.length || 0);
@@ -67,11 +50,11 @@ const emit = defineEmits<{
     (e: 'select-item', index: number): void;
 }>();
 
-const getFileName = (fileData: AliasedNodeData | unknown): string => {
+const getFileName = (fileData: AliasedNodeData | null): string => {
     const defaultName = props.itemTypeLabel || 'File';
     if (!fileData) return defaultName;
 
-    const typedData = fileData as AliasedNodeData;
+    const typedData = fileData;
     const fileArray = typedData.node_value as Array<
         Record<string, unknown>
     > | null;
@@ -101,10 +84,10 @@ const getFileName = (fileData: AliasedNodeData | unknown): string => {
     return defaultName;
 };
 
-const isImage = (fileData: AliasedNodeData | unknown): boolean => {
+const isImage = (fileData: AliasedNodeData | null): boolean => {
     if (!fileData) return false;
 
-    const typedData = fileData as AliasedNodeData;
+    const typedData = fileData;
     const fileArray = typedData.node_value as Array<
         Record<string, unknown>
     > | null;
@@ -163,7 +146,9 @@ const isImage = (fileData: AliasedNodeData | unknown): boolean => {
                 :should-show-label="false"
                 :mode="EDIT"
                 :aliased-node-data="currentNodeData"
-                @update:value="emit('file-updated', $event)" />
+                @update:value="
+                    emit('file-updated', $event as AliasedNodeData)
+                " />
 
             <div
                 v-else
