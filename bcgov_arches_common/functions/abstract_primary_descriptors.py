@@ -20,7 +20,7 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
 
     _html_nodes = []
 
-    _datatype_factory = DataTypeFactory()
+    _datatype_factory = None
 
     _nodes = {}
     _datatypes = {}
@@ -33,6 +33,8 @@ class AbstractPrimaryDescriptors(CoreDescriptorsFunction):
     def initialize(cls):
         cls._nodes = {}
         cls._datatypes = {}
+        if not cls._datatype_factory:
+            cls._datatype_factory = DataTypeFactory()
         for alias in cls.get_all_nodes():
             node = models.Node.objects.filter(
                 alias=alias,
