@@ -1,7 +1,6 @@
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
 
-import arches.app.datatypes.datatypes
 from bcgov_arches_common.functions.abstract_primary_descriptors import (
     AbstractPrimaryDescriptors,
 )
@@ -25,6 +24,9 @@ class AbstractPrimaryDescriptorsTestCase(TestCase):
         AbstractPrimaryDescriptors._popup_node_aliases = []
         AbstractPrimaryDescriptors._nodes = {}
         AbstractPrimaryDescriptors._datatypes = {}
+        # initialize() caches this on the class, so a mock from one test would
+        # otherwise be reused by the next.
+        AbstractPrimaryDescriptors._datatype_factory = None
         AbstractPrimaryDescriptors._initialized = False
 
     def _create_mock_nodes(self):
@@ -60,10 +62,8 @@ class AbstractPrimaryDescriptorsTestCase(TestCase):
         descriptors.initialize()
 
         self.assertEqual(descriptors._nodes["alias1"], self.mock_nodes["alias1"])
-        self.assertIsInstance(
-            descriptors._datatypes["alias1"],
-            arches.app.datatypes.datatypes.StringDataType,
-        )
+        self.assertEqual(descriptors._datatypes["alias1"], self.mock_datatype)
+        mock_factory.return_value.get_instance.assert_called_with("string")
         self.assertTrue(descriptors._initialized)
 
     @patch(
@@ -256,6 +256,7 @@ class HtmlNodesInitializeTestCase(TestCase):
         AbstractPrimaryDescriptors._nodes = {}
         AbstractPrimaryDescriptors._datatypes = {}
         AbstractPrimaryDescriptors._html_nodes = []
+        AbstractPrimaryDescriptors._datatype_factory = None
         AbstractPrimaryDescriptors._initialized = False
 
     @patch(
