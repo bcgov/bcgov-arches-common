@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext';
 
-import type { CardXNodeXWidgetData } from '@/arches_component_lab/types';
+import type { CardXNodeXWidgetData } from '@/arches_vue_components/types';
 
 const { $gettext } = useGettext();
 

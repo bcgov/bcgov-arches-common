@@ -1,8 +1,8 @@
-import type { AliasedTileData } from '@/arches_component_lab/types.ts';
+import type { AliasedTileData } from '@/arches_vue_components/types.ts';
 import type {
-    FileListValue,
+    FileListAliasedNodeData,
     FileReference,
-} from '@/arches_component_lab/datatypes/file-list/types.ts';
+} from '@/arches_vue_components/datatypes/file-list/types.ts';
 
 export function formatFileLink(file: FileReference): string {
     if (!file?.url) return '';
@@ -17,7 +17,8 @@ export function expandDocumentRows<T extends AliasedTileData>(
 
     documents.forEach((doc, docIndex) => {
         const aliasedData = doc.aliased_data as Record<string, unknown>;
-        const fieldData = aliasedData?.[fieldName] as FileListValue | undefined;
+        const fieldData = aliasedData?.[fieldName] as
+            FileListAliasedNodeData | undefined;
         const files = fieldData?.node_value;
 
         if (!files || !Array.isArray(files) || files.length <= 1) {
@@ -50,7 +51,8 @@ export function applyFileLinks<T extends AliasedTileData>(
 ): T[] {
     return documents.map((doc) => {
         const aliasedData = doc.aliased_data as Record<string, unknown>;
-        const fieldData = aliasedData?.[fieldName] as FileListValue | undefined;
+        const fieldData = aliasedData?.[fieldName] as
+            FileListAliasedNodeData | undefined;
         const files = fieldData?.node_value;
 
         if (!files || !Array.isArray(files) || files.length === 0) {

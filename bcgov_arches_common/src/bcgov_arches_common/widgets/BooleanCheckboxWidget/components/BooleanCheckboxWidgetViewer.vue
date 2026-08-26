@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { BooleanValue } from '@/arches_component_lab/datatypes/boolean/types';
+import type { BooleanAliasedNodeData } from '@/arches_vue_components/datatypes/boolean/types';
 
 defineProps<{
-    aliasedNodeData: BooleanValue | null;
+    aliasedNodeData: BooleanAliasedNodeData | null;
 }>();
 </script>
 

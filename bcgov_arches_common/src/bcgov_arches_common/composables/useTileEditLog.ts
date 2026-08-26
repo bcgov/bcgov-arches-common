@@ -2,7 +2,7 @@ import { ref, watch, type Ref } from 'vue';
 import type {
     AliasedTileData,
     AliasedNodegroupData,
-} from '@/arches_component_lab/types.ts';
+} from '@/arches_vue_components/types.ts';
 import type {
     EditLogData,
     AliasedTileDataWithAudit,

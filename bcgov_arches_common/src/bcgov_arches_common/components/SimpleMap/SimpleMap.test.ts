@@ -19,12 +19,14 @@ vi.mock('@/bcgov_arches_common/components/SimpleMap/api.ts', () => ({
     }),
 }));
 
-vi.mock('@/arches_component_lab/generics/GenericWidget/api.ts', () => ({
-    fetchCardXNodeXWidgetData: vi.fn().mockResolvedValue({}),
+vi.mock('@/arches_vue_components/stores/useWidgetConfigStore.ts', () => ({
+    useWidgetConfigStore: () => ({
+        fetchWidgetConfig: vi.fn().mockResolvedValue({}),
+    }),
 }));
 
 import SimpleMap from './SimpleMap.vue';
-import { VIEW } from '@/arches_component_lab/widgets/constants.ts';
+import { VIEW } from '@/arches_vue_components/widgets/constants.ts';
 
 const MapViewStub = {
     name: 'MapView',

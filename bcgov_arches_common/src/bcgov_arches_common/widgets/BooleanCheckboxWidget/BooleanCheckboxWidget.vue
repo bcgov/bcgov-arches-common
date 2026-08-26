@@ -1,23 +1,46 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+
 import BooleanCheckboxWidgetEditor from '@/bcgov_arches_common/widgets/BooleanCheckboxWidget/components/BooleanCheckboxWidgetEditor.vue';
 import BooleanCheckboxWidgetViewer from '@/bcgov_arches_common/widgets/BooleanCheckboxWidget/components/BooleanCheckboxWidgetViewer.vue';
 
-import { EDIT, VIEW } from '@/arches_component_lab/widgets/constants.ts';
+import { EDIT, VIEW } from '@/arches_vue_components/widgets/constants.ts';
 
-import type { BooleanCardXNodeXWidgetData } from '@/arches_component_lab/types.ts';
-import type { BooleanValue } from '@/arches_component_lab/datatypes/boolean/types.ts';
-import type { WidgetMode } from '@/arches_component_lab/widgets/types.ts';
+import type { BooleanCardXNodeXWidgetData } from '@/arches_vue_components/types.ts';
+import type { BooleanAliasedNodeData } from '@/arches_vue_components/datatypes/boolean/types.ts';
+import type { WidgetMode } from '@/arches_vue_components/widgets/types.ts';
 
-defineProps<{
+const props = defineProps<{
     mode: WidgetMode;
     nodeAlias: string;
     graphSlug: string;
     cardXNodeXWidgetData: BooleanCardXNodeXWidgetData;
-    aliasedNodeData: BooleanValue | null;
-    shouldEmitSimplifiedValue?: boolean;
+    aliasedNodeData: BooleanAliasedNodeData | null;
 }>();
 
-const emit = defineEmits(['update:value']);
+const emit = defineEmits<{
+    'update:aliasedNodeData': [updatedValue: BooleanAliasedNodeData];
+    'update:value': [updatedValue: boolean | null];
+    initialized: [updatedValue: BooleanAliasedNodeData];
+}>();
+
+// GenericWidget keeps the widget behind a skeleton until this fires, and stores
+// the payload as the baseline it diffs against for dirty state.
+onMounted(() =>
+    emit(
+        'initialized',
+        props.aliasedNodeData ?? {
+            display_value: '',
+            node_value: null,
+            details: [],
+        },
+    ),
+);
+
+function onUpdateAliasedNodeData(updatedValue: BooleanAliasedNodeData) {
+    emit('update:aliasedNodeData', updatedValue);
+    emit('update:value', updatedValue.node_value);
+}
 </script>
 
 <template>
@@ -25,11 +48,9 @@ const emit = defineEmits(['update:value']);
         v-if="mode === EDIT"
         :card-x-node-x-widget-data="cardXNodeXWidgetData"
         :aliased-node-data="aliasedNodeData"
-        :should-emit-simplified-value="shouldEmitSimplifiedValue"
-        @update:value="emit('update:value', $event)" />
+        @update:aliased-node-data="onUpdateAliasedNodeData($event)" />
     <BooleanCheckboxWidgetViewer
         v-if="mode === VIEW"
-        :card-x-node-x-widget-data="cardXNodeXWidgetData"
         :aliased-node-data="aliasedNodeData" />
 </template>
 

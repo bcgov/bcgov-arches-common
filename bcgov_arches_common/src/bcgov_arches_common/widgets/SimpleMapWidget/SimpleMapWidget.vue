@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { fetchSystemMapData } from '@/bcgov_arches_common/widgets/SimpleMap/api.ts';
-import { type SimpleMapConfiguration } from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
-import { computed, inject, ref, toRefs, shallowRef, watchEffect } from 'vue';
+import { fetchSystemMapData } from '@/bcgov_arches_common/widgets/SimpleMapWidget/api.ts';
+import { type SimpleMapConfiguration } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
+import { computed, inject, ref, toRefs, watchEffect } from 'vue';
 
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
-import { VIEW } from '@/arches_component_lab/widgets/constants.ts';
-import type { WidgetMode } from '@/arches_component_lab/widgets/types.ts';
+import { VIEW } from '@/arches_vue_components/widgets/constants.ts';
+import type { WidgetMode } from '@/arches_vue_components/widgets/types.ts';
 import type { MapData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
-import MapView from '@/bcgov_arches_common/widgets/SimpleMap/components/SimpleMapView.vue';
+import MapView from '@/bcgov_arches_common/widgets/SimpleMapWidget/components/SimpleMapView.vue';
 import ProgressSpinner from 'primevue/progressspinner';
-import { fetchCardXNodeXWidgetData } from '@/arches_component_lab/generics/GenericWidget/api.ts';
+import { useWidgetConfig } from '@/bcgov_arches_common/composables/useWidgetConfig.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 const mapData = ref<MapData | null | undefined>(null);
@@ -36,12 +36,16 @@ const isLoading = computed(() => {
     return mapDataLoading.value || widgetConfigLoading.value;
 });
 const mapDataLoading = ref(false);
-const widgetConfigLoading = ref(false);
 
-const resolvedCardXNodeXWidgetData = shallowRef<
-    GeoJSONFeatureCollectionCardXNodeXWidgetData | undefined
->(cardXNodeXWidgetData.value);
-const configurationError = ref<Error>();
+const {
+    config: resolvedCardXNodeXWidgetData,
+    isLoading: widgetConfigLoading,
+    error: configurationError,
+} = useWidgetConfig<GeoJSONFeatureCollectionCardXNodeXWidgetData>(
+    graphSlug,
+    nodeAlias,
+    cardXNodeXWidgetData.value,
+);
 
 watchEffect(async () => {
     if (mapData.value) {
@@ -55,28 +59,6 @@ watchEffect(async () => {
         configurationError.value = error as Error;
     } finally {
         mapDataLoading.value = false;
-    }
-});
-
-// Copied from GenericWidget - should remove if/when folded into component lab
-
-watchEffect(async () => {
-    if (resolvedCardXNodeXWidgetData.value) {
-        return;
-    }
-
-    widgetConfigLoading.value = true;
-
-    try {
-        resolvedCardXNodeXWidgetData.value = (await fetchCardXNodeXWidgetData(
-            graphSlug.value,
-            nodeAlias.value,
-        )) as GeoJSONFeatureCollectionCardXNodeXWidgetData;
-    } catch (error) {
-        console.log(error);
-        configurationError.value = error as Error;
-    } finally {
-        widgetConfigLoading.value = false;
     }
 });
 </script>

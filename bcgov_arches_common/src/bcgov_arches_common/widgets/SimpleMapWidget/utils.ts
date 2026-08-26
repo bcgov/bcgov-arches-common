@@ -3,7 +3,7 @@ import type { Feature, FeatureCollection } from 'geojson';
 import type {
     GeoJsonCardXNodeXWidgetData,
     GeoJsonNodeConfigType,
-} from '@/bcgov_arches_common/widgets/SimpleMap/types.ts';
+} from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 import maplibregl from 'maplibre-gl';
 import type { LayerSpecification, LngLatLike } from 'maplibre-gl';
 
