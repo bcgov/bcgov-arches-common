@@ -1,6 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import type { FeatureCollection } from 'geojson';
+
+// FileList.vue is sourced from the pip-installed arches_vue_components Python package
+// (outside the project root in CI), whose own imports (e.g. primevue/image) cannot be
+// resolved by Vite from that external path. Mocking it with a factory prevents Vite
+// from transforming the file, avoiding the resolution failure entirely.
+vi.mock(
+    '@/arches_vue_components/widgets/FileListWidget/components/FileListWidgetEditor/components/FileList.vue',
+    () => ({
+        default: {
+            name: 'FileList',
+            props: ['files'],
+            emits: ['remove'],
+            template: '<div />',
+        },
+    }),
+);
 
 import { EDIT, VIEW } from '@/arches_vue_components/widgets/constants.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';

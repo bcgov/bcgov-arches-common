@@ -91,8 +91,10 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         ),
     );
     // Process results after ALL promises are resolved
+    let anyGeometries = false;
     for (const { file, geometries } of results) {
         if (!geometries) continue;
+        anyGeometries = true;
 
         const geometrySourceId = uuid.generate();
 
@@ -163,7 +165,9 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
     //     );
     // }
 
-    emitUpdatedValue();
+    if (anyGeometries) {
+        emitUpdatedValue();
+    }
 }
 
 function onRemovePendingFile(

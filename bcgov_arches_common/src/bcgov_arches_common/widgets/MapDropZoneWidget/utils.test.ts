@@ -77,7 +77,10 @@ function stubBinaryReader(result: ArrayBuffer) {
 // ---------------------------------------------------------------------------
 
 describe('processFileGeometry', () => {
-    afterEach(() => vi.unstubAllGlobals());
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.clearAllMocks();
+    });
 
     // ------------------------------------------------------------------
     // Unsupported / missing extension
