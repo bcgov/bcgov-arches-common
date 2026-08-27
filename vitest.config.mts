@@ -47,6 +47,8 @@ function generateConfig(): Promise<UserConfig> {
                 'js',
                 'arches.js',
             ),
+            // shpjsesm is an alias for the shpjs ESM build, wired via nodeModulesPaths in webpack
+            shpjsesm: path.join(filePath, 'node_modules', 'shpjs'),
         };
 
         for (const [

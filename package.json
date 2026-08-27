@@ -48,7 +48,9 @@
         "prettier": "3.9.3",
         "vite": "latest"
     },
-    "nodeModulesPaths": {},
+    "nodeModulesPaths": {
+        "shpjsesm": "node_modules/shpjs"
+    },
     "overrides": {
         "geojson": "0.5.0",
         "moment-timezone": "^0.5.45",
