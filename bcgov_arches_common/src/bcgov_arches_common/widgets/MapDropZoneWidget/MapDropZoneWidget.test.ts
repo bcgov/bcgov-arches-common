@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import type { FeatureCollection } from 'geojson';
 
-import { EDIT, VIEW } from '@/arches_vue_components//widgets/constants.ts';
+import { EDIT, VIEW } from '@/arches_vue_components/widgets/constants.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 
 import MapDropZoneWidget from './MapDropZoneWidget.vue';

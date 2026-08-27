@@ -193,29 +193,29 @@ describe('MapDropZoneWidgetEditor', () => {
         expect(processFileGeometry).toHaveBeenCalledWith(file);
     });
 
-    it('does not emit update:value when processFileGeometry returns undefined', async () => {
+    it('does not emit update:aliasedNodeData when processFileGeometry returns undefined', async () => {
         vi.mocked(processFileGeometry).mockResolvedValue(undefined);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('bad.csv')]);
-        expect(wrapper.emitted('update:value')).toBeUndefined();
+        expect(wrapper.emitted('update:aliasedNodeData')).toBeUndefined();
     });
 
     // ------------------------------------------------------------------
-    // update:value event structure
+    // update:aliasedNodeData event structure
     // ------------------------------------------------------------------
 
-    it('emits update:value after a successful file selection', async () => {
+    it('emits update:aliasedNodeData after a successful file selection', async () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        expect(wrapper.emitted('update:value')).toHaveLength(1);
+        expect(wrapper.emitted('update:aliasedNodeData')).toHaveLength(1);
     });
 
     it('emitted node_value is a FeatureCollection', async () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.type).toBe('FeatureCollection');
     });
 
@@ -223,7 +223,7 @@ describe('MapDropZoneWidgetEditor', () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.features).toHaveLength(1);
         expect(emitted.node_value.features[0].id).toBe('existing-id');
     });
@@ -233,7 +233,7 @@ describe('MapDropZoneWidgetEditor', () => {
         const wrapper = mountEditor();
         const file = makePrimeVueFile('map.geojson');
         await triggerSelect(wrapper, [file]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.details).toHaveLength(1);
         expect(emitted.details[0].name).toBe('map.geojson');
     });
@@ -242,7 +242,7 @@ describe('MapDropZoneWidgetEditor', () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.details[0].node_id).toBe('node-123');
     });
 
@@ -254,7 +254,7 @@ describe('MapDropZoneWidgetEditor', () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.features[0].id).toBe('existing-id');
     });
 
@@ -262,7 +262,7 @@ describe('MapDropZoneWidgetEditor', () => {
         vi.mocked(processFileGeometry).mockResolvedValue(FC_NO_ID);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.features[0].id).toBe('generated-uuid');
     });
 
@@ -276,7 +276,7 @@ describe('MapDropZoneWidgetEditor', () => {
         );
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('shapes.kml')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         // One GC feature with 2 geometries → 2 individual features
         expect(emitted.node_value.features).toHaveLength(2);
     });
@@ -287,7 +287,7 @@ describe('MapDropZoneWidgetEditor', () => {
         );
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('shapes.kml')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         const types = emitted.node_value.features.map(
             (f: any) => f.geometry.type,
         );
@@ -302,7 +302,7 @@ describe('MapDropZoneWidgetEditor', () => {
         );
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('shapes.kml')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         for (const feature of emitted.node_value.features) {
             expect(feature.properties.source).toBe('gc');
         }
@@ -335,7 +335,7 @@ describe('MapDropZoneWidgetEditor', () => {
         vi.mocked(processFileGeometry).mockResolvedValue(mixedFC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('mixed.kml')]);
-        const emitted = wrapper.emitted('update:value')![0][0] as any;
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         // 1 Point + 1 GC(2 geoms) → 3 total
         expect(emitted.node_value.features).toHaveLength(3);
     });
@@ -350,18 +350,22 @@ describe('MapDropZoneWidgetEditor', () => {
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
 
         // Confirm the feature is present after selection
-        const beforeRemove = wrapper.emitted('update:value')![0][0] as any;
+        const beforeRemove = wrapper.emitted(
+            'update:aliasedNodeData',
+        )![0][0] as any;
         expect(beforeRemove.node_value.features).toHaveLength(1);
 
         // Trigger removal of file at index 0
         wrapper.findComponent(FileListStub).vm.$emit('remove', null, 0);
         await flushPromises();
 
-        const afterRemove = wrapper.emitted('update:value')![1][0] as any;
+        const afterRemove = wrapper.emitted(
+            'update:aliasedNodeData',
+        )![1][0] as any;
         expect(afterRemove.node_value.features).toHaveLength(0);
     });
 
-    it('emits update:value again after file removal', async () => {
+    it('emits update:aliasedNodeData again after file removal', async () => {
         vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
@@ -369,7 +373,7 @@ describe('MapDropZoneWidgetEditor', () => {
         wrapper.findComponent(FileListStub).vm.$emit('remove', null, 0);
         await flushPromises();
 
-        expect(wrapper.emitted('update:value')).toHaveLength(2);
+        expect(wrapper.emitted('update:aliasedNodeData')).toHaveLength(2);
     });
 
     it('keeps features from other files when only one file is removed', async () => {
@@ -410,7 +414,9 @@ describe('MapDropZoneWidgetEditor', () => {
         wrapper.findComponent(FileListStub).vm.$emit('remove', null, 0);
         await flushPromises();
 
-        const afterRemove = wrapper.emitted('update:value')![1][0] as any;
+        const afterRemove = wrapper.emitted(
+            'update:aliasedNodeData',
+        )![1][0] as any;
         const ids = afterRemove.node_value.features.map((f: any) => f.id);
         expect(ids.includes('feat-A')).toBe(false);
         expect(ids).toContain('feat-B');
