@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { nextTick } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import type { FeatureCollection } from 'geojson';
 
@@ -374,6 +375,120 @@ describe('MapDropZoneWidgetEditor', () => {
         await flushPromises();
 
         expect(wrapper.emitted('update:aliasedNodeData')).toHaveLength(2);
+    });
+
+    // ------------------------------------------------------------------
+    // Warning message
+    // ------------------------------------------------------------------
+
+    describe('warning message', () => {
+        // Fake-timer tests cannot use triggerSelect() because flushPromises()
+        // internally uses setTimeout, which is also faked and would deadlock.
+        // Instead the 'select' event is emitted directly and we drain the
+        // microtask queue with several Promise.resolve() yields before
+        // asserting or advancing fake time.
+        async function emitSelectAndFlush(
+            wrapper: ReturnType<typeof mountEditor>,
+            files: PrimeVueMapFile[],
+        ) {
+            wrapper
+                .findComponent({ name: 'FileUpload' })
+                .vm.$emit('select', { files });
+            // Drain Promise.all + mocked-promise resolutions (all microtasks)
+            for (let i = 0; i < 10; i++) await Promise.resolve();
+            await nextTick();
+        }
+
+        afterEach(() => vi.useRealTimers());
+
+        it('no warning is shown on mount', () => {
+            const wrapper = mountEditor();
+            expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        });
+
+        it('shows a warning when no geometry is found in any selected file', async () => {
+            const wrapper = mountEditor();
+            await triggerSelect(wrapper, [makePrimeVueFile('bad.csv')]);
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+        });
+
+        it('warning message mentions each supported format', async () => {
+            const wrapper = mountEditor();
+            await triggerSelect(wrapper, [makePrimeVueFile('bad.csv')]);
+            const text = wrapper.find('[role="alert"]').text();
+            for (const fmt of ['.geojson', '.json', '.kml', '.shp', '.zip']) {
+                expect(text).toContain(fmt);
+            }
+        });
+
+        it('does not show a warning after a successful file selection', async () => {
+            vi.mocked(processFileGeometry).mockResolvedValue(POINT_FC);
+            const wrapper = mountEditor();
+            await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
+            expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        });
+
+        it('clicking × dismisses the warning immediately', async () => {
+            const wrapper = mountEditor();
+            await triggerSelect(wrapper, [makePrimeVueFile('bad.csv')]);
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+
+            await wrapper
+                .find('.map-drop-zone-warning-dismiss')
+                .trigger('click');
+
+            expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        });
+
+        it('warning is still visible just before 5 seconds elapse', async () => {
+            vi.useFakeTimers();
+            const wrapper = mountEditor();
+            await emitSelectAndFlush(wrapper, [makePrimeVueFile('bad.csv')]);
+
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+
+            vi.advanceTimersByTime(4999);
+            await nextTick();
+
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+        });
+
+        it('warning auto-clears after 5 seconds', async () => {
+            vi.useFakeTimers();
+            const wrapper = mountEditor();
+            await emitSelectAndFlush(wrapper, [makePrimeVueFile('bad.csv')]);
+
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+
+            vi.advanceTimersByTime(5000);
+            await nextTick();
+
+            expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        });
+
+        it('selecting a second file with no geometry resets the auto-clear timer', async () => {
+            vi.useFakeTimers();
+            const wrapper = mountEditor();
+
+            // First bad file – starts 5 s timer
+            await emitSelectAndFlush(wrapper, [makePrimeVueFile('bad1.csv')]);
+
+            // 4 s into the first timer
+            vi.advanceTimersByTime(4000);
+
+            // Second bad file – resets timer to 5 s from now
+            await emitSelectAndFlush(wrapper, [makePrimeVueFile('bad2.csv')]);
+
+            // 4 s more (8 s total, but only 4 s since reset) – should persist
+            vi.advanceTimersByTime(4000);
+            await nextTick();
+            expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+
+            // 1 more second (5 s since the reset) – should now be gone
+            vi.advanceTimersByTime(1001);
+            await nextTick();
+            expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        });
     });
 
     it('keeps features from other files when only one file is removed', async () => {
