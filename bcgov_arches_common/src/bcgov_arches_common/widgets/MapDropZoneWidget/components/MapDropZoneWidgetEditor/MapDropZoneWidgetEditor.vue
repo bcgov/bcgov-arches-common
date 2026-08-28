@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect, onUnmounted } from 'vue';
-import uuid from 'uuid';
+import { v4, validate as uuidValidate } from 'uuidesm';
 
 import FileUpload from 'primevue/fileupload';
 
@@ -112,7 +112,7 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         if (!geometries) continue;
         anyGeometries = true;
 
-        const geometrySourceId = uuid.generate();
+        const geometrySourceId = v4();
 
         // Arches does not support GeometryCollection — expand each such feature
         // into one Feature per contained geometry before storing.
@@ -122,12 +122,15 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
             return feature.geometry.geometries.map((geom) => ({
                 ...feature,
                 geometry: geom,
+                id: v4(),
             }));
         });
 
-        // Ensure each feature has an id
+        // Ensure each feature has a valid uuid
         geometries.features = geometries.features.map((feature) => {
-            return feature?.id ? feature : { ...feature, id: uuid.generate() };
+            return uuidValidate(feature?.id)
+                ? feature
+                : { ...feature, id: v4() };
         });
 
         pendingFiles.value = [
@@ -160,7 +163,7 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
     //                 geometries.features = geometries.features.map((feature) => {
     //                     return feature?.id
     //                         ? feature
-    //                         : { ...feature, id: uuid.generate() };
+    //                         : { ...feature, id: v4() };
     //                 });
     //                 pendingFiles.value.push({
     //                     name: file.name,
@@ -169,7 +172,7 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
     //                     url: file.objectURL,
     //                     file: file,
     //                     node_id: cardXNodeXWidgetData.node.nodeid,
-    //                     geometrySourceId: uuid.generate(),
+    //                     geometrySourceId: v4(),
     //                     geometries: geometries as FeatureCollection,
     //                 });
     //                 nodeValue.value.features = [

@@ -11,8 +11,9 @@ vi.mock('@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts', () => ({
     processFileGeometry: vi.fn(),
 }));
 
-vi.mock('uuid', () => ({
-    default: { generate: vi.fn().mockReturnValue('generated-uuid') },
+vi.mock('uuidesm', () => ({
+    v4: vi.fn().mockReturnValue('generated-uuid'),
+    validate: vi.fn().mockReturnValue(false),
 }));
 
 vi.mock(
@@ -30,6 +31,7 @@ vi.mock(
 import MapDropZoneWidgetEditor from './MapDropZoneWidgetEditor.vue';
 import { processFileGeometry } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts';
 import type { PrimeVueMapFile } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';
+import { v4 } from 'uuidesm';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -155,6 +157,8 @@ describe('MapDropZoneWidgetEditor', () => {
     beforeEach(() => {
         vi.mocked(processFileGeometry).mockReset();
         vi.mocked(processFileGeometry).mockResolvedValue(undefined);
+        vi.mocked(v4 as () => string).mockReset();
+        vi.mocked(v4 as () => string).mockReturnValue('generated-uuid');
     });
 
     // ------------------------------------------------------------------
@@ -267,6 +271,25 @@ describe('MapDropZoneWidgetEditor', () => {
         expect(emitted.node_value.features[0].id).toBe('generated-uuid');
     });
 
+    it('replaces a non-UUID id with a generated UUID', async () => {
+        const fcWithArbitraryId: FeatureCollection = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    id: 'not-a-uuid',
+                    geometry: { type: 'Point', coordinates: [0, 0] },
+                    properties: {},
+                },
+            ],
+        };
+        vi.mocked(processFileGeometry).mockResolvedValue(fcWithArbitraryId);
+        const wrapper = mountEditor();
+        await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
+        expect(emitted.node_value.features[0].id).toBe('generated-uuid');
+    });
+
     // ------------------------------------------------------------------
     // GeometryCollection expansion
     // ------------------------------------------------------------------
@@ -307,6 +330,41 @@ describe('MapDropZoneWidgetEditor', () => {
         for (const feature of emitted.node_value.features) {
             expect(feature.properties.source).toBe('gc');
         }
+    });
+
+    it('each expanded GC feature gets a new id, not the parent feature id', async () => {
+        // Before the fix, expanded features inherited the parent's id via spread.
+        // After the fix, each gets id: v4() explicitly.
+        vi.mocked(v4 as () => string)
+            .mockReturnValueOnce('gc-uuid-1')
+            .mockReturnValueOnce('gc-uuid-2');
+        vi.mocked(processFileGeometry).mockResolvedValue(
+            GEOMETRY_COLLECTION_FC,
+        );
+        const wrapper = mountEditor();
+        await triggerSelect(wrapper, [makePrimeVueFile('shapes.kml')]);
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
+        const ids: string[] = emitted.node_value.features.map((f: any) => f.id);
+        // No expanded feature should carry the original parent's id
+        expect(ids.includes('gc-feat')).toBe(false);
+        // Each feature should have received its own generated id
+        expect(ids).toContain('gc-uuid-1');
+        expect(ids).toContain('gc-uuid-2');
+    });
+
+    it('expanded GC features each receive a distinct id', async () => {
+        vi.mocked(v4 as () => string)
+            .mockReturnValueOnce('unique-id-a')
+            .mockReturnValueOnce('unique-id-b');
+        vi.mocked(processFileGeometry).mockResolvedValue(
+            GEOMETRY_COLLECTION_FC,
+        );
+        const wrapper = mountEditor();
+        await triggerSelect(wrapper, [makePrimeVueFile('shapes.kml')]);
+        const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
+        const ids: string[] = emitted.node_value.features.map((f: any) => f.id);
+        const uniqueIds = new Set(ids);
+        expect(uniqueIds.size).toBe(ids.length);
     });
 
     it('non-GeometryCollection features pass through unchanged', async () => {
