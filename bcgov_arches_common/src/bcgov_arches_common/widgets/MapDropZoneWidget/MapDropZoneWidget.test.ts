@@ -194,7 +194,9 @@ describe('MapDropZoneWidget', () => {
             details: [],
         };
 
-        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', editorValue);
+        wrapper
+            .findComponent(EditorStub)
+            .vm.$emit('update:aliasedNodeData', editorValue);
         await flushPromises();
 
         const mapData = wrapper
@@ -236,7 +238,9 @@ describe('MapDropZoneWidget', () => {
             node_value: makeFC('f1'),
             details: [],
         };
-        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', newValue);
+        wrapper
+            .findComponent(EditorStub)
+            .vm.$emit('update:aliasedNodeData', newValue);
         await flushPromises();
         expect(wrapper.emitted('update:value')).toHaveLength(1);
     });
@@ -248,8 +252,12 @@ describe('MapDropZoneWidget', () => {
             node_value: makeFC('f1'),
             details: [],
         };
-        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', newValue);
+        wrapper
+            .findComponent(EditorStub)
+            .vm.$emit('update:aliasedNodeData', newValue);
         await flushPromises();
-        expect(wrapper.emitted('update:value')![0][0]).toEqual(newValue.node_value);
+        expect(wrapper.emitted('update:value')![0][0]).toEqual(
+            newValue.node_value,
+        );
     });
 });
