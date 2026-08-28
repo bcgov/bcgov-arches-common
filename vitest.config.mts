@@ -49,6 +49,7 @@ function generateConfig(): Promise<UserConfig> {
             ),
             // shpjsesm is an alias for the shpjs ESM build, wired via nodeModulesPaths in webpack
             shpjsesm: path.join(filePath, 'node_modules', 'shpjs'),
+            pinia: path.join(filePath, 'node_modules', 'pinia'),
         };
 
         for (const [

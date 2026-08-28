@@ -30,12 +30,12 @@ import MapDropZoneWidget from './MapDropZoneWidget.vue';
 const EditorStub = {
     name: 'MapDropZoneWidgetEditor',
     props: ['aliasedNodeData', 'nodeAlias', 'cardXNodeXWidgetData'],
-    emits: ['update:value'],
+    emits: ['update:aliasedNodeData'],
     template: '<div class="editor-stub" />',
 };
 
 const SimpleMapStub = {
-    name: 'SimpleMap',
+    name: 'SimpleMapWidget',
     props: [
         'graphSlug',
         'nodeAlias',
@@ -88,7 +88,7 @@ function mountWidget(props: Record<string, unknown> = {}) {
         global: {
             stubs: {
                 MapDropZoneWidgetEditor: EditorStub,
-                SimpleMap: SimpleMapStub,
+                SimpleMapWidget: SimpleMapStub,
             },
         },
     });
@@ -135,7 +135,7 @@ describe('MapDropZoneWidget', () => {
         const wrapper = mountWidget();
         expect(
             wrapper.findComponent(EditorStub).props('cardXNodeXWidgetData'),
-        ).toBe(CARD_DATA);
+        ).toStrictEqual(CARD_DATA);
     });
 
     it('passes graphSlug to SimpleMap', () => {
@@ -194,7 +194,7 @@ describe('MapDropZoneWidget', () => {
             details: [],
         };
 
-        wrapper.findComponent(EditorStub).vm.$emit('update:value', editorValue);
+        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', editorValue);
         await flushPromises();
 
         const mapData = wrapper
@@ -209,7 +209,7 @@ describe('MapDropZoneWidget', () => {
         const wrapper = mountWidget({ aliasedNodeData: undefined });
 
         const editorFC = makeFC('file-feat-1', 'file-feat-2');
-        wrapper.findComponent(EditorStub).vm.$emit('update:value', {
+        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', {
             display_value: '',
             node_value: editorFC,
             details: [],
@@ -229,27 +229,27 @@ describe('MapDropZoneWidget', () => {
     // update:value event propagation
     // ------------------------------------------------------------------
 
-    it('emits update:value when the editor fires update:value', async () => {
+    it('emits update:value when the editor fires update:aliasedNodeData', async () => {
         const wrapper = mountWidget();
         const newValue: GeoJSONFeatureCollectionValue = {
             display_value: 'x',
             node_value: makeFC('f1'),
             details: [],
         };
-        wrapper.findComponent(EditorStub).vm.$emit('update:value', newValue);
+        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', newValue);
         await flushPromises();
         expect(wrapper.emitted('update:value')).toHaveLength(1);
     });
 
-    it('emitted update:value carries the value from the editor', async () => {
+    it('emitted update:value carries the node_value FeatureCollection from the editor', async () => {
         const wrapper = mountWidget();
         const newValue: GeoJSONFeatureCollectionValue = {
             display_value: 'test',
             node_value: makeFC('f1'),
             details: [],
         };
-        wrapper.findComponent(EditorStub).vm.$emit('update:value', newValue);
+        wrapper.findComponent(EditorStub).vm.$emit('update:aliasedNodeData', newValue);
         await flushPromises();
-        expect(wrapper.emitted('update:value')![0][0]).toEqual(newValue);
+        expect(wrapper.emitted('update:value')![0][0]).toEqual(newValue.node_value);
     });
 });
