@@ -67,7 +67,7 @@ const host = (config?: SimpleMapConfiguration) =>
     defineComponent({
         setup() {
             const ids = ref(['a', 'b']);
-            useMapBoxAutoCenter('mapBoxes', config);
+            useMapBoxAutoCenter('mapBoxes', config, QUIET_MS);
             return { ids };
         },
         render() {
@@ -80,6 +80,11 @@ const host = (config?: SimpleMapConfiguration) =>
         },
     });
 
+// A short quiet period keeps the debounce tests quick; underscore measures it
+// with the real clock, so fake timers cannot drive them.
+const QUIET_MS = 20;
+const settle = () => new Promise((resolve) => setTimeout(resolve, QUIET_MS * 3));
+
 const mountHost = (config?: SimpleMapConfiguration) => {
     const wrapper = mount(host(config), { attachTo: document.body });
     return { wrapper, observer: observers[observers.length - 1] };
@@ -88,7 +93,6 @@ const mountHost = (config?: SimpleMapConfiguration) => {
 describe('useMapBoxAutoCenter', () => {
     beforeEach(() => {
         observers.length = 0;
-        frames.length = 0;
     });
 
     it('observes every box the template rendered', async () => {
@@ -114,26 +118,41 @@ describe('useMapBoxAutoCenter', () => {
         wrapper.unmount();
     });
 
-    it('provides a refit signal that bumps once per frame however many boxes resized', async () => {
+    it('bumps the refit signal once, after the box holds still', async () => {
         const { wrapper, observer } = mountHost();
         await nextTick();
 
         const signal = injected.refitSignal;
-        expect(signal?.value).toBe(0);
-
         const boxes = [...observer.observed] as HTMLElement[];
-        observer.fire(boxes.map((target) => ({ target, height: 200 })));
-        observer.fire(boxes.map((target) => ({ target, height: 210 })));
+
+        // A drag: several resizes in quick succession.
+        for (const height of [200, 210, 220]) {
+            observer.fire(boxes.map((target) => ({ target, height })));
+        }
         expect(signal?.value).toBe(0);
 
-        runFrames();
+        await settle();
         expect(signal?.value).toBe(1);
 
-        // A later resize schedules a fresh frame rather than being swallowed.
-        observer.fire([{ target: boxes[0], height: 220 }]);
-        runFrames();
+        // A later resize starts its own quiet period.
+        observer.fire([{ target: boxes[0], height: 240 }]);
+        await settle();
         expect(signal?.value).toBe(2);
+
         wrapper.unmount();
+    });
+
+    it('drops a pending refit when the component goes away', async () => {
+        const { wrapper, observer } = mountHost();
+        await nextTick();
+
+        const signal = injected.refitSignal;
+        const boxes = [...observer.observed] as HTMLElement[];
+        observer.fire([{ target: boxes[0], height: 200 }]);
+        wrapper.unmount();
+
+        await settle();
+        expect(signal?.value).toBe(0);
     });
 
     it('keeps a caller-supplied config alongside the signal', async () => {
