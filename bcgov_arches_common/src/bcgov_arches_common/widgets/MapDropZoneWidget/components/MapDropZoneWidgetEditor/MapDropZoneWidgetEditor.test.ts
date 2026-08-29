@@ -13,7 +13,15 @@ vi.mock('@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts', () => ({
 
 vi.mock('uuidesm', () => ({
     v4: vi.fn().mockReturnValue('generated-uuid'),
-    validate: vi.fn().mockReturnValue(false),
+    // Use a real UUID-format check so existing valid UUIDs are preserved and
+    // non-UUID strings (e.g. 'existing-id', 'gc-feat') are flagged for replacement.
+    validate: vi.fn().mockImplementation(
+        (id: unknown) =>
+            typeof id === 'string' &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+                id,
+            ),
+    ),
 }));
 
 vi.mock(
@@ -42,7 +50,7 @@ const POINT_FC: FeatureCollection = {
     features: [
         {
             type: 'Feature',
-            id: 'existing-id',
+            id: '11111111-1111-1111-1111-111111111111',
             geometry: { type: 'Point', coordinates: [0, 0] },
             properties: {},
         },
@@ -230,7 +238,7 @@ describe('MapDropZoneWidgetEditor', () => {
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
         const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.features).toHaveLength(1);
-        expect(emitted.node_value.features[0].id).toBe('existing-id');
+        expect(emitted.node_value.features[0].id).toBe('11111111-1111-1111-1111-111111111111');
     });
 
     it('emitted details contains the pending file entry', async () => {
@@ -260,7 +268,7 @@ describe('MapDropZoneWidgetEditor', () => {
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
         const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
-        expect(emitted.node_value.features[0].id).toBe('existing-id');
+        expect(emitted.node_value.features[0].id).toBe('11111111-1111-1111-1111-111111111111');
     });
 
     it('assigns a generated ID to features that have no id', async () => {
@@ -335,9 +343,13 @@ describe('MapDropZoneWidgetEditor', () => {
     it('each expanded GC feature gets a new id, not the parent feature id', async () => {
         // Before the fix, expanded features inherited the parent's id via spread.
         // After the fix, each gets id: v4() explicitly.
+        // The first v4() call in onSelect is geometrySourceId; the next two are
+        // the expansion IDs. Use proper UUID-format strings so they pass validate
+        // and are not replaced by a second v4() call in the validation step.
         vi.mocked(v4 as () => string)
-            .mockReturnValueOnce('gc-uuid-1')
-            .mockReturnValueOnce('gc-uuid-2');
+            .mockReturnValueOnce('00000000-0000-0000-0000-000000000001') // geometrySourceId
+            .mockReturnValueOnce('00000000-0000-0000-0000-000000000002') // sub-geom 1
+            .mockReturnValueOnce('00000000-0000-0000-0000-000000000003'); // sub-geom 2
         vi.mocked(processFileGeometry).mockResolvedValue(
             GEOMETRY_COLLECTION_FC,
         );
@@ -348,14 +360,15 @@ describe('MapDropZoneWidgetEditor', () => {
         // No expanded feature should carry the original parent's id
         expect(ids.includes('gc-feat')).toBe(false);
         // Each feature should have received its own generated id
-        expect(ids).toContain('gc-uuid-1');
-        expect(ids).toContain('gc-uuid-2');
+        expect(ids).toContain('00000000-0000-0000-0000-000000000002');
+        expect(ids).toContain('00000000-0000-0000-0000-000000000003');
     });
 
     it('expanded GC features each receive a distinct id', async () => {
         vi.mocked(v4 as () => string)
-            .mockReturnValueOnce('unique-id-a')
-            .mockReturnValueOnce('unique-id-b');
+            .mockReturnValueOnce('00000000-0000-0000-0000-000000000001') // geometrySourceId
+            .mockReturnValueOnce('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') // sub-geom 1
+            .mockReturnValueOnce('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'); // sub-geom 2
         vi.mocked(processFileGeometry).mockResolvedValue(
             GEOMETRY_COLLECTION_FC,
         );
@@ -555,7 +568,7 @@ describe('MapDropZoneWidgetEditor', () => {
             features: [
                 {
                     type: 'Feature',
-                    id: 'feat-A',
+                    id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
                     geometry: { type: 'Point', coordinates: [0, 0] },
                     properties: {},
                 },
@@ -566,7 +579,7 @@ describe('MapDropZoneWidgetEditor', () => {
             features: [
                 {
                     type: 'Feature',
-                    id: 'feat-B',
+                    id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
                     geometry: { type: 'Point', coordinates: [1, 1] },
                     properties: {},
                 },
@@ -591,7 +604,7 @@ describe('MapDropZoneWidgetEditor', () => {
             'update:aliasedNodeData',
         )![1][0] as any;
         const ids = afterRemove.node_value.features.map((f: any) => f.id);
-        expect(ids.includes('feat-A')).toBe(false);
-        expect(ids).toContain('feat-B');
+        expect(ids.includes('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).toBe(false);
+        expect(ids).toContain('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb');
     });
 });
