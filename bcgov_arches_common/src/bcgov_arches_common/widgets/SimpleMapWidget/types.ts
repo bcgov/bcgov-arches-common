@@ -1,3 +1,4 @@
+import type { Ref } from 'vue';
 import type { CardXNodeXWidgetData } from '@/arches_vue_components/types.ts';
 import type {
     LayerSpecification,
@@ -39,4 +40,5 @@ export type GeoJsonCardXNodeXWidgetData = Omit<CardXNodeXWidgetData, 'node'> & {
 
 export type SimpleMapConfiguration = {
     showCentroidMarker?: boolean;
+    refitSignal?: Ref<number>;
 };

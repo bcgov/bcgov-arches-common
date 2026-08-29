@@ -5,6 +5,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import {
     watch,
     onMounted,
+    onBeforeUnmount,
+    inject,
     type Ref,
     ref,
     toRefs,
@@ -31,6 +33,7 @@ import type {
     LayerSpecificationType,
     StyleSpecificationType,
     MapLibreMapSourcesType,
+    SimpleMapConfiguration,
 } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { MapFileData } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';
@@ -105,6 +108,7 @@ const mapCentre = computed<[number, number]>(() => {
 const zoom = ref<number>(3.5);
 
 const mapEl = ref<HTMLDivElement | null>(null);
+const panelEl = ref<HTMLDivElement | null>(null);
 const map: Ref<MapLibreMap | null> = ref(null);
 
 const styleObj = {
@@ -121,6 +125,13 @@ const defaultStyle = shallowRef<StyleSpecificationType>(styleObj);
 watch(mapData, () => {
     setupMap();
 });
+
+const onResize = () => {
+    console.log('Resizing');
+    map.value?.resize();
+};
+
+onBeforeUnmount(() => window.removeEventListener('resize', onResize));
 
 function setupMap(): void {
     // dataLoaded.value = true;
@@ -174,12 +185,54 @@ function setupMap(): void {
         zoom.value = Number(map.value.getZoom().toFixed(2));
     });
 
-    const onResize = () => {
-        console.log('Resizing');
-        map.value?.resize();
-    };
     window.addEventListener('resize', onResize);
     // map.value.on('resize', onResize);
+}
+
+const simpleMapConfig = inject('simpleMapConfig', {} as SimpleMapConfiguration);
+watch(
+    () => simpleMapConfig.refitSignal?.value,
+    () => {
+        map.value?.resize();
+        fitToGeometries();
+    },
+);
+
+function fitToGeometries() {
+    const features = allGeometries.value?.features ?? [];
+    if (!map.value || !features.length) return;
+    const bounds = bbox(allGeometries.value as FeatureCollection);
+    const canvas = map.value.getCanvas();
+    const padding = Math.min(
+        100,
+        Math.floor(Math.min(canvas.clientWidth, canvas.clientHeight) / 4),
+    );
+    // A consumer that floats the readout over the map hides that strip of
+    // canvas, so centring on the full height sits low by half of it. A readout
+    // left in normal flow starts below the canvas and overlaps by nothing.
+    const canvasBox = canvas.getBoundingClientRect();
+    const panelBox = panelEl.value?.getBoundingClientRect();
+    const hiddenBottom = panelBox
+        ? Math.min(
+              Math.max(0, canvasBox.bottom - panelBox.top),
+              canvasBox.height,
+          )
+        : 0;
+    map.value.fitBounds(
+        [
+            [bounds[0], bounds[1]],
+            [bounds[2], bounds[3]],
+        ],
+        {
+            padding: {
+                top: padding,
+                bottom: padding + hiddenBottom,
+                left: padding,
+                right: padding,
+            },
+            maxZoom: 15,
+        },
+    );
 }
 
 onMounted(async () => {
@@ -260,23 +313,7 @@ const updateMapGeometries = (
         });
     }
 
-    const allFeaturesCollection = allGeometries.value;
-    if (
-        allFeaturesCollection &&
-        (allFeaturesCollection?.features?.length ?? 0 > 0)
-    ) {
-        const bounds = bbox(allFeaturesCollection);
-        map.value.fitBounds(
-            [
-                [bounds[0], bounds[1]],
-                [bounds[2], bounds[3]],
-            ],
-            {
-                padding: 100,
-                maxZoom: 15,
-            },
-        );
-    }
+    fitToGeometries();
 
     if (markCentroid.value) {
         if (!centroidMarker.value) {
@@ -364,7 +401,9 @@ watch(
                 max-height: var(--map-max-height, 550px);
                 max-width: var(--map-max-width, 700px);
             "></div>
-        <div class="panel">
+        <div
+            ref="panelEl"
+            class="panel">
             <!--button @click="flyVancouver">Vancouver</button>
             <button @click="flyParis">Paris</button-->
             <span class="coords">
