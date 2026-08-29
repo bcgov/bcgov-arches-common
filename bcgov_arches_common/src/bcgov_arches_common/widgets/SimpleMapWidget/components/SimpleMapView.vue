@@ -404,8 +404,6 @@ watch(
         <div
             ref="panelEl"
             class="panel">
-            <!--button @click="flyVancouver">Vancouver</button>
-            <button @click="flyParis">Paris</button-->
             <span class="coords">
                 Boundary Centroid Lng/Lat: {{ mapCentre?.[0].toFixed(6) }},
                 {{ mapCentre?.[1].toFixed(6) }} | Zoom:
