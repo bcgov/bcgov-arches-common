@@ -83,7 +83,8 @@ const host = (config?: SimpleMapConfiguration) =>
 // A short quiet period keeps the debounce tests quick; underscore measures it
 // with the real clock, so fake timers cannot drive them.
 const QUIET_MS = 20;
-const settle = () => new Promise((resolve) => setTimeout(resolve, QUIET_MS * 3));
+const settle = () =>
+    new Promise((resolve) => setTimeout(resolve, QUIET_MS * 3));
 
 const mountHost = (config?: SimpleMapConfiguration) => {
     const wrapper = mount(host(config), { attachTo: document.body });
