@@ -15,13 +15,15 @@ vi.mock('uuidesm', () => ({
     v4: vi.fn().mockReturnValue('generated-uuid'),
     // Use a real UUID-format check so existing valid UUIDs are preserved and
     // non-UUID strings (e.g. 'existing-id', 'gc-feat') are flagged for replacement.
-    validate: vi.fn().mockImplementation(
-        (id: unknown) =>
-            typeof id === 'string' &&
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-                id,
-            ),
-    ),
+    validate: vi
+        .fn()
+        .mockImplementation(
+            (id: unknown) =>
+                typeof id === 'string' &&
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+                    id,
+                ),
+        ),
 }));
 
 vi.mock(
@@ -238,7 +240,9 @@ describe('MapDropZoneWidgetEditor', () => {
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
         const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
         expect(emitted.node_value.features).toHaveLength(1);
-        expect(emitted.node_value.features[0].id).toBe('11111111-1111-1111-1111-111111111111');
+        expect(emitted.node_value.features[0].id).toBe(
+            '11111111-1111-1111-1111-111111111111',
+        );
     });
 
     it('emitted details contains the pending file entry', async () => {
@@ -268,7 +272,9 @@ describe('MapDropZoneWidgetEditor', () => {
         const wrapper = mountEditor();
         await triggerSelect(wrapper, [makePrimeVueFile('map.geojson')]);
         const emitted = wrapper.emitted('update:aliasedNodeData')![0][0] as any;
-        expect(emitted.node_value.features[0].id).toBe('11111111-1111-1111-1111-111111111111');
+        expect(emitted.node_value.features[0].id).toBe(
+            '11111111-1111-1111-1111-111111111111',
+        );
     });
 
     it('assigns a generated ID to features that have no id', async () => {
@@ -604,7 +610,9 @@ describe('MapDropZoneWidgetEditor', () => {
             'update:aliasedNodeData',
         )![1][0] as any;
         const ids = afterRemove.node_value.features.map((f: any) => f.id);
-        expect(ids.includes('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).toBe(false);
+        expect(ids.includes('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).toBe(
+            false,
+        );
         expect(ids).toContain('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb');
     });
 });
