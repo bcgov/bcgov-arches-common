@@ -233,7 +233,7 @@ describe('SimpleMapView', () => {
 
     it('does not create a Map when mapData is undefined', () => {
         mountView({ mapData: undefined });
-        expect(vi.mocked(maplibregl.Map)).not.toHaveBeenCalled();
+        expect(maplibregl.Map).not.toHaveBeenCalled();
     });
 
     it('creates a Map on mount when mapData is provided', () => {
@@ -266,7 +266,7 @@ describe('SimpleMapView', () => {
 
     it('creates a Map when mapData is set after mount', async () => {
         const wrapper = mountView({ mapData: undefined });
-        expect(vi.mocked(maplibregl.Map)).not.toHaveBeenCalled();
+        expect(maplibregl.Map).not.toHaveBeenCalled();
 
         await wrapper.setProps({ mapData: makeMapData() });
         await nextTick();
@@ -455,7 +455,7 @@ describe('SimpleMapView', () => {
         eventHandlers['load']?.();
         await nextTick();
 
-        expect(vi.mocked(getCentroidMarker)).not.toHaveBeenCalled();
+        expect(getCentroidMarker).not.toHaveBeenCalled();
     });
 
     // ------------------------------------------------------------------
