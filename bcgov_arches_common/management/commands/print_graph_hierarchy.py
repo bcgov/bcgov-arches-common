@@ -45,19 +45,15 @@ class Command(BaseCommand):
         except GraphModel.DoesNotExist:
             raise CommandError(f"No graph found with slug '{slug}'")
 
-        # Load all nodes for this graph in one query, with nodegroup data
         nodes_qs = Node.objects.filter(graph=graph).select_related("nodegroup")
         nodes_by_id = {str(node.nodeid): node for node in nodes_qs}
 
-        # Load all edges for this graph in one query
         edges_qs = Edge.objects.filter(graph=graph).only("domainnode", "rangenode")
 
-        # Build parent→[children] adjacency map
         children_of = defaultdict(list)
         for edge in edges_qs:
             children_of[str(edge.domainnode_id)].append(str(edge.rangenode_id))
 
-        # Find the root node
         root = next(
             (n for n in nodes_by_id.values() if n.istopnode),
             None,

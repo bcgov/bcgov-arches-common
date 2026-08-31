@@ -155,35 +155,6 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         ];
     }
 
-    // for (const file of event.files) {
-    //     processFileGeometry(file).then(
-    //         (geometries: FeatureCollection | undefined) => {
-    //             if (geometries) {
-    //                 // This sets geometry id for each feature if it doesn't already exist
-    //                 geometries.features = geometries.features.map((feature) => {
-    //                     return feature?.id
-    //                         ? feature
-    //                         : { ...feature, id: v4() };
-    //                 });
-    //                 pendingFiles.value.push({
-    //                     name: file.name,
-    //                     size: file.size,
-    //                     type: file.type,
-    //                     url: file.objectURL,
-    //                     file: file,
-    //                     node_id: cardXNodeXWidgetData.node.nodeid,
-    //                     geometrySourceId: v4(),
-    //                     geometries: geometries as FeatureCollection,
-    //                 });
-    //                 nodeValue.value.features = [
-    //                     ...nodeValue.value.features,
-    //                     ...geometries.features,
-    //                 ];
-    //             }
-    //         },
-    //     );
-    // }
-
     if (anyGeometries) {
         emitUpdatedValue();
     } else {

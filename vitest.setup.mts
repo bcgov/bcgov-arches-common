@@ -1,8 +1,7 @@
 import { beforeAll, vi } from 'vitest';
 
-// maplibre-gl calls window.URL.createObjectURL at module-load time to set its
-// worker URL. jsdom does not implement this API, so stub it before any test
-// file's import chain can trigger the maplibre-gl module.
+// maplibre-gl calls window.URL.createObjectURL at module-load time; stub it
+// before any import chain triggers the module (jsdom doesn't implement it).
 if (typeof window !== 'undefined') {
     window.URL.createObjectURL = vi.fn();
     window.URL.revokeObjectURL = vi.fn();
@@ -21,13 +20,24 @@ beforeAll(() => {
         }),
     }));
 
-    // maplibre-gl calls window.URL.createObjectURL() during module
-    // initialisation, which jsdom does not implement.  Provide a minimal stub
-    // so any test file that does not need the real maplibre-gl API can import
-    // Vue components that depend on it without a runtime error.
-    // Individual test files (e.g. SimpleMap/utils.test.ts) supply their own
-    // more detailed vi.mock('maplibre-gl', ...) which overrides this one.
+    // Minimal stub so components importing maplibre-gl don't crash in jsdom.
+    // Test files that need the real API supply their own vi.mock override.
     vi.mock('maplibre-gl', () => ({
         default: {},
     }));
+
+    // FileList.vue is from a pip-installed package outside the project root in
+    // CI; its own imports (e.g. primevue/image) can't be resolved by Vite from
+    // that external path. A factory mock prevents Vite from transforming it.
+    vi.mock(
+        '@/arches_vue_components/widgets/FileListWidget/components/FileListWidgetEditor/components/FileList.vue',
+        () => ({
+            default: {
+                name: 'FileList',
+                props: ['files'],
+                emits: ['remove'],
+                template: '<div />',
+            },
+        }),
+    );
 });

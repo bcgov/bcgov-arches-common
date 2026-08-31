@@ -24,18 +24,6 @@ function makeFile(name: string): File {
     return new File(['content'], name);
 }
 
-// ---------------------------------------------------------------------------
-// FileReader stubs
-//
-// The code does:
-//   const reader = new window.FileReader();
-//   reader.onload = function(e) { ... };
-//   reader.readAsText(file)  |  reader.readAsArrayBuffer(file)
-//
-// We capture the onload assignment via a setter and fire it synchronously
-// inside readAsText / readAsArrayBuffer so tests stay synchronous-friendly.
-// ---------------------------------------------------------------------------
-
 function stubTextReader(result: string) {
     let onloadFn: ((e: any) => void) | undefined;
     const instance = {

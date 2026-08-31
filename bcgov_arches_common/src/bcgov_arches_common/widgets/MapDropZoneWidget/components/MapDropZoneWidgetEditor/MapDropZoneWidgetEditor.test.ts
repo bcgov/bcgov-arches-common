@@ -26,18 +26,6 @@ vi.mock('uuidesm', () => ({
         ),
 }));
 
-vi.mock(
-    '@/arches_vue_components/widgets/FileListWidget/components/FileListWidgetEditor/components/FileList.vue',
-    () => ({
-        default: {
-            name: 'FileList',
-            props: ['files'],
-            emits: ['remove'],
-            template: '<div />',
-        },
-    }),
-);
-
 import MapDropZoneWidgetEditor from './MapDropZoneWidgetEditor.vue';
 import { processFileGeometry } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/utils.ts';
 import type { PrimeVueMapFile } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';

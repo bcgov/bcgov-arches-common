@@ -47,23 +47,16 @@ function generateConfig(): Promise<UserConfig> {
                 'js',
                 'arches.js',
             ),
-            // shpjsesm is an alias for the shpjs ESM build, wired via nodeModulesPaths in webpack
+            // Pin each of these to the local node_modules so that files
+            // outside the project root (e.g. sibling packages, Python-installed
+            // packages) resolve the same copy that webpack uses.
             shpjsesm: path.join(filePath, 'node_modules', 'shpjs'),
-            // pinia is a dep of arches-vue-components; resolve from local node_modules
-            // so Vite can find it when transforming files from the sibling package path
             pinia: path.join(filePath, 'node_modules', 'pinia'),
-            // Pin primevue to the project's own node_modules so that files
-            // located outside the project root (e.g. Python-installed packages
-            // under /usr/local/lib/...) can still resolve primevue/* imports
-            // during Vite's build-time import analysis.
             primevue: path.join(__dirname, 'node_modules', 'primevue'),
             uuidesm: path.join(__dirname, 'node_modules', 'uuid', 'dist'),
         };
 
-        // Mirror webpack's nodeModulesPaths alias resolution so that packages
-        // referenced by their webpack alias name (e.g. "shpjsesm", "togeojson")
-        // resolve correctly in the test environment.  Webpack reads these from
-        // arches' package.json; we do the same here for the installed npm package.
+        // Mirror webpack's nodeModulesPaths aliases from arches' package.json.
         const archesNpmPackageJSON = JSON.parse(
             fs.readFileSync(
                 path.join(__dirname, 'node_modules', 'arches', 'package.json'),
