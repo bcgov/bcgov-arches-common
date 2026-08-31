@@ -207,9 +207,8 @@ function fitToGeometries() {
         100,
         Math.floor(Math.min(canvas.clientWidth, canvas.clientHeight) / 4),
     );
-    // A consumer that floats the readout over the map hides that strip of
-    // canvas, so centring on the full height sits low by half of it. A readout
-    // left in normal flow starts below the canvas and overlaps by nothing.
+    // A readout floated over the map hides that strip of canvas, so centring on
+    // the full height sits low by half of it (in normal flow, it overlaps none).
     const canvasBox = canvas.getBoundingClientRect();
     const panelBox = panelEl.value?.getBoundingClientRect();
     const hiddenBottom = panelBox

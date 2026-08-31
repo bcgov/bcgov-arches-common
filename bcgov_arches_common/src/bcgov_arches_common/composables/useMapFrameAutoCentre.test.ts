@@ -6,8 +6,6 @@ import { useMapFrameAutoCentre } from './useMapFrameAutoCentre.ts';
 
 import type { SimpleMapConfiguration } from '../widgets/SimpleMapWidget/types.ts';
 
-// One fake observer per instance, so a test can fire a resize for chosen boxes
-// and assert which elements are being watched.
 const observers: FakeResizeObserver[] = [];
 
 class FakeResizeObserver {
@@ -53,7 +51,6 @@ const runFrames = () => {
     pending.forEach((cb) => cb(0));
 };
 
-// A descendant sees the provided config; the provider itself would not.
 let injected: SimpleMapConfiguration;
 const Child = defineComponent({
     setup() {
@@ -62,7 +59,6 @@ const Child = defineComponent({
     },
 });
 
-// A host that renders one box per id, the way a v-for over map fields does.
 const host = (config?: SimpleMapConfiguration) =>
     defineComponent({
         setup() {

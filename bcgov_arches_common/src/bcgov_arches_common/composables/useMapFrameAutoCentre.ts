@@ -4,11 +4,9 @@ import _ from 'underscore';
 import type { SimpleMapConfiguration } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 
 // Sizes the map widget inside a caller-sized box: put the ref name on the box
-// and give it a height. The widget's map div reads --map-height and defaults to
-// 550px, which overflows a shorter box, and a percentage collapses against the
-// widget's own auto-height wrappers. Resizing keeps the old centre and zoom, so
-// the signal tells every map below the caller to re-fit once laid out.
-// How long the box must hold still before the map refits.
+// and give it a height (--map-height defaults to 550px; percentages collapse
+// against the widget's auto-height wrappers). Maps below the caller re-fit once
+// the box holds still.
 const REFIT_QUIET_MS = 1000;
 
 export const useMapFrameAutoCentre = (
