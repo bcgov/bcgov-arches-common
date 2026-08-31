@@ -6,6 +6,11 @@
 //
 // This augmentation re-adds `not` and `resolves` directly via interface
 // merging so they are always present regardless of the subject's type.
+//
+// `export {}` is required to make TypeScript treat this file as a module;
+// without it, `declare module 'vitest'` is an ambient declaration that
+// replaces the original module types instead of merging with them.
+export {};
 declare module 'vitest' {
     interface Assertion<T = any> {
         not: Assertion<T>;
