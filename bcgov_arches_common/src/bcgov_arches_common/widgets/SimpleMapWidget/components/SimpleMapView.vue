@@ -235,22 +235,9 @@ function fitToGeometries() {
     );
 }
 
-onMounted(async () => {
-    if (!map.value && mapData.value) {
-        setupMap();
-    }
+onMounted(() => {
+    setupMap();
 });
-
-watch(
-    () => mapData,
-    (mapData, prevMapData) => {
-        console.log('mapData updated', mapData);
-        console.log('cardXNodeXWidgetData', cardXNodeXWidgetData);
-        if (mapData) {
-            setupMap();
-        }
-    },
-);
 
 const updateMapGeometries = (
     featuresToAdd: MapFileData[],
@@ -333,9 +320,8 @@ const updateMapGeometries = (
 };
 
 watch(
-    () => cardXNodeXWidgetData,
+    () => cardXNodeXWidgetData.value,
     (cardXNodeXWidgetData) => {
-        console.log('cardXNodeXWidgetData updated', cardXNodeXWidgetData);
         if (
             cardXNodeXWidgetData &&
             mapData &&

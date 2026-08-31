@@ -474,4 +474,117 @@ describe('SimpleMapView', () => {
         wrapper.unmount();
         expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
     });
+
+    // ------------------------------------------------------------------
+    // moveend event
+    // ------------------------------------------------------------------
+
+    it('updates the displayed zoom when moveend fires', async () => {
+        const wrapper = mountView({ mapData: makeMapData() });
+        mockMapInstance.getZoom.mockReturnValue(8.5);
+        eventHandlers['moveend']?.();
+        await nextTick();
+        expect(wrapper.find('.coords').text()).toContain('8.5');
+    });
+
+    // ------------------------------------------------------------------
+    // Load event — node features already present
+    // ------------------------------------------------------------------
+
+    it('adds a source for each node feature present when the map loads', async () => {
+        mountView({
+            mapData: makeMapData(),
+            aliasedNodeData: makeAliasedData([makePoint()]),
+        });
+        eventHandlers['load']?.();
+        await nextTick();
+        expect(mockMapInstance.addSource).toHaveBeenCalledWith(
+            'pt-0-0',
+            expect.objectContaining({ type: 'geojson' }),
+        );
+    });
+
+    it('calls buildLayersForFeature for each node feature present when the map loads', async () => {
+        mountView({
+            mapData: makeMapData(),
+            aliasedNodeData: makeAliasedData([makePoint()]),
+        });
+        eventHandlers['load']?.();
+        await nextTick();
+        expect(buildLayersForFeature).toHaveBeenCalledWith(
+            'pt-0-0',
+            expect.anything(),
+            expect.anything(),
+        );
+    });
+
+    // ------------------------------------------------------------------
+    // aliasedNodeData watcher — node_value-only changes (else branch)
+    // ------------------------------------------------------------------
+
+    it('adds a source for a new node feature that arrives without file-detail changes', async () => {
+        const wrapper = mountView({ mapData: makeMapData() });
+        eventHandlers['load']?.();
+        await nextTick();
+        mockMapInstance.addSource.mockClear();
+
+        await wrapper.setProps({
+            aliasedNodeData: makeAliasedData([makePoint()]),
+        });
+        await nextTick();
+
+        expect(mockMapInstance.addSource).toHaveBeenCalledWith(
+            'pt-0-0',
+            expect.objectContaining({ type: 'geojson' }),
+        );
+    });
+
+    it('removes the layer for a node feature that is removed from aliasedNodeData', async () => {
+        const wrapper = mountView({ mapData: makeMapData() });
+        eventHandlers['load']?.();
+        await nextTick();
+
+        // Add the node feature so it is tracked in addedNodeFeatureIds.
+        await wrapper.setProps({
+            aliasedNodeData: makeAliasedData([makePoint()]),
+        });
+        await nextTick();
+
+        // Remove it — the watcher should call removeLayersUsingSource.
+        await wrapper.setProps({ aliasedNodeData: makeAliasedData([]) });
+        await nextTick();
+
+        expect(removeLayersUsingSource).toHaveBeenCalledWith(
+            mockMapInstance,
+            'pt-0-0',
+            true,
+        );
+    });
+
+    // ------------------------------------------------------------------
+    // markCentroid — update existing marker position
+    // ------------------------------------------------------------------
+
+    it('calls setLngLat on the existing centroid marker when geometry updates', async () => {
+        const wrapper = mountView({
+            mapData: makeMapData(),
+            markCentroid: true,
+            aliasedNodeData: makeAliasedData([makePoint()]),
+        });
+
+        // First load creates the centroid marker.
+        eventHandlers['load']?.();
+        await nextTick();
+
+        // Adding a file detail triggers a second updateMapGeometries call,
+        // which should hit the setLngLat branch instead of creating a new marker.
+        const detail = makeFileData('source-xyz', [makePoint(1, 1)]);
+        await wrapper.setProps({
+            aliasedNodeData: makeAliasedData([makePoint()], [detail]),
+        });
+        await nextTick();
+
+        const marker = vi.mocked(getCentroidMarker).mock.results[0].value;
+        expect(marker.setLngLat).toHaveBeenCalled();
+    });
 });
