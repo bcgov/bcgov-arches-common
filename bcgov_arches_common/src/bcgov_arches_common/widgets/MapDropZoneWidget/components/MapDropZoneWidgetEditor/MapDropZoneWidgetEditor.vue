@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
-import uuid from 'uuid';
+import { ref, watchEffect, onUnmounted } from 'vue';
+import { v4, validate as uuidValidate } from 'uuidesm';
 
 import FileUpload from 'primevue/fileupload';
 
@@ -81,6 +81,22 @@ const nodeValue = ref({
     features: [] as Feature[],
 } satisfies FeatureCollection);
 
+const warningMessage = ref<string | null>(null);
+let warningTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showWarning(message: string) {
+    warningMessage.value = message;
+    if (warningTimer) clearTimeout(warningTimer);
+    warningTimer = setTimeout(() => {
+        warningMessage.value = null;
+        warningTimer = null;
+    }, 5000);
+}
+
+onUnmounted(() => {
+    if (warningTimer) clearTimeout(warningTimer);
+});
+
 async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
     const results = await Promise.all(
         event.files.map((file) =>
@@ -91,14 +107,30 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         ),
     );
     // Process results after ALL promises are resolved
+    let anyGeometries = false;
     for (const { file, geometries } of results) {
         if (!geometries) continue;
+        anyGeometries = true;
 
-        const geometrySourceId = uuid.generate();
+        const geometrySourceId = v4();
 
-        // Ensure each feature has an id
+        // Arches does not support GeometryCollection — expand each such feature
+        // into one Feature per contained geometry before storing.
+        geometries.features = geometries.features.flatMap((feature) => {
+            if (feature.geometry?.type !== 'GeometryCollection')
+                return [feature];
+            return feature.geometry.geometries.map((geom) => ({
+                ...feature,
+                geometry: geom,
+                id: v4(),
+            }));
+        });
+
+        // Ensure each feature has a valid uuid
         geometries.features = geometries.features.map((feature) => {
-            return feature?.id ? feature : { ...feature, id: uuid.generate() };
+            return uuidValidate(feature?.id)
+                ? feature
+                : { ...feature, id: v4() };
         });
 
         pendingFiles.value = [
@@ -123,36 +155,14 @@ async function onSelect(event: { files: PrimeVueMapFile[] }): Promise<void> {
         ];
     }
 
-    // for (const file of event.files) {
-    //     processFileGeometry(file).then(
-    //         (geometries: FeatureCollection | undefined) => {
-    //             if (geometries) {
-    //                 // This sets geometry id for each feature if it doesn't already exist
-    //                 geometries.features = geometries.features.map((feature) => {
-    //                     return feature?.id
-    //                         ? feature
-    //                         : { ...feature, id: uuid.generate() };
-    //                 });
-    //                 pendingFiles.value.push({
-    //                     name: file.name,
-    //                     size: file.size,
-    //                     type: file.type,
-    //                     url: file.objectURL,
-    //                     file: file,
-    //                     node_id: cardXNodeXWidgetData.node.nodeid,
-    //                     geometrySourceId: uuid.generate(),
-    //                     geometries: geometries as FeatureCollection,
-    //                 });
-    //                 nodeValue.value.features = [
-    //                     ...nodeValue.value.features,
-    //                     ...geometries.features,
-    //                 ];
-    //             }
-    //         },
-    //     );
-    // }
-
-    emitUpdatedValue();
+    if (anyGeometries) {
+        emitUpdatedValue();
+    } else {
+        showWarning(
+            'No valid geometry was found in the selected file(s). ' +
+                'Supported formats: .geojson, .json, .kml, .shp, .zip',
+        );
+    }
 }
 
 function onRemovePendingFile(
@@ -203,6 +213,19 @@ function openFileChooser(): void {
                 " />
         </template>
     </FileUpload>
+    <Transition name="map-drop-zone-warning">
+        <div
+            v-if="warningMessage"
+            class="map-drop-zone-warning"
+            role="alert">
+            <span>{{ warningMessage }}</span>
+            <button
+                class="map-drop-zone-warning-dismiss"
+                @click="warningMessage = null">
+                ×
+            </button>
+        </div>
+    </Transition>
 </template>
 
 <style scoped>
@@ -211,5 +234,41 @@ function openFileChooser(): void {
 }
 :deep(.p-fileupload-content) {
     padding: 0;
+}
+
+.map-drop-zone-warning {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    color: #664d03;
+    font-size: 0.875rem;
+}
+
+.map-drop-zone-warning-dismiss {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: inherit;
+    padding: 0;
+}
+
+.map-drop-zone-warning-enter-active {
+    transition: opacity 0.2s ease;
+}
+.map-drop-zone-warning-leave-active {
+    transition: opacity 0.6s ease;
+}
+.map-drop-zone-warning-enter-from,
+.map-drop-zone-warning-leave-to {
+    opacity: 0;
 }
 </style>

@@ -32,6 +32,7 @@
         "primevue": "^4.3.9",
         "togeojson": "^0.16.0",
         "typescript": "^5.6.2",
+        "uuid": "^14.0.1",
         "vite": "latest",
         "vue-router": "^4.4.3",
         "vue3-gettext": "^4.0.0-beta.1",
@@ -41,6 +42,7 @@
         "@maplibre/maplibre-gl-style-spec": "^24.1.0",
         "@types/geojson": "^7946.0.16",
         "@types/shpjs": "^3.4.7",
+        "@types/uuid": "^10.0.0",
         "@types/underscore": "^1.13.0",
         "@vue/eslint-config-prettier": "^10.2.0",
         "arches-dev-dependencies": "archesproject/arches-dev-dependencies#stable/8.0.8",
@@ -48,7 +50,10 @@
         "prettier": "3.9.3",
         "vite": "latest"
     },
-    "nodeModulesPaths": {},
+    "nodeModulesPaths": {
+        "shpjsesm": "node_modules/shpjs",
+        "uuidesm": "node_modules/uuid/dist"
+    },
     "overrides": {
         "geojson": "0.5.0",
         "moment-timezone": "^0.5.45",

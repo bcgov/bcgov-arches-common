@@ -16,7 +16,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "uuid"
     ],
     "allowImportingTsExtensions": true,
     "paths": {
@@ -28,6 +29,9 @@
       ],
       "@/arches_vue_components/*": [
         "./node_modules/arches-vue-components/arches_vue_components/src/arches_vue_components/*"
+      ],
+      "uuidesm": [
+        "./node_modules/uuid/dist"
       ],
       "*": [
         "./node_modules/*"
