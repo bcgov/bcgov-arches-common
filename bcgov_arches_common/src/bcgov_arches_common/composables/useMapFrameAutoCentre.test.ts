@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { defineComponent, h, inject, nextTick, ref } from 'vue';
 import { mount } from '@vue/test-utils';
 
-import { useMapBoxAutoCenter } from './useMapBoxAutoCenter.ts';
+import { useMapFrameAutoCentre } from './useMapFrameAutoCentre.ts';
 
 import type { SimpleMapConfiguration } from '../widgets/SimpleMapWidget/types.ts';
 
@@ -67,7 +67,7 @@ const host = (config?: SimpleMapConfiguration) =>
     defineComponent({
         setup() {
             const ids = ref(['a', 'b']);
-            useMapBoxAutoCenter('mapBoxes', config, QUIET_MS);
+            useMapFrameAutoCentre('mapBoxes', config, QUIET_MS);
             return { ids };
         },
         render() {
@@ -91,7 +91,7 @@ const mountHost = (config?: SimpleMapConfiguration) => {
     return { wrapper, observer: observers[observers.length - 1] };
 };
 
-describe('useMapBoxAutoCenter', () => {
+describe('useMapFrameAutoCentre', () => {
     beforeEach(() => {
         observers.length = 0;
     });

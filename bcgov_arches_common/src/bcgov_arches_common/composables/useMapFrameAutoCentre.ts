@@ -11,7 +11,7 @@ import type { SimpleMapConfiguration } from '@/bcgov_arches_common/widgets/Simpl
 // How long the box must hold still before the map refits.
 const REFIT_QUIET_MS = 1000;
 
-export const useMapBoxAutoCenter = (
+export const useMapFrameAutoCentre = (
     refName = 'mapBoxes',
     config: SimpleMapConfiguration = {},
     quietMs = REFIT_QUIET_MS,
