@@ -1,17 +1,15 @@
-// Vitest's Assertion<T> receives `.not` through the recursive mapped type
-// VitestAssertion<Chai.Assertion, T>.  For complex class constructor types
-// (e.g. maplibre-gl's Map class, which TypeScript names Map$1 to disambiguate
-// it from the built-in Map) TypeScript hits its mapped-type depth limit and
-// truncates the result, dropping `.not` from the returned Assertion<T>.
+// Vitest's `Assertion<T>` is defined in `@vitest/expect` and merely
+// re-exported by `vitest`. TypeScript's interface merging only works against
+// the module where an interface is *declared*, so augmenting `vitest` has no
+// effect. Augmenting `@vitest/expect` directly fixes the mapped-type depth
+// limit that drops `.not` for complex types (e.g. maplibre-gl's `Map` class,
+// which TypeScript renames `Map$1` to avoid shadowing the built-in `Map`).
 //
-// This augmentation re-adds `not` and `resolves` directly via interface
-// merging so they are always present regardless of the subject's type.
-//
-// `export {}` is required to make TypeScript treat this file as a module;
-// without it, `declare module 'vitest'` is an ambient declaration that
-// replaces the original module types instead of merging with them.
+// `export {}` is required to make this file a module; without it,
+// `declare module` creates an ambient declaration that *replaces* the
+// original types instead of merging with them.
 export {};
-declare module 'vitest' {
+declare module '@vitest/expect' {
     interface Assertion<T = any> {
         not: Assertion<T>;
         resolves: Assertion<T>;
