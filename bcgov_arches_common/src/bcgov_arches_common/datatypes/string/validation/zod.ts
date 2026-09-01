@@ -18,7 +18,7 @@ export const StringNodeValueRequiredSchema = z.looseObject({
 
 export const StringValueSchema = z.object({
     display_value: z.string(),
-    node_value: StringNodeValueSchema,
+    node_value: StringNodeValueSchema.nullable(),
 });
 
 export const StringValueRequiredSchema = z.object({
@@ -41,7 +41,7 @@ export function getStringValueSchema(maxLength: number = 0) {
           });
 
     return StringValueSchema.safeExtend({
-        node_value: nodeSchema,
+        node_value: nodeSchema.nullable(),
     });
 }
 

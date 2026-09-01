@@ -45,9 +45,9 @@ describe('StringValueSchema (optional value, required object)', () => {
         expect(() => StringValueSchema.parse(bad)).toThrow();
     });
 
-    it('rejects when node_value is null (schema expects an object)', () => {
-        const bad = base({ node_value: null as any });
-        expect(() => StringValueSchema.parse(bad)).toThrow();
+    it('allows node_value to be null', () => {
+        const parsed = StringValueSchema.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
     });
 
     it('rejects when "en" key is missing in node_value', () => {
@@ -109,7 +109,19 @@ describe('getStringValueSchema(maxLength)', () => {
             node_value: { en: { value: null, direction: 'ltr' } },
         });
         const parsed = Schema5.parse(okNull);
-        expect(parsed.node_value.en.value).toBeNull();
+        expect(parsed.node_value?.en.value).toBeNull();
+    });
+
+    it('allows node_value itself to be null', () => {
+        const Schema = getStringValueSchema();
+        const parsed = Schema.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
+    });
+
+    it('with maxLength=5, allows node_value itself to be null', () => {
+        const Schema5 = getStringValueSchema(5);
+        const parsed = Schema5.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
     });
 });
 

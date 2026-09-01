@@ -125,6 +125,33 @@ describe('FileListValueSchema', () => {
         );
     });
 
+    it('accepts /files/{uuid} paths for url and objectURL', () => {
+        const filesUrl = `/files/${uuidA}`;
+        const item = validFile({
+            url: filesUrl,
+            file: { objectURL: filesUrl },
+        });
+        const parsed = FileListValueSchema.parse(
+            validValue({ node_value: [item] }),
+        );
+        expect(parsed.node_value[0].url).toBe(filesUrl);
+        expect((parsed.node_value[0].file as any).objectURL).toBe(filesUrl);
+    });
+
+    it('rejects /files/ path with invalid UUID', () => {
+        const bad = validValue({
+            node_value: [validFile({ url: '/files/not-a-uuid' as any })],
+        });
+        expect(() => FileListValueSchema.parse(bad)).toThrow(/blob url/i);
+    });
+
+    it('rejects /files/ path missing UUID', () => {
+        const bad = validValue({
+            node_value: [validFile({ url: '/files/' as any })],
+        });
+        expect(() => FileListValueSchema.parse(bad)).toThrow(/blob url/i);
+    });
+
     it('rejects non-UUID node_id', () => {
         const bad = validValue({
             node_value: [validFile({ node_id: '1234' })],

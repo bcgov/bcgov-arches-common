@@ -81,15 +81,35 @@ describe('ConceptValueRequiredSchema (node_value required & uuid v4)', () => {
         expect(parsed.node_value).toBe(uuid);
     });
 
-    it('rejects null or empty node_value', () => {
-        const nullNode = validConcept({ node_value: null });
-        const emptyNode = validConcept({ node_value: '' });
-        expect(() => ConceptValueRequiredSchema.parse(nullNode)).toThrow();
-        expect(() => ConceptValueRequiredSchema.parse(emptyNode)).toThrow();
+    it('rejects null node_value with "Value is required"', () => {
+        const result = ConceptValueRequiredSchema.safeParse(
+            validConcept({ node_value: null }),
+        );
+        expect(result.success).toBe(false);
+        expect(JSON.stringify(result)).toMatch(/Value is required/);
     });
 
-    it('rejects malformed UUID even when non-empty', () => {
-        const bad = validConcept({ node_value: '1234' });
-        expect(() => ConceptValueRequiredSchema.parse(bad)).toThrow();
+    it('rejects empty string node_value with "Value is required"', () => {
+        const result = ConceptValueRequiredSchema.safeParse(
+            validConcept({ node_value: '' }),
+        );
+        expect(result.success).toBe(false);
+        expect(JSON.stringify(result)).toMatch(/Value is required/);
+    });
+
+    it('rejects a non-UUID string with "Invalid UUID"', () => {
+        const result = ConceptValueRequiredSchema.safeParse(
+            validConcept({ node_value: 'not-a-uuid' }),
+        );
+        expect(result.success).toBe(false);
+        expect(JSON.stringify(result)).toMatch(/Invalid UUID/);
+    });
+
+    it('rejects a short non-UUID string with "Invalid UUID"', () => {
+        const result = ConceptValueRequiredSchema.safeParse(
+            validConcept({ node_value: '1234' }),
+        );
+        expect(result.success).toBe(false);
+        expect(JSON.stringify(result)).toMatch(/Invalid UUID/);
     });
 });
