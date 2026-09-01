@@ -13,10 +13,17 @@ import {
     shallowRef,
     computed,
 } from 'vue';
+import arches from 'arches';
 import centroid from '@turf/centroid';
 import bbox from '@turf/bbox';
 import type { AllGeoJSON } from '@turf/helpers';
 import _ from 'underscore';
+import {
+    getUtmZone,
+    lngLatToNad83Utm,
+    formatLngLat,
+    formatUtmCoords,
+} from '@/bcgov_arches_common/utils/map-projection-tools.ts';
 import type { GeoJSONFeatureCollectionCardXNodeXWidgetData } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { GeoJsonCardXNodeXWidgetData } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
@@ -34,6 +41,7 @@ import type {
     StyleSpecificationType,
     MapLibreMapSourcesType,
     SimpleMapConfiguration,
+    ArchesMapMarker,
 } from '@/bcgov_arches_common/widgets/SimpleMapWidget/types.ts';
 import type { GeoJSONFeatureCollectionValue } from '@/bcgov_arches_common/datatypes/geojson-feature-collection/types.ts';
 import type { MapFileData } from '@/bcgov_arches_common/widgets/MapDropZoneWidget/types.ts';
@@ -46,6 +54,7 @@ const props = defineProps<{
     mapData: MapData | undefined | null;
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
     markCentroid?: boolean;
+    useUtmCoords?: boolean;
 }>();
 const {
     graphSlug,
@@ -106,6 +115,20 @@ const mapCentre = computed<[number, number]>(() => {
     ) as [number, number];
 });
 
+const utmZone = computed<number>(() => getUtmZone(mapCentre.value[0]));
+
+const utmCoords = computed<[number, number] | null>(() =>
+    lngLatToNad83Utm(mapCentre.value[0], mapCentre.value[1]),
+);
+
+const formattedUtmCoords = computed<[string, string] | null>(() =>
+    utmCoords.value ? formatUtmCoords(utmCoords.value) : null,
+);
+
+const formattedMapCentre = computed<[string, string]>(() =>
+    formatLngLat(mapCentre.value),
+);
+
 const zoom = ref<number>(3.5);
 
 const mapEl = ref<HTMLDivElement | null>(null);
@@ -133,6 +156,27 @@ const onResize = () => {
 };
 
 onBeforeUnmount(() => window.removeEventListener('resize', onResize));
+
+watch(mapCentre, (val, oldVal) => {
+    if (map.value && oldVal) {
+        map.value.flyTo({ center: val, zoom: zoom.value, speed: 0.8 });
+    }
+});
+
+const registerMapMarkersAsImages = () => {
+    if (!map.value) return;
+    const markers = arches.mapMarkers as ArchesMapMarker[];
+    for (const { name, url } of markers) {
+        if (map.value.hasImage(name)) continue;
+        const img = new Image();
+        img.onload = () => {
+            if (map.value && !map.value.hasImage(name)) {
+                map.value.addImage(name, img);
+            }
+        };
+        img.src = url;
+    }
+};
 
 function setupMap(): void {
     // dataLoaded.value = true;
@@ -173,6 +217,7 @@ function setupMap(): void {
         map.value?.addControl(
             new maplibregl.AttributionControl({ compact: true }),
         );
+        registerMapMarkersAsImages();
         if (aliasedNodeData?.value?.node_value?.features?.[0]) {
             console.log('Adding geometry from load event');
             updateMapGeometries(aliasedNodeData.value?.details ?? [], []);
@@ -267,7 +312,7 @@ const updateMapGeometries = (
         const layers = buildLayersForFeature(
             feature.geometrySourceId,
             feature.geometries,
-            cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
+            cardXNodeXWidgetData.value as any as GeoJsonCardXNodeXWidgetData,
         );
         layers.forEach((layer) => {
             map.value?.addLayer(layer);
@@ -292,7 +337,7 @@ const updateMapGeometries = (
                     const layers = buildLayersForFeature(
                         `${featureid}`,
                         feature,
-                        cardXNodeXWidgetData as any as GeoJsonCardXNodeXWidgetData,
+                        cardXNodeXWidgetData.value as any as GeoJsonCardXNodeXWidgetData,
                     );
                     layers.forEach((layer) => {
                         map.value?.addLayer(layer);
@@ -410,9 +455,16 @@ watch(
             ref="panelEl"
             class="panel">
             <span class="coords">
-                Boundary Centroid Lng/Lat: {{ mapCentre?.[0].toFixed(6) }},
-                {{ mapCentre?.[1].toFixed(6) }} | Zoom:
-                {{ zoom }}
+                <template v-if="useUtmCoords && formattedUtmCoords">
+                    Boundary Centroid UTM {{ utmZone }}N
+                    {{ formattedUtmCoords[0] }} {{ formattedUtmCoords[1] }} |
+                    Zoom: {{ zoom }}
+                </template>
+                <template v-else>
+                    Boundary Centroid Lng/Lat: {{ formattedMapCentre[0] }},
+                    {{ formattedMapCentre[1] }} | Zoom:
+                    {{ zoom }}
+                </template>
             </span>
         </div>
     </div>

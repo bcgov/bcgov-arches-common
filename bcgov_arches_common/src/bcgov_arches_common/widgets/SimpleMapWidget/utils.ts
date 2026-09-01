@@ -9,6 +9,29 @@ import type { LayerSpecification, LngLatLike } from 'maplibre-gl';
 
 type ParsedColor = { color: string; opacity: number };
 
+/** Rebind advancedStyle JSON layers to the local GeoJSON source; null falls back to simple styling. */
+function buildAdvancedLayersFromJson(
+    sourceId: string,
+    cfg: GeoJsonNodeConfigType,
+): LayerSpecification[] | null {
+    if (!cfg.advancedStyling || !cfg.advancedStyle) return null;
+
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(cfg.advancedStyle);
+    } catch (error) {
+        console.warn('Failed to parse advancedStyle config', error);
+        return null;
+    }
+    if (!Array.isArray(parsed) || !parsed.length) return null;
+
+    return parsed.map(({ 'source-layer': _sl, id, ...rest }) => ({
+        ...rest,
+        id: `${sourceId}-${id}`,
+        source: sourceId,
+    })) as LayerSpecification[];
+}
+
 function parseColor(input?: string): ParsedColor {
     if (!input) return { color: '#000000', opacity: 1 };
     const s = String(input).trim();
@@ -38,6 +61,9 @@ export function buildLayersForFeature(
 ): LayerSpecification[] {
     const cfg: GeoJsonNodeConfigType = sourceJson?.node?.config ?? {};
 
+    const advancedLayers = buildAdvancedLayersFromJson(id, cfg);
+    if (advancedLayers) return advancedLayers;
+
     const {
         weight = 2,
         outlineWeight = 2,
@@ -64,7 +90,7 @@ export function buildLayersForFeature(
         parseColor(outlineColor);
 
     const src: string = id as string;
-    const baseId = `${id}-site`;
+    const baseId = `${id}`;
 
     const featureArray: Feature[] = (features as Feature)?.geometry
         ? [features as Feature]
