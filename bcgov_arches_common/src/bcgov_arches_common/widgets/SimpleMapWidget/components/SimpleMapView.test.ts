@@ -22,6 +22,7 @@ const mockMapInstance = vi.hoisted(() => ({
     getStyle: vi.fn(),
     resize: vi.fn(),
     fitBounds: vi.fn(),
+    flyTo: vi.fn(),
     getCanvas: vi.fn(),
     getZoom: vi.fn(),
 }));
@@ -43,6 +44,10 @@ vi.mock('maplibre-gl', () => ({
         })),
         Popup: vi.fn(() => ({ setHTML: vi.fn().mockReturnThis() })),
     },
+}));
+
+vi.mock('arches', () => ({
+    default: { mapMarkers: [] },
 }));
 
 vi.mock('@turf/centroid', () => ({
