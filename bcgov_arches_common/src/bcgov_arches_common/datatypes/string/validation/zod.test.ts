@@ -29,15 +29,15 @@ describe('StringValueSchema (optional value, required object)', () => {
     it('parses a valid object with en.value string and direction', () => {
         const parsed = StringValueSchema.parse(base());
         expect(parsed.display_value).toBe('Hello');
-        expect(parsed.node_value.en.value).toBe('Hello');
-        expect(parsed.node_value.en.direction).toBe('ltr');
+        expect(parsed.node_value?.en?.value).toBe('Hello');
+        expect(parsed.node_value?.en?.direction).toBe('ltr');
     });
 
     it('accepts null for en.value (schema uses nullable())', () => {
         const parsed = StringValueSchema.parse(
             base({ node_value: baseNode({ value: null }) }),
         );
-        expect(parsed.node_value.en.value).toBeNull();
+        expect(parsed.node_value?.en?.value).toBeNull();
     });
 
     it('rejects invalid direction values', () => {
@@ -45,9 +45,9 @@ describe('StringValueSchema (optional value, required object)', () => {
         expect(() => StringValueSchema.parse(bad)).toThrow();
     });
 
-    it('rejects when node_value is null (schema expects an object)', () => {
-        const bad = base({ node_value: null as any });
-        expect(() => StringValueSchema.parse(bad)).toThrow();
+    it('allows node_value to be null', () => {
+        const parsed = StringValueSchema.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
     });
 
     it('rejects when "en" key is missing in node_value', () => {
@@ -82,7 +82,7 @@ describe('getStringValueSchema(maxLength)', () => {
             node_value: { en: { value: 'Hello', direction: 'ltr' } },
         });
         const parsed = Schema5.parse(ok);
-        expect(parsed.node_value.en.value).toBe('Hello');
+        expect(parsed.node_value?.en?.value).toBe('Hello');
     });
 
     it('with maxLength=5, rejects longer strings', () => {
@@ -109,7 +109,19 @@ describe('getStringValueSchema(maxLength)', () => {
             node_value: { en: { value: null, direction: 'ltr' } },
         });
         const parsed = Schema5.parse(okNull);
-        expect(parsed.node_value.en.value).toBeNull();
+        expect(parsed.node_value?.en.value).toBeNull();
+    });
+
+    it('allows node_value itself to be null', () => {
+        const Schema = getStringValueSchema();
+        const parsed = Schema.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
+    });
+
+    it('with maxLength=5, allows node_value itself to be null', () => {
+        const Schema5 = getStringValueSchema(5);
+        const parsed = Schema5.parse(base({ node_value: null }));
+        expect(parsed.node_value).toBeNull();
     });
 });
 

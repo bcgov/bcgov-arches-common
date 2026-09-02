@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { CollectionItemSchema } from '@/bcgov_arches_common/datatypes/concept/validation/zod.ts';
 
 export const ConceptListValueSchema = z.object({
     display_value: z.string(),

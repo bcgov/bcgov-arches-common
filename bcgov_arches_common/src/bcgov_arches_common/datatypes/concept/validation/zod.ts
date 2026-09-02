@@ -17,5 +17,8 @@ export const ConceptValueSchema = z.object({
 });
 
 export const ConceptValueRequiredSchema = ConceptValueSchema.safeExtend({
-    node_value: z.uuidv4().min(1, { message: 'Value is required.' }),
+    node_value: z
+        .string({ message: 'Value is required.' })
+        .min(1, { message: 'Value is required.' })
+        .uuid({ message: 'Invalid UUID', version: 'v4' }),
 });

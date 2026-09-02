@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { htmlToPlainText } from '@/bcgov_arches_common/datatypes/string/validation/utils.ts';
 
 export const UrlValueSchema = z.object({
     display_value: z.string().nullish(),
