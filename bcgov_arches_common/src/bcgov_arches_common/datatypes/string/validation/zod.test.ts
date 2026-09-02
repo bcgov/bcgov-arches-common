@@ -29,15 +29,15 @@ describe('StringValueSchema (optional value, required object)', () => {
     it('parses a valid object with en.value string and direction', () => {
         const parsed = StringValueSchema.parse(base());
         expect(parsed.display_value).toBe('Hello');
-        expect(parsed.node_value.en.value).toBe('Hello');
-        expect(parsed.node_value.en.direction).toBe('ltr');
+        expect(parsed.node_value?.en?.value).toBe('Hello');
+        expect(parsed.node_value?.en?.direction).toBe('ltr');
     });
 
     it('accepts null for en.value (schema uses nullable())', () => {
         const parsed = StringValueSchema.parse(
             base({ node_value: baseNode({ value: null }) }),
         );
-        expect(parsed.node_value.en.value).toBeNull();
+        expect(parsed.node_value?.en?.value).toBeNull();
     });
 
     it('rejects invalid direction values', () => {
@@ -82,7 +82,7 @@ describe('getStringValueSchema(maxLength)', () => {
             node_value: { en: { value: 'Hello', direction: 'ltr' } },
         });
         const parsed = Schema5.parse(ok);
-        expect(parsed.node_value.en.value).toBe('Hello');
+        expect(parsed.node_value?.en?.value).toBe('Hello');
     });
 
     it('with maxLength=5, rejects longer strings', () => {
