@@ -32,6 +32,8 @@ export type GeoJsonNodeConfigType = {
     pointHaloColor?: string;
     fillColor?: string;
     outlineColor?: string;
+    advancedStyling?: boolean;
+    advancedStyle?: string; // JSON array of MapLibre LayerSpecification objects
 };
 
 export type GeoJsonCardXNodeXWidgetData = Omit<CardXNodeXWidgetData, 'node'> & {
@@ -41,4 +43,9 @@ export type GeoJsonCardXNodeXWidgetData = Omit<CardXNodeXWidgetData, 'node'> & {
 export type SimpleMapConfiguration = {
     showCentroidMarker?: boolean;
     refitSignal?: Ref<number>;
+};
+
+export type ArchesMapMarker = {
+    name: string;
+    url: string;
 };
