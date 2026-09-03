@@ -4,13 +4,16 @@ from unittest.mock import MagicMock, patch
 from django.test import RequestFactory, TestCase
 import urllib3
 
-from bcgov_arches_common.views.api.bc_geocoder import BCGeocoderView, GEOCODER_FIXED_PARAMS
-
+from bcgov_arches_common.views.api.bc_geocoder import (
+    BCGeocoderView,
+    GEOCODER_FIXED_PARAMS,
+)
 
 # ---------------------------------------------------------------------------
 # urllib3 exception helpers
 # Subclass to bypass parent __init__ constructors that require pool/conn args.
 # ---------------------------------------------------------------------------
+
 
 class _TimeoutError(urllib3.exceptions.TimeoutError):
     def __init__(self):
@@ -154,7 +157,9 @@ class BCGeocoderViewTest(TestCase):
         call_kwargs = mock_req.request.call_args
         fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
         for key in GEOCODER_FIXED_PARAMS:
-            self.assertIn(key, fields, f"Fixed param '{key}' missing from upstream call")
+            self.assertIn(
+                key, fields, f"Fixed param '{key}' missing from upstream call"
+            )
 
     def test_address_string_is_stripped_before_forwarding(self):
         _, mock_req = self._get(address_string="  100 Fort St  ")
