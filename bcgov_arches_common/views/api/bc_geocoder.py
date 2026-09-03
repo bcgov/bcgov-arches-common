@@ -87,18 +87,7 @@ class BCGeocoderView(View, OutboundProxyMixin):
             )
 
         except urllib3.exceptions.HTTPError as e:
-            logger.error(
-                f"HTTP error fetching geocoder data for {address_string!r}: {e}"
-            )
-            return JsonResponse(
-                {"error": "Error fetching data from the BC Geocoder"},
-                status=500,
-            )
-
-        except urllib3.exceptions.RequestError as e:
-            logger.error(
-                f"Request error fetching geocoder data for {address_string!r}: {e}"
-            )
+            logger.error(f"Error fetching geocoder data for {address_string!r}: {e}")
             return JsonResponse(
                 {"error": "Error fetching data from the BC Geocoder"},
                 status=500,
