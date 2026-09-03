@@ -70,13 +70,6 @@ class BCGeocoderView(View, OutboundProxyMixin):
 
             return JsonResponse(data, safe=False)
 
-        except urllib3.exceptions.TimeoutError:
-            logger.error(f"Timeout fetching geocoder data for: {address_string!r}")
-            return JsonResponse(
-                {"error": "The request to the BC Geocoder timed out"},
-                status=504,
-            )
-
         except urllib3.exceptions.NewConnectionError:
             logger.error(
                 f"Connection error fetching geocoder data for: {address_string!r}"
@@ -84,6 +77,13 @@ class BCGeocoderView(View, OutboundProxyMixin):
             return JsonResponse(
                 {"error": "Could not connect to the BC Geocoder"},
                 status=502,
+            )
+
+        except urllib3.exceptions.TimeoutError:
+            logger.error(f"Timeout fetching geocoder data for: {address_string!r}")
+            return JsonResponse(
+                {"error": "The request to the BC Geocoder timed out"},
+                status=504,
             )
 
         except urllib3.exceptions.HTTPError as e:
