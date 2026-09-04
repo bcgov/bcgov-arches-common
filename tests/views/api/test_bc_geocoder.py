@@ -1,12 +1,15 @@
 import json
 from unittest.mock import MagicMock, patch
 
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 import urllib3
 
 from bcgov_arches_common.views.api.bc_geocoder import (
     BCGeocoderView,
     GEOCODER_FIXED_PARAMS,
+    _GEOCODER_DEFAULT_URL,
+    _GEOCODER_DEFAULT_MAX_RESULTS,
+    _GEOCODER_DEFAULT_MIN_SCORE,
 )
 
 # ---------------------------------------------------------------------------
@@ -167,6 +170,18 @@ class BCGeocoderViewTest(TestCase):
         fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
         self.assertEqual(fields["addressString"], "100 Fort St")
 
+    def test_default_max_results_forwarded(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertEqual(fields["maxResults"], _GEOCODER_DEFAULT_MAX_RESULTS)
+
+    def test_default_min_score_forwarded(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertEqual(fields["minScore"], _GEOCODER_DEFAULT_MIN_SCORE)
+
     # ------------------------------------------------------------------
     # Upstream HTTP error (non-200 status)
     # ------------------------------------------------------------------
@@ -260,3 +275,66 @@ class BCGeocoderViewTest(TestCase):
         )
         data = json.loads(response.content)
         self.assertIn("error", data)
+
+    # ------------------------------------------------------------------
+    # BC_GEOCODER_CONFIG — URL
+    # ------------------------------------------------------------------
+
+    def test_default_url_is_production(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        url = call_kwargs.kwargs.get("url") or call_kwargs[1]["url"]
+        self.assertEqual(url, _GEOCODER_DEFAULT_URL)
+
+    @override_settings(
+        BC_GEOCODER_CONFIG={"url": "https://geocodertst.api.gov.bc.ca/addresses.json"}
+    )
+    def test_config_url_overrides_default(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        url = call_kwargs.kwargs.get("url") or call_kwargs[1]["url"]
+        self.assertEqual(url, "https://geocodertst.api.gov.bc.ca/addresses.json")
+
+    @override_settings(
+        BC_GEOCODER_CONFIG={"url": "https://geocoderdlv.api.gov.bc.ca/addresses.json"}
+    )
+    def test_config_dlvr_url_is_forwarded(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        url = call_kwargs.kwargs.get("url") or call_kwargs[1]["url"]
+        self.assertEqual(url, "https://geocoderdlv.api.gov.bc.ca/addresses.json")
+
+    # ------------------------------------------------------------------
+    # BC_GEOCODER_CONFIG — API key
+    # ------------------------------------------------------------------
+
+    def test_no_api_key_by_default(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertNotIn("apikey", fields)
+
+    @override_settings(BC_GEOCODER_CONFIG={"api_key": "test-key-abc"})
+    def test_config_api_key_forwarded_when_set(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertEqual(fields["apikey"], "test-key-abc")
+
+    # ------------------------------------------------------------------
+    # BC_GEOCODER_CONFIG — maxResults / minScore
+    # ------------------------------------------------------------------
+
+    @override_settings(BC_GEOCODER_CONFIG={"max_results": "25"})
+    def test_config_max_results_overrides_default(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertEqual(fields["maxResults"], "25")
+
+    @override_settings(BC_GEOCODER_CONFIG={"min_score": "10"})
+    def test_config_min_score_overrides_default(self):
+        _, mock_req = self._get(address_string="100 Fort St")
+        call_kwargs = mock_req.request.call_args
+        fields = call_kwargs.kwargs.get("fields") or call_kwargs[1]["fields"]
+        self.assertEqual(fields["minScore"], "10")

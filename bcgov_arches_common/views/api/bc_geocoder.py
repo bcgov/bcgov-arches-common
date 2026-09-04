@@ -1,5 +1,6 @@
 import json
 import logging
+from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views import View
 from bcgov_arches_common.views.base import OutboundProxyMixin
@@ -7,12 +8,26 @@ import urllib3
 
 logger = logging.getLogger(__name__)
 
-GEOCODER_BASE_URL = "https://geocoder.api.gov.bc.ca/addresses.json"
+# Configurable via BC_GEOCODER_CONFIG in Django settings, e.g.:
+#
+#   BC_GEOCODER_CONFIG = {
+#       "url": "https://geocodertst.api.gov.bc.ca/addresses.json",
+#       "api_key": "your-api-key",   # optional
+#       "max_results": "25",         # optional, default "10"
+#       "min_score": "5",            # optional, default "2"
+#   }
+#
+# Environment URLs:
+#   PROD  https://geocoder.api.gov.bc.ca/addresses.json
+#   TEST  https://geocodertst.api.gov.bc.ca/addresses.json
+#   DLVR  https://geocoderdlv.api.gov.bc.ca/addresses.json
+_GEOCODER_DEFAULT_URL = "https://geocoder.api.gov.bc.ca/addresses.json"
+_GEOCODER_DEFAULT_MAX_RESULTS = "10"
+_GEOCODER_DEFAULT_MIN_SCORE = "2"
 
 GEOCODER_FIXED_PARAMS = {
     "hasPid": "false",
     "locationDescriptor": "any",
-    "maxResults": "10",
     "interpolation": "adaptive",
     "echo": "true",
     "brief": "false",
@@ -21,7 +36,6 @@ GEOCODER_FIXED_PARAMS = {
     "fuzzyMatch": "false",
     "setBack": "0",
     "outputSRS": "4326",
-    "minScore": "2",
     "provinceCode": "BC",
 }
 
@@ -48,7 +62,20 @@ class BCGeocoderView(View, OutboundProxyMixin):
                 content_type="application/json",
             )
 
-        params = {**GEOCODER_FIXED_PARAMS, "addressString": address_string}
+        config = getattr(settings, "BC_GEOCODER_CONFIG", {})
+        geocoder_url = config.get("url", _GEOCODER_DEFAULT_URL)
+        api_key = config.get("api_key")
+        max_results = config.get("max_results", _GEOCODER_DEFAULT_MAX_RESULTS)
+        min_score = config.get("min_score", _GEOCODER_DEFAULT_MIN_SCORE)
+
+        params = {
+            **GEOCODER_FIXED_PARAMS,
+            "maxResults": str(max_results),
+            "minScore": str(min_score),
+            "addressString": address_string,
+        }
+        if api_key:
+            params["apikey"] = api_key
 
         logger.info(
             f"Requesting BC Geocoder data for addressString: {address_string!r}"
@@ -56,7 +83,7 @@ class BCGeocoderView(View, OutboundProxyMixin):
 
         try:
             req = self.get_request_pool_manager()
-            response = req.request(method="GET", url=GEOCODER_BASE_URL, fields=params)
+            response = req.request(method="GET", url=geocoder_url, fields=params)
 
             if response.status != 200:
                 raise urllib3.exceptions.HTTPError(f"HTTP error {response.status}")
