@@ -43,6 +43,7 @@ const props = defineProps<{
     mapData: MapData | undefined | null;
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
     markCentroid?: boolean;
+    preserveDrawingBuffer?: boolean;
 }>();
 const {
     graphSlug,
@@ -51,6 +52,7 @@ const {
     mapData,
     aliasedNodeData,
     markCentroid,
+    preserveDrawingBuffer,
 } = toRefs(props);
 
 const geometry = computed<Feature | undefined>(() => {
@@ -148,7 +150,11 @@ function setupMap(): void {
         center: center.value,
         zoom: zoom.value,
         attributionControl: false,
-        preserveDrawingBuffer: true,
+        canvasContextAttributes: {
+            preserveDrawingBuffer: preserveDrawingBuffer?.value ?? false,
+            antialias: false,
+            powerPreference: 'default', // options: 'default', 'low-power', 'high-performance'
+        },
     });
 
     map.value.on('load', () => {
