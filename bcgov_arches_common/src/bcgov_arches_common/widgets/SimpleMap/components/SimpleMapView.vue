@@ -43,6 +43,7 @@ const props = defineProps<{
     mapData: MapData | undefined | null;
     aliasedNodeData: GeoJSONFeatureCollectionValue | undefined;
     markCentroid?: boolean;
+    preserveDrawingBuffer?: boolean;
 }>();
 const {
     graphSlug,
@@ -51,6 +52,7 @@ const {
     mapData,
     aliasedNodeData,
     markCentroid,
+    preserveDrawingBuffer,
 } = toRefs(props);
 
 const geometry = computed<Feature | undefined>(() => {
@@ -81,7 +83,6 @@ const addedDetails = new Map<string, MapFileData>();
 const addedFeatureIds = new Set<string>();
 const addedNodeFeatureIds = new Set<string>();
 
-// const defaultCenter = ref<[number, number]>([-123.1207, 49.2827]); // Vancouver (lng, lat)
 const defaultCenter = computed<[number, number]>(() => {
     return cardXNodeXWidgetData?.value?.config?.centerX &&
         cardXNodeXWidgetData?.value?.config?.centerY
@@ -107,6 +108,7 @@ const zoom = ref<number>(3.5);
 
 const mapEl = ref<HTMLDivElement | null>(null);
 const map: Ref<MapLibreMap | null> = ref(null);
+const mapSnapshot = ref<string>('');
 
 const styleObj = {
     version: 8,
@@ -148,6 +150,11 @@ function setupMap(): void {
         center: center.value,
         zoom: zoom.value,
         attributionControl: false,
+        canvasContextAttributes: {
+            preserveDrawingBuffer: preserveDrawingBuffer?.value ?? false,
+            antialias: false,
+            powerPreference: 'default', // options: 'default', 'low-power', 'high-performance'
+        },
     });
 
     map.value.on('load', () => {
@@ -173,6 +180,16 @@ function setupMap(): void {
         // const c = map.value.getCenter();
         // center.value = [Number(c.lng.toFixed(5)), Number(c.lat.toFixed(5))];
         zoom.value = Number(map.value.getZoom().toFixed(2));
+    });
+
+    // This supports map printing. Takes a snapshot of the map when it is idle.
+    // so it can be rendered in the print view.
+    map.value.on('idle', () => {
+        if (!map.value) return;
+        // const canvas = toRaw(map.value).getCanvas();
+        const canvas = map.value.getCanvas();
+        if (canvas.width === 0 || canvas.height === 0) return;
+        mapSnapshot.value = canvas.toDataURL();
     });
 
     const onResize = () => {
@@ -375,6 +392,10 @@ watch(
         class="map-wrap"
         :data-graph-slug="graphSlug"
         :data-node-alias="nodeAlias">
+        <img
+            :src="mapSnapshot || undefined"
+            class="map-print-snapshot"
+            alt="Map snapshot" />
         <div
             ref="mapEl"
             class="map"
@@ -398,5 +419,25 @@ watch(
 <style>
 .map-wrap > .panel {
     background-color: transparent;
+}
+
+.map-print-snapshot {
+    display: none;
+}
+
+@media print {
+    .map-print-snapshot[src] {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .map-wrap > .map {
+        display: none;
+    }
+
+    .map-wrap > .panel {
+        display: none;
+    }
 }
 </style>

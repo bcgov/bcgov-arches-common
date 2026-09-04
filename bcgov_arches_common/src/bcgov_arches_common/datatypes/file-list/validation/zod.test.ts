@@ -1,6 +1,10 @@
 // zod.file-list.test.ts
 import { describe, it, expect } from 'vitest';
-import { FileListValueSchema } from '@/bcgov_arches_common/datatypes/file-list/validation/zod';
+import {
+    FileListValueSchema,
+    getFileListValueSchema,
+    getFileListValueRequiredSchema,
+} from '@/bcgov_arches_common/datatypes/file-list/validation/zod';
 import { MimeType } from '@/bcgov_arches_common/datatypes/file-list/validation/constants';
 
 // Fixed UUIDs for repeatable tests
@@ -164,5 +168,101 @@ describe('FileListValueSchema', () => {
             node_value: [{ name: 'oops' }] as any,
         });
         expect(() => FileListValueSchema.parse(badMissingFields)).toThrow();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getFileListValueSchema
+// ---------------------------------------------------------------------------
+
+describe('getFileListValueSchema', () => {
+    it('uses a default max of 1 and accepts an empty list', () => {
+        const schema = getFileListValueSchema();
+        const parsed = schema.parse(validValue({ node_value: [] }));
+        expect(parsed.node_value).toHaveLength(0);
+    });
+
+    it('uses a default max of 1 and accepts exactly 1 file', () => {
+        const schema = getFileListValueSchema();
+        const parsed = schema.parse(validValue({ node_value: [validFile()] }));
+        expect(parsed.node_value).toHaveLength(1);
+    });
+
+    it('uses a default max of 1 and rejects more than 1 file', () => {
+        const schema = getFileListValueSchema();
+        const bad = validValue({ node_value: [validFile(), validFile()] });
+        expect(() => schema.parse(bad)).toThrow();
+    });
+
+    it('accepts up to the custom max and rejects one more', () => {
+        const schema = getFileListValueSchema(3);
+        const three = validValue({
+            node_value: [validFile(), validFile(), validFile()],
+        });
+        expect(schema.parse(three).node_value).toHaveLength(3);
+
+        const four = validValue({
+            node_value: [validFile(), validFile(), validFile(), validFile()],
+        });
+        expect(() => schema.parse(four)).toThrow();
+    });
+
+    it('still rejects invalid mime types', () => {
+        const schema = getFileListValueSchema();
+        const bad = validValue({
+            node_value: [validFile({ type: 'image/unknown' as any })],
+        });
+        expect(() => schema.parse(bad)).toThrow(/invalid_value/i);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getFileListValueRequiredSchema
+// ---------------------------------------------------------------------------
+
+describe('getFileListValueRequiredSchema', () => {
+    it('uses a default max of 1 and rejects an empty list', () => {
+        const schema = getFileListValueRequiredSchema();
+        const bad = validValue({ node_value: [] });
+        expect(() => schema.parse(bad)).toThrow();
+    });
+
+    it('uses a default max of 1 and accepts exactly 1 file', () => {
+        const schema = getFileListValueRequiredSchema();
+        const parsed = schema.parse(validValue({ node_value: [validFile()] }));
+        expect(parsed.node_value).toHaveLength(1);
+    });
+
+    it('uses a default max of 1 and rejects more than 1 file', () => {
+        const schema = getFileListValueRequiredSchema();
+        const bad = validValue({ node_value: [validFile(), validFile()] });
+        expect(() => schema.parse(bad)).toThrow();
+    });
+
+    it('accepts up to the custom max and rejects one more', () => {
+        const schema = getFileListValueRequiredSchema(3);
+        const three = validValue({
+            node_value: [validFile(), validFile(), validFile()],
+        });
+        expect(schema.parse(three).node_value).toHaveLength(3);
+
+        const four = validValue({
+            node_value: [validFile(), validFile(), validFile(), validFile()],
+        });
+        expect(() => schema.parse(four)).toThrow();
+    });
+
+    it('rejects an empty list even with a custom max', () => {
+        const schema = getFileListValueRequiredSchema(5);
+        const bad = validValue({ node_value: [] });
+        expect(() => schema.parse(bad)).toThrow();
+    });
+
+    it('still rejects invalid mime types', () => {
+        const schema = getFileListValueRequiredSchema();
+        const bad = validValue({
+            node_value: [validFile({ type: 'image/unknown' as any })],
+        });
+        expect(() => schema.parse(bad)).toThrow(/invalid_value/i);
     });
 });
