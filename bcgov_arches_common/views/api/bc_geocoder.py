@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views import View
-from bcgov_arches_common.views.base import OutboundProxyMixin
+from bcgov_arches_common.views.outbound_proxy_mixin import OutboundProxyMixin
 import urllib3
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class BCGeocoderView(View, OutboundProxyMixin):
         )
 
         try:
-            req = self.get_request_pool_manager()
+            req = self.get_http_connection(use_outbound_proxy=True)
             response = req.request(method="GET", url=geocoder_url, fields=params)
 
             if response.status != 200:
