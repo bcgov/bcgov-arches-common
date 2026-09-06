@@ -78,7 +78,7 @@ class BCGeocoderViewTest(TestCase):
 
         request = self.factory.get("/api/bc-geocoder", params)
 
-        with patch.object(BCGeocoderView, "get_request_pool_manager") as mock_pm:
+        with patch.object(BCGeocoderView, "get_http_connection") as mock_pm:
             mock_req = MagicMock()
             mock_pm.return_value = mock_req
             if side_effect is not None:
