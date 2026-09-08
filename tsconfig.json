@@ -28,5 +28,10 @@
             "uuidesm": ["./node_modules/uuid/dist"],
             "*": ["./node_modules/*"]
         }
-    }
+    },
+    "exclude": [
+        "**/*.test.ts",
+        "**/build/**",
+        "**/staticfiles/**"
+    ]
 }

@@ -22,3 +22,15 @@ export const FileListValueSchema = z.object({
     display_value: z.string().nullish(),
     node_value: z.array(FileMetadata),
 });
+
+export function getFileListValueSchema(maxFiles: number = 1) {
+    return FileListValueSchema.safeExtend({
+        node_value: z.array(FileMetadata).max(maxFiles),
+    });
+}
+
+export function getFileListValueRequiredSchema(maxFiles: number = 1) {
+    return FileListValueSchema.safeExtend({
+        node_value: z.array(FileMetadata).min(1).max(maxFiles),
+    });
+}
