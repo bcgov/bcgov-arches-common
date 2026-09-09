@@ -31,11 +31,9 @@ const { config: resolvedConfig } = useWidgetConfig(
 
 const maxItems = computed(() => {
     const widgetConfig = resolvedConfig.value?.config as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
     const nodeConfig = resolvedConfig.value?.node?.config as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
 
     return (nodeConfig?.maxFiles ?? widgetConfig?.maxFiles ?? 10) as number;
 });
