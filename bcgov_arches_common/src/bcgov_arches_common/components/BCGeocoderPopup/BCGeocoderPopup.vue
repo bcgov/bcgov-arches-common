@@ -50,6 +50,7 @@ onBeforeUnmount(() =>
             <li
                 v-for="(feature, i) in results"
                 :key="i"
+                class="geocoder-result"
                 @mousedown.prevent="emit('select', feature)">
                 {{ String(feature.properties.fullAddress ?? '') }}
             </li>
