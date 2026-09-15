@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import BCGeocoderPopup from './BCGeocoderPopup.vue';
 import type { GeocoderFeature } from '@/bcgov_arches_common/composables/useBCGeocoder.ts';
@@ -168,5 +169,52 @@ describe('BCGeocoderPopup', () => {
     it('does not render a close button when results is empty', () => {
         const wrapper = mountPopup([]);
         expect(wrapper.find('.geocoder-close-btn').exists()).toBe(false);
+    });
+
+    // ------------------------------------------------------------------
+    // click-outside dismiss (handleClickOutside / onBeforeUnmount)
+    // ------------------------------------------------------------------
+
+    it('emits dismiss when a click occurs outside the container', async () => {
+        const wrapper = mount(BCGeocoderPopup, {
+            props: { results: [makeFeature('100 Fort St')] },
+            attachTo: document.body,
+        });
+
+        const outside = document.createElement('div');
+        document.body.appendChild(outside);
+        outside.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await nextTick();
+
+        expect(wrapper.emitted('dismiss')).toBeTruthy();
+
+        outside.remove();
+        wrapper.unmount();
+    });
+
+    it('does not emit dismiss when a click occurs inside the container', async () => {
+        const wrapper = mount(BCGeocoderPopup, {
+            props: { results: [makeFeature('100 Fort St')] },
+            attachTo: document.body,
+        });
+
+        wrapper.element.dispatchEvent(
+            new MouseEvent('click', { bubbles: true }),
+        );
+        await nextTick();
+
+        expect(wrapper.emitted('dismiss')).toBeFalsy();
+
+        wrapper.unmount();
+    });
+
+    it('removes the document click listener on unmount', () => {
+        const spy = vi.spyOn(document, 'removeEventListener');
+        const wrapper = mountPopup([]);
+
+        wrapper.unmount();
+
+        expect(spy).toHaveBeenCalledWith('click', expect.any(Function));
+        spy.mockRestore();
     });
 });
