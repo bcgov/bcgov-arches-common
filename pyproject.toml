@@ -24,7 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "arches @ git+https://github.com/bcgov/arches@v8.0.10-bcgov-2",
+    "arches @ git+https://github.com/bcgov/arches@v8.0.10-bcgov-3",
     "arches-component-lab @ git+https://github.com/bcgov/arches-component-lab@v0.0.1a13-bcgov",
     "arches-querysets[drf] @ git+https://github.com/bcgov/arches-querysets@v1.1.2-bcgov",
     "authlib",
