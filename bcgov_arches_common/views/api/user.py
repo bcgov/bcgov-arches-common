@@ -1,16 +1,38 @@
 from http import HTTPStatus
 
-from arches.app.utils.betterJSONSerializer import JSONSerializer
-from arches.app.utils.response import JSONErrorResponse, JSONResponse
-from arches.app.views.api import APIBase
+from django.utils.translation import gettext as _
+
+from arches.app.utils.response import JSONErrorResponse
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.serializers import (
+    BooleanField,
+    CharField,
+    Serializer,
+    SerializerMethodField,
+)
+from rest_framework.views import APIView
 
 
-class UserView(APIBase):
+class UserProfileResponseSerializer(Serializer):
+    username = CharField()
+    first_name = CharField(allow_blank=True)
+    last_name = CharField(allow_blank=True)
+    groups = SerializerMethodField()
+    is_superuser = BooleanField()
+
+    def get_groups(self, user) -> dict[str, int]:
+        return dict(user.groups.values_list("name", "id"))
+
+
+class UserView(APIView):
+    """The signed-in user's name and group memberships."""
+
     http_method_names = ["get"]
+    permission_classes = [AllowAny]
+    serializer_class = UserProfileResponseSerializer
 
     def get(self, request):
-        l = request.user.groups.values_list("name", "id")
-        groups = dict(list(l))
         if not request.user.is_active:
             return JSONErrorResponse(
                 title=_("Login required"),
@@ -18,16 +40,6 @@ class UserView(APIBase):
                 status=HTTPStatus.FORBIDDEN,
             )
 
-        # N.B.: SetAnonymousUser middleware provides an anonymous User,
-        # so don't infer from a 200 OK (or even is_authenticated, if we
-        # later serialize that) that you have an authenticated user.
-        return JSONResponse(
-            JSONSerializer().serialize(
-                {
-                    "first_name": request.user.first_name,
-                    "last_name": request.user.last_name,
-                    "username": request.user.username,
-                    "groups": groups,
-                },
-            )
-        )
+        # N.B.: SetAnonymousUser middleware provides an anonymous User, so don't
+        # infer from a 200 OK that you have an authenticated user.
+        return Response(self.serializer_class(request.user).data)
