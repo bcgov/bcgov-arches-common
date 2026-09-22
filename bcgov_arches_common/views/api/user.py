@@ -14,7 +14,7 @@ from rest_framework.serializers import (
 from rest_framework.views import APIView
 
 
-class UserProfileResponseSerializer(Serializer):
+class UserResponseSerializer(Serializer):
     username = CharField()
     first_name = CharField(allow_blank=True)
     last_name = CharField(allow_blank=True)
@@ -30,7 +30,7 @@ class UserView(APIView):
 
     http_method_names = ["get"]
     permission_classes = [AllowAny]
-    serializer_class = UserProfileResponseSerializer
+    serializer_class = UserResponseSerializer
 
     def get(self, request):
         if not request.user.is_active:
