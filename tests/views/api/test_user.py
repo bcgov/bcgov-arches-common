@@ -10,13 +10,20 @@ class UserViewTest(SimpleTestCase):
         self.factory = RequestFactory()
 
     @staticmethod
-    def _user(is_active=True, is_superuser=False, groups=(("Editor", 3),)):
+    def _user(
+        is_active=True,
+        is_superuser=False,
+        groups=(("Editor", 3),),
+        username="jsmith",
+        first_name="Jane",
+        last_name="Smith",
+    ):
         user = MagicMock()
         user.is_active = is_active
         user.is_superuser = is_superuser
-        user.username = "jsmith"
-        user.first_name = "Jane"
-        user.last_name = "Smith"
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
         user.groups.values_list.return_value = list(groups)
         return user
 
@@ -54,6 +61,30 @@ class UserViewTest(SimpleTestCase):
         response = self._get(self._user(is_superuser=True))
         self.assertIs(response.data["is_superuser"], True)
 
+    def test_arches_anonymous_user_returns_profile(self):
+        # SetAnonymousUser middleware swaps in the active "anonymous" User record.
+        response = self._get(
+            self._user(
+                username="anonymous",
+                first_name="",
+                last_name="",
+                groups=(("Guest", 2),),
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data,
+            {
+                "username": "anonymous",
+                "first_name": "",
+                "last_name": "",
+                "groups": {"Guest": 2},
+                "is_superuser": False,
+            },
+        )
+
     def test_inactive_user_is_forbidden(self):
+        # Also covers django's AnonymousUser (is_active is always False), i.e. a
+        # request that SetAnonymousUser middleware didn't touch.
         response = self._get(self._user(is_active=False))
         self.assertEqual(response.status_code, 403)
