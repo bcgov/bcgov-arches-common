@@ -376,13 +376,13 @@ watch(
 
         if (toAdd.length || toRemove.length) {
             updateMapGeometries(toAdd, toRemove);
-        } else {
-            const unaddedNodeFeatures = (
-                newVal.node_value?.features ?? []
-            ).filter((f) => f.id && !addedFeatureIds.has(String(f.id)));
-            if (unaddedNodeFeatures.length || removedNodeFeatureIds.length) {
-                updateMapGeometries([], []);
-            }
+        }
+
+        const unaddedNodeFeatures = (newVal.node_value?.features ?? []).filter(
+            (f) => f.id && !addedFeatureIds.has(String(f.id)),
+        );
+        if (unaddedNodeFeatures.length || removedNodeFeatureIds.length) {
+            updateMapGeometries([], []);
         }
     },
 );
