@@ -50,6 +50,17 @@ const emit = defineEmits<{
     (e: 'select-item', index: number): void;
 }>();
 
+const handleFileDrop = (eventData: AliasedNodeData) => {
+    if (
+        eventData &&
+        Array.isArray(eventData.node_value) &&
+        eventData.node_value.length > 1
+    ) {
+        eventData.node_value = [eventData.node_value[0]];
+    }
+    emit('file-updated', eventData);
+};
+
 const getFileName = (fileData: AliasedNodeData | null): string => {
     const defaultName = props.itemTypeLabel || 'File';
     if (!fileData) return defaultName;
@@ -146,8 +157,8 @@ const isImage = (fileData: AliasedNodeData | null): boolean => {
                 :should-show-label="false"
                 :mode="EDIT"
                 :aliased-node-data="currentNodeData"
-                @update:value="
-                    emit('file-updated', $event as AliasedNodeData)
+                @update:aliased-node-data="
+                    handleFileDrop($event as AliasedNodeData)
                 " />
 
             <div
