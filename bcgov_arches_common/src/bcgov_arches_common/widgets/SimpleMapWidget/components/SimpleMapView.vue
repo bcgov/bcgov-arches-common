@@ -70,10 +70,11 @@ const geometry = computed<Feature | undefined>(() => {
 });
 
 const allGeometries = computed<FeatureCollection | undefined>(() => {
-    const geometriesFromFiles = aliasedNodeData?.value?.details.reduce(
-        (coll, file) => [...coll, ...file.geometries.features],
-        [],
-    );
+    const geometriesFromFiles =
+        aliasedNodeData?.value?.details?.reduce(
+            (coll, file) => [...coll, ...file.geometries.features],
+            [],
+        ) ?? [];
     const geometriesFromNode =
         aliasedNodeData?.value?.node_value?.features ?? [];
     return {

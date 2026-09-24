@@ -14,7 +14,7 @@ export const useMapFrameAutoCentre = (
     config: SimpleMapConfiguration = {},
     quietMs = REFIT_QUIET_MS,
 ) => {
-    const mapBoxes = useTemplateRef<HTMLElement[]>(refName);
+    const mapBoxes = useTemplateRef<HTMLElement | HTMLElement[]>(refName);
     const refitSignal = ref(0);
 
     provide('simpleMapConfig', { ...config, refitSignal });
@@ -32,9 +32,13 @@ export const useMapFrameAutoCentre = (
         scheduleRefit();
     });
 
+    const toArray = (
+        v: HTMLElement | HTMLElement[] | null | undefined,
+    ): HTMLElement[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
+
     const observed = new Set<HTMLElement>();
     watch(mapBoxes, (boxes) => {
-        const current = new Set(boxes ?? []);
+        const current = new Set(toArray(boxes));
         observed.forEach((box) => {
             if (!current.has(box)) {
                 boxObserver.unobserve(box);
