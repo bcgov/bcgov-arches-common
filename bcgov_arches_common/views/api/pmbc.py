@@ -1,135 +1,74 @@
-# views.py
-import json
+"""PMBC Parcel Fabric views: proxy WFS lookups by PID or PIN."""
+
 import logging
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.views import View
-from bcgov_arches_common.views.base import OutboundProxyMixin
+
 import urllib3
+from django.http import JsonResponse
+from django.views import View
+
+from bcgov_arches_common.services.pmbc import PmbcError, fetch_by_pid, fetch_by_pin
 
 logger = logging.getLogger(__name__)
 
 
-class PMBCDataView(View, OutboundProxyMixin):
-    """
-    Class-based view to fetch parcel data from BC Energy Regulator ArcGIS REST service using PID.
+def _run_query(fetch_fn, identifier: str, label: str) -> JsonResponse:
+    try:
+        data = fetch_fn(identifier)
+    except urllib3.exceptions.TimeoutError:
+        logger.error("Timeout fetching PMBC data (%s=%s)", label, identifier)
+        return JsonResponse(
+            {"error": "The request to the external service timed out."}, status=504
+        )
+    except urllib3.exceptions.NewConnectionError:
+        logger.error("Connection error fetching PMBC data (%s=%s)", label, identifier)
+        return JsonResponse(
+            {"error": "Could not connect to the external service."}, status=502
+        )
+    except (urllib3.exceptions.HTTPError, PmbcError):
+        logger.error(
+            "Error fetching PMBC data (%s=%s)", label, identifier, exc_info=True
+        )
+        return JsonResponse(
+            {"error": "The external service returned an error."}, status=502
+        )
+    except Exception:
+        logger.error(
+            "Unexpected error fetching PMBC data (%s=%s)",
+            label,
+            identifier,
+            exc_info=True,
+        )
+        return JsonResponse({"error": "An unexpected error occurred."}, status=500)
 
-    GET Parameters:
-    - pid: The PID value to query, e.g., '0008746320'
+    return JsonResponse(
+        {
+            "meta": {"source": "ParcelMap BC Parcel Fabric", label: identifier},
+            "data": data,
+        }
+    )
 
-    Returns:
-    - JsonResponse: The data from the ArcGIS REST endpoint
-    """
+
+class PMBCParcelByPidView(View):
+    """Proxy a PMBC WFS parcel lookup by PID."""
 
     def get(self, request, pid, *args, **kwargs):
-        # Get PID from request parameters
-        # pid = request.GET.get("pid")
-
-        # Validate PID parameter
         if not pid or not pid.isdigit():
-            return HttpResponseBadRequest(
-                json.dumps(
-                    {
-                        "error": "Invalid or missing PID parameter. PID should be a numeric value."
-                    }
-                ),
-                content_type="application/json",
-            )
-
-        # Construct the URL to the external API
-
-        base_url = "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows"
-
-        # Define parameters for the request
-        params = {
-            "service": "WFS",
-            "version": "2.0.0",
-            "request": "GetFeature",
-            "typeNames": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
-            "srsName": "EPSG:4326",
-            "CQL_FILTER": f"PID='{pid}'",
-            "outputFormat": "application/json",
-        }
-
-        logger.info(f"Requesting PMBC data for PID: {pid}")
-
-        try:
-            req = self.get_request_pool_manager()
-            # Make the request to the external API
-            response = req.request(method="GET", url=base_url, fields=params)
-
-            if response.status != 200:
-                raise urllib3.exceptions.HTTPError(f"HTTP error {response.status}")
-
-            # Parse JSON data
-            data = json.loads(response.data.decode("utf-8"))
-
-            logger.info(f"Received PMBC data for PID: {pid}, status: {response.status}")
-
-            # Add some metadata to the response
-            result = {
-                "meta": {
-                    "source": "ParcelMap BC Parcel Fabric",
-                    "pid": pid,
-                    "timestamp": response.headers.get("Date"),
-                },
-                "data": data,
-            }
-
-            return JsonResponse(result)
-
-        except urllib3.exceptions.TimeoutError:
-            logger.error(f"Timeout while fetching PMBC data for PID: {pid}")
             return JsonResponse(
-                {"error": "The request to the external API timed out", "pid": pid},
-                status=504,
-            )  # Gateway Timeout
+                {"error": "Invalid PID. PID must be numeric."}, status=400
+            )
+        return _run_query(fetch_by_pid, pid, "pid")
 
-        except urllib3.exceptions.NewConnectionError:
-            logger.error(f"Connection error while fetching PMBC data for PID: {pid}")
-            return JsonResponse(
-                {"error": "Could not connect to the external API", "pid": pid},
-                status=502,
-            )  # Bad Gateway
 
-        except urllib3.exceptions.HTTPError as e:
-            logger.error(
-                f"HTTP error while fetching PMBC data for PID: {pid}: {str(e)}"
-            )
-            return JsonResponse(
-                {
-                    "error": f"Error fetching data from external API: {str(e)}",
-                    "pid": pid,
-                },
-                status=500,
-            )
+class PMBCParcelByPinView(View):
+    """Proxy a PMBC WFS parcel lookup by PIN."""
 
-        except urllib3.exceptions.RequestError as e:
-            logger.error(
-                f"Request error while fetching PMBC data for PID: {pid}: {str(e)}"
-            )
+    def get(self, request, pin, *args, **kwargs):
+        if not pin or not pin.isdigit():
             return JsonResponse(
-                {
-                    "error": f"Error fetching data from external API: {str(e)}",
-                    "pid": pid,
-                },
-                status=500,
+                {"error": "Invalid PIN. PIN must be numeric."}, status=400
             )
+        return _run_query(fetch_by_pin, pin, "pin")
 
-        except json.JSONDecodeError:
-            logger.error(f"JSON decode error while processing PMBC data for PID: {pid}")
-            return JsonResponse(
-                {"error": "Error parsing response from external API", "pid": pid},
-                status=500,
-            )
 
-        except Exception as e:
-            logger.error(
-                f"Unexpected error while fetching PMBC data for PID: {pid}: {str(e)}"
-            )
-            return JsonResponse(
-                {
-                    "error": f"Unexpected error: {str(e)}",
-                    "pid": pid,
-                },
-                status=500,
-            )
+# Backwards-compatible alias
+PMBCDataView = PMBCParcelByPidView

@@ -4,6 +4,9 @@
     class="arches-urls"
     api-map-data="{% url 'api-map-data' %}"
     get_api_resource_edit_log='(resource_id) => {return "{% url "api-resource-edit-log" "00000000-0000-0000-0000-000000000000" %}".replace("00000000-0000-0000-0000-000000000000", resource_id)}'
-    pmbc_parcel_data='(pid) => {return "{% url "pmbc-parcel-data" "----p1" %}".replace("----p1", pid)}'
+    pmbc_parcel='(pid) => {return "{% url "pmbc-parcel-by-pid" "000000000" %}".replace("000000000", pid)}'
+    pmbc_parcel_by_pin='(pin) => {return "{% url "pmbc-parcel-by-pin" "000000000" %}".replace("000000000", pin)}'
 ></div>
 {% endblock arches_urls %}
+
+
