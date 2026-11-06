@@ -7,7 +7,7 @@
         "maxLength": 20,
         "uneditable": true,
         "defaultValue": "",
-        "reportTypeAbbreviation": "AAA",
+        "prefix": "AAA",
         "sequenceDigits": 4
     },
     "helptext": null,
