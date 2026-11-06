@@ -1,0 +1,15 @@
+{
+    "widgetid": "10000000-0000-0000-0000-000000001006",
+    "component": "views/components/widgets/reference-number-widget",
+    "datatype": "non-localized-string",
+    "defaultconfig": {
+        "width": "10%",
+        "maxLength": 20,
+        "uneditable": true,
+        "defaultValue": "",
+        "reportTypeAbbreviation": "AAA",
+        "sequenceDigits": 4
+    },
+    "helptext": null,
+    "name": "reference-number-widget"
+}
