@@ -11,7 +11,8 @@ from bcgov_arches_common.views.api.map import (
 from bcgov_arches_common.views.api.edit_log import ResourceEditLogView
 
 uuid_regex = settings.UUID_REGEX
-from bcgov_arches_common.views.api.pmbc import PMBCDataView
+from bcgov_arches_common.views.api.pmbc import PMBCParcelByPidView, PMBCParcelByPinView
+from bcgov_arches_common.views.api.reference_number import ReferenceNumberView
 
 urlpatterns = [
     path(
@@ -43,7 +44,21 @@ urlpatterns = [
         ResourceEditLogView.as_view(),
         name="api-resource-edit-log",
     ),
-    path("api/pmbc-parcel/<slug:pid>", PMBCDataView.as_view(), name="pmbc-parcel-data"),
+    path(
+        "api/pmbc-parcel/pid/<slug:pid>",
+        PMBCParcelByPidView.as_view(),
+        name="pmbc-parcel-by-pid",
+    ),
+    path(
+        "api/pmbc-parcel/pin/<slug:pin>",
+        PMBCParcelByPinView.as_view(),
+        name="pmbc-parcel-by-pin",
+    ),
+    path(
+        "api/reference-number/<str:nodeid>",
+        ReferenceNumberView.as_view(),
+        name="get_next_reference_number",
+    ),
 ]
 
 # Adds URL pattern to serve media files during development

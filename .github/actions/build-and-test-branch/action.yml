@@ -1,14 +1,12 @@
 name: 'Build and test branch'
 description: 'Builds and tests a branch'
-inputs: 
+inputs:
   branch-type:
     description: 'String denoting either `target` or `feature` branch'
     required: true
   project-name:
     description: 'String denoting the name of the project'
     required: true
-  secrets:
-    description: 'Secrets from main.yml as JSON'
 runs:
   using: 'composite'
   steps:
@@ -48,8 +46,6 @@ runs:
 
     - name: Install Arches applications
       uses: ./.github/actions/install-arches-applications
-      with:
-        secrets: ${{ inputs.secrets }}
 
     - name: Install frontend dependencies
       run: |
