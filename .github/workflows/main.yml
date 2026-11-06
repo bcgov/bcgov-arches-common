@@ -86,7 +86,6 @@ jobs:
       - name: Build and test branch
         uses: ./.github/actions/build-and-test-branch
         with:
-          secrets: ${{ toJSON(secrets) }}
           project-name: 'bcgov_arches_common'
           branch-type: 'target'
 
@@ -130,7 +129,6 @@ jobs:
       - name: Build and test branch
         uses: ./.github/actions/build-and-test-branch
         with:
-          secrets: ${{ toJSON(secrets) }}
           project-name: 'bcgov_arches_common'
           branch-type: 'feature'
 
