@@ -31,8 +31,12 @@ class ReferenceNumberView(View):
         except ValueError:
             sequence_digits = 4
         try:
-            reference_number = get_next_reference_number(nodeid, abbreviation, sequence_digits)
-            return JsonResponse({"status": "success", "report_number": reference_number})
+            reference_number = get_next_reference_number(
+                nodeid, abbreviation, sequence_digits
+            )
+            return JsonResponse(
+                {"status": "success", "report_number": reference_number}
+            )
         except Exception:
             logger.error(
                 "Failed to generate reference number for node %s", nodeid, exc_info=True

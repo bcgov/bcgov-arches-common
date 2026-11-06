@@ -11,7 +11,7 @@ const viewModel = function (params) {
         'maxLength',
         'defaultValue',
         'uneditable',
-        'reportTypeAbbreviation',
+        'prefix',
         'sequenceDigits',
     ];
 
@@ -31,13 +31,13 @@ const viewModel = function (params) {
 
     self.placeholder = ko.computed(() => {
         const year = new Date().getFullYear();
-        const abbr = ko.unwrap(self.reportTypeAbbreviation) || 'AAA';
+        const abbr = ko.unwrap(self.prefix) || 'AAA';
         const digits = parseInt(ko.unwrap(self.sequenceDigits)) || 4;
         return `${abbr}-${year}-${'0'.repeat(digits)}`;
     });
 
     self.getReportNumber = function () {
-        const abbr = ko.unwrap(self.widget.config.reportTypeAbbreviation);
+        const abbr = ko.unwrap(self.widget.config.prefix);
         const digits =
             parseInt(ko.unwrap(self.widget.config.sequenceDigits)) || 4;
         const url = `${self.urls.get_next_reference_number(self.node.id)}?abbreviation=${abbr}&sequence_digits=${digits}`;
