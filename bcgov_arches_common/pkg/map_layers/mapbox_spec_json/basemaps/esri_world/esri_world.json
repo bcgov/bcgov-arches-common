@@ -1,0 +1,32 @@
+{
+    "name": "ESRI World Imagery",
+    "sources": {
+        "esri-world-source": {
+            "type": "raster",
+            "tiles": [
+                "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            ],
+            "tileSize": 256,
+            "attribution": "Esri, Maxar, Earthstar Geographics"
+        }
+    },
+    "arches-metadata": {
+        "ispublic": false,
+        "addtomap": false,
+        "centerx": null,
+        "centery": null,
+        "icon": "fa fa-globe",
+        "isoverlay": false,
+        "legend": "",
+        "searchonly": false,
+        "sortorder": 0,
+        "zoom": null
+    },
+    "layers": [
+        {
+            "id": "esri-world",
+            "type": "raster",
+            "source": "esri-world-source"
+        }
+    ]
+}
