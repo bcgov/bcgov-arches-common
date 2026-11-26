@@ -104,8 +104,8 @@ const isPrioritySearched = computed(() => {
             <div class="bcgov-card-body">
                 <div class="title-grid">
                     <div
-                        class="logo-area"
-                        v-if="props.icon">
+                        v-if="props.icon"
+                        class="logo-area">
                         <img
                             v-if="
                                 props.icon.includes('/') ||

@@ -46,12 +46,8 @@ vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
     frames.push(cb);
     return frames.length;
 });
-const runFrames = () => {
-    const pending = frames.splice(0);
-    pending.forEach((cb) => cb(0));
-};
-
 let injected: SimpleMapConfiguration;
+// eslint-disable-next-line vue/one-component-per-file
 const Child = defineComponent({
     setup() {
         injected = inject('simpleMapConfig', {} as SimpleMapConfiguration);
@@ -60,6 +56,7 @@ const Child = defineComponent({
 });
 
 const host = (config?: SimpleMapConfiguration) =>
+    // eslint-disable-next-line vue/one-component-per-file
     defineComponent({
         setup() {
             const ids = ref(['a', 'b']);

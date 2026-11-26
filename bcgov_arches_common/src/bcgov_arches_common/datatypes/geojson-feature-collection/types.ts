@@ -25,7 +25,6 @@ export interface GeoJSONFeatureCollectionValue extends Omit<
     GeoJSONFeatureCollectionAliasedNodeData,
     'details'
 > {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details: any[];
 }
 
@@ -67,6 +66,7 @@ export interface MapLayer {
     zoom?: number | null;
     nodeid?: string;
     source?: MapSource;
+    sources?: MapSource[];
 }
 
 export interface LayerDefinition {

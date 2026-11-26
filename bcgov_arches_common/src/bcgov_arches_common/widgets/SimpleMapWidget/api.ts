@@ -26,13 +26,20 @@ export async function fetchSystemMapData() {
         );
 
         mapData.map_layers.forEach((layer: MapLayer) => {
-            if (
-                layer?.layerdefinitions?.[0].source &&
-                sourcesMap[layer.layerdefinitions[0].source]
-            )
-                layer.source = sourcesMap[
-                    layer.layerdefinitions[0].source
-                ] as MapSource;
+            const layerSources = [
+                ...new Set(
+                    layer.layerdefinitions
+                        .map((ld) => ld.source)
+                        .filter((s): s is string => !!s),
+                ),
+            ]
+                .map((name) => sourcesMap[name] as MapSource)
+                .filter(Boolean);
+
+            layer.sources = layerSources;
+            if (layerSources.length === 1) {
+                layer.source = layerSources[0];
+            }
         });
 
         transformedMapData.overlays = layers.filter(
