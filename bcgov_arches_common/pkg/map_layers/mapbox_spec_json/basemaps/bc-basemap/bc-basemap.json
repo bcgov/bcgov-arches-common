@@ -1,0 +1,324 @@
+{
+    "name": "BC Basemap",
+    "sources": {
+        "bc-basemap-source": {
+            "type": "vector",
+            "tiles": [
+                "/bcap/bctileserver/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer/tile/{z}/{y}/{x}.pbf?source=arcgis"
+            ],
+            "minzoom": 3,
+            "maxzoom": 17
+        },
+        "bc-basemap-hillshade-source": {
+            "type": "vector",
+            "tiles": [
+                "/bcap/bctileserver/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_Basemap_Vector_Hillshade/VectorTileServer/tile/{z}/{y}/{x}.pbf?source=arcgis"
+            ],
+            "minzoom": 0,
+            "maxzoom": 19
+        }
+    },
+    "arches-metadata": {
+        "addtomap": true,
+        "centerx": null,
+        "centery": null,
+        "icon": "fa fa-map",
+        "isoverlay": false,
+        "legend": null,
+        "searchonly": false,
+        "sortorder": 0,
+        "zoom": 5
+    },
+    "layers": [
+        {
+            "id": "bc-basemap-background",
+            "type": "background",
+            "paint": {
+                "background-color": "#b8d4e8"
+            }
+        },
+        {
+            "id": "bc-basemap-outside-canada",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Outside BC (Canada)",
+            "paint": {
+                "fill-color": "#e8e4de"
+            }
+        },
+        {
+            "id": "bc-basemap-outside-usa",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Outside BC (USA)",
+            "paint": {
+                "fill-color": "#e8e4de"
+            }
+        },
+        {
+            "id": "bc-basemap-land",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "BC Terrestrial (Base)",
+            "paint": {
+                "fill-color": "#f0ede8"
+            }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-1",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 2],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#B3B1AB", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-2",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 3],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#BFBDB9", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-3",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 4],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#CCC9C7", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-4",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 5],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#D9D6D4", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-5",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 6],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#E6E3E2", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-6",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 7],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#F2F1F1", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-cascadia-7",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Cascadia_Hillshade",
+            "filter": ["==", "_symbol", 8],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#FFFFFF", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-1",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 2],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#B3B1AB", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-2",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 3],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#BFBDB9", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-3",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 4],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#CCC9C7", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-4",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 5],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#D9D6D4", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-5",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 6],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#E6E3E2", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-6",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 7],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#F2F1F1", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-hillshade-alaska-7",
+            "type": "fill",
+            "source": "bc-basemap-hillshade-source",
+            "source-layer": "Alaska_Vector_Hillshade",
+            "filter": ["==", "_symbol", 8],
+            "minzoom": 4,
+            "maxzoom": 12,
+            "paint": { "fill-color": "#FFFFFF", "fill-opacity": 0.7 }
+        },
+        {
+            "id": "bc-basemap-wetlands",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Wetlands",
+            "paint": {
+                "fill-color": "#c8dfc8"
+            }
+        },
+        {
+            "id": "bc-basemap-parks-conservancies",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Conservancies",
+            "paint": {
+                "fill-color": "#d4e8c0",
+                "fill-opacity": 0.7
+            }
+        },
+        {
+            "id": "bc-basemap-parks-provincial",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Provincial",
+            "paint": {
+                "fill-color": "#d0e8c8",
+                "fill-opacity": 0.7
+            }
+        },
+        {
+            "id": "bc-basemap-parks-national",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "National",
+            "paint": {
+                "fill-color": "#c8e0c0",
+                "fill-opacity": 0.7
+            }
+        },
+        {
+            "id": "bc-basemap-lakes-s",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Lakes (S)",
+            "paint": {
+                "fill-color": "#b8d4e8"
+            }
+        },
+        {
+            "id": "bc-basemap-lakes-l",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Lakes (L)",
+            "paint": {
+                "fill-color": "#b8d4e8"
+            }
+        },
+        {
+            "id": "bc-basemap-wide-rivers",
+            "type": "fill",
+            "source": "bc-basemap-source",
+            "source-layer": "Wide Rivers",
+            "paint": {
+                "fill-color": "#b8d4e8"
+            }
+        },
+        {
+            "id": "bc-basemap-streams-l",
+            "type": "line",
+            "source": "bc-basemap-source",
+            "source-layer": "Streams (L)",
+            "paint": {
+                "line-color": "#90b8d8",
+                "line-width": 1.5
+            }
+        },
+        {
+            "id": "bc-basemap-streams-s",
+            "type": "line",
+            "source": "bc-basemap-source",
+            "source-layer": "Streams (S)",
+            "paint": {
+                "line-color": "#90b8d8",
+                "line-width": 0.8
+            }
+        },
+        {
+            "id": "bc-basemap-roads-s",
+            "type": "line",
+            "source": "bc-basemap-source",
+            "source-layer": "DRA Roads (S)",
+            "paint": {
+                "line-color": "#ffffff",
+                "line-width": 1
+            }
+        },
+        {
+            "id": "bc-basemap-roads-l",
+            "type": "line",
+            "source": "bc-basemap-source",
+            "source-layer": "DRA Roads (L)",
+            "paint": {
+                "line-color": "#e8c060",
+                "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1, 12, 4]
+            }
+        },
+        {
+            "id": "bc-basemap-railways",
+            "type": "line",
+            "source": "bc-basemap-source",
+            "source-layer": "Railroads",
+            "paint": {
+                "line-color": "#b0a090",
+                "line-width": 1
+            }
+        }
+    ]
+}

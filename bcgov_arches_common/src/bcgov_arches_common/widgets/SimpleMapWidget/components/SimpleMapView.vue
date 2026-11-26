@@ -186,7 +186,14 @@ function setupMap(): void {
     const basemap = _.find(mapData.value.basemaps, (basemap: MapLayer) => {
         return basemap.addtomap;
     });
-    defaultStyle.value.sources[basemap.source.name] = basemap.source.source;
+    const sources = basemap.sources?.length
+        ? basemap.sources
+        : basemap.source
+          ? [basemap.source]
+          : [];
+    for (const src of sources) {
+        defaultStyle.value.sources[src.name] = src.source;
+    }
     defaultStyle.value.layers.push(...basemap.layerdefinitions);
 
     if (mapData.value.default_bounds) {

@@ -59,6 +59,30 @@ function makeLayer(
     };
 }
 
+function makeMultiSourceLayer(
+    name: string,
+    isoverlay: boolean,
+    sourceNames: (string | undefined)[],
+) {
+    return {
+        activated: true,
+        addtomap: true,
+        icon: '',
+        id: Math.random(),
+        isoverlay,
+        layerdefinitions: sourceNames.map((sourceName, i) =>
+            sourceName
+                ? { id: `${name}-layer-${i}`, type: 'fill', source: sourceName }
+                : { id: `${name}-layer-${i}`, type: 'background' },
+        ),
+        name,
+        title: name,
+        url: '',
+        visible: true,
+        sortorder: undefined,
+    };
+}
+
 function makeRawMapData(
     layers: ReturnType<typeof makeLayer>[],
     sources: ReturnType<typeof makeSource>[],
@@ -176,6 +200,91 @@ describe('fetchSystemMapData', () => {
         const result = await fetchSystemMapData();
 
         expect(result!.basemaps[0].source).toBeUndefined();
+    });
+
+    it('populates sources array for a single-source layer', async () => {
+        const source = makeSource('wms-tiles');
+        const layer = makeLayer('tiles-layer', false, 'wms-tiles');
+        vi.mocked(fetchMapData).mockResolvedValue(
+            makeRawMapData([layer], [source]),
+        );
+
+        const result = await fetchSystemMapData();
+
+        expect(result!.basemaps[0].sources).toEqual([source]);
+    });
+
+    it('populates sources array for a multi-source layer', async () => {
+        const src1 = makeSource('main-source');
+        const src2 = makeSource('hillshade-source');
+        // first layer is a background (no source), then two sources
+        const layer = makeMultiSourceLayer('bc-basemap', false, [
+            undefined,
+            'main-source',
+            'hillshade-source',
+            'main-source', // duplicate — should be deduplicated
+        ]);
+        vi.mocked(fetchMapData).mockResolvedValue(
+            makeRawMapData([layer], [src1, src2]),
+        );
+
+        const result = await fetchSystemMapData();
+
+        expect(result!.basemaps[0].sources).toHaveLength(2);
+        expect(result!.basemaps[0].sources).toEqual(
+            expect.arrayContaining([src1, src2]),
+        );
+    });
+
+    it('does not set source (singular) when a layer has multiple sources', async () => {
+        const src1 = makeSource('main-source');
+        const src2 = makeSource('hillshade-source');
+        const layer = makeMultiSourceLayer('bc-basemap', false, [
+            'main-source',
+            'hillshade-source',
+        ]);
+        vi.mocked(fetchMapData).mockResolvedValue(
+            makeRawMapData([layer], [src1, src2]),
+        );
+
+        const result = await fetchSystemMapData();
+
+        expect(result!.basemaps[0].source).toBeUndefined();
+    });
+
+    it('skips layer definitions whose source is not in map_sources', async () => {
+        const src = makeSource('known-source');
+        const layer = makeMultiSourceLayer('bc-basemap', false, [
+            'known-source',
+            'unknown-source',
+        ]);
+        vi.mocked(fetchMapData).mockResolvedValue(
+            makeRawMapData([layer], [src]),
+        );
+
+        const result = await fetchSystemMapData();
+
+        expect(result!.basemaps[0].sources).toHaveLength(1);
+        expect(result!.basemaps[0].sources![0]).toEqual(src);
+    });
+
+    it('does not set source when the first layer has no source but later layers do (multi-source case)', async () => {
+        const src1 = makeSource('main-source');
+        const src2 = makeSource('overlay-source');
+        const layer = makeMultiSourceLayer('bc-basemap', false, [
+            undefined,
+            'main-source',
+            'overlay-source',
+        ]);
+        vi.mocked(fetchMapData).mockResolvedValue(
+            makeRawMapData([layer], [src1, src2]),
+        );
+
+        const result = await fetchSystemMapData();
+
+        // Multiple sources → source (singular) should not be set
+        expect(result!.basemaps[0].source).toBeUndefined();
+        expect(result!.basemaps[0].sources).toHaveLength(2);
     });
 
     // ------------------------------------------------------------------

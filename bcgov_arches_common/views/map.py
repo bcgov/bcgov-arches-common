@@ -51,7 +51,15 @@ class BCTileserverProxyView(TileserverProxyView, OutboundProxyMixin):
             use_outbound_proxy=source_config.get("use_outbound_proxy", False)
         )
 
-        return super(BCTileserverProxyView, self).get_request_headers()
+        headers = super(BCTileserverProxyView, self).get_request_headers()
+
+        # Strip internal proxy headers that must not be forwarded to upstream
+        # tile servers. X-Forwarded-Host in particular causes ArcGIS CloudFront
+        # to route to the wrong origin when it receives "localhost".
+        for header in ("X-Forwarded-Host", "X-Forwarded-For", "X-Forwarded-Proto"):
+            headers.pop(header, None)
+
+        return headers
 
     def dispatch(self, request, *args, **kwargs):
         # When hitting /bctileserver/ there is no <path:path> kwarg.

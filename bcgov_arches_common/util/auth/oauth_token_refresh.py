@@ -63,19 +63,14 @@ class OAuthTokenRefreshMiddleware:
 
         return False
 
-    def __call__(self, request):
-        if bypass_auth(request):
-            return self.get_response(request)
+    def _handle_token(self, request, has_valid_dot_token=False):
+        """
+        Validate the session OAuth token and refresh it if expired.
 
-        # If request has a valid DOT bearer token, do NOT redirect to HOME_PAGE
-        has_valid_dot_token = self.dot_access_token_is_valid(request)
-
-        if logger.isEnabledFor(logging.DEBUG):
-            expiry_timestamp = request.session.get_expiry_date().timestamp()
-            now = time.time()
-            time_left = int(expiry_timestamp - now)
-            logger.debug(f"Session expires in {time_left}")
-
+        Returns a redirect response if the token is expired and refresh fails
+        (indicating the user must re-authenticate), or None in all other cases.
+        Logs the user out whenever credentials are found to be irrecoverably stale.
+        """
         token = request.session.get("oauth_token")
 
         if token:
@@ -113,8 +108,31 @@ class OAuthTokenRefreshMiddleware:
                         return redirect(UNAUTHORIZED_PAGE)
         else:
             if request.user.is_authenticated and not has_valid_dot_token:
-                logger.warning(f"[Token] No token - logging user out.")
+                logger.warning("[Token] No token - logging user out.")
                 log_user_out(request)
+
+        return None
+
+    def __call__(self, request):
+        if bypass_auth(request):
+            # Home page is exempt from redirects but still needs credential
+            # cleanup so it renders with the correct auth state.
+            if request.path.rstrip("/") == HOME_PAGE.rstrip("/"):
+                self._handle_token(request)
+            return self.get_response(request)
+
+        # If request has a valid DOT bearer token, do NOT redirect to HOME_PAGE
+        has_valid_dot_token = self.dot_access_token_is_valid(request)
+
+        if logger.isEnabledFor(logging.DEBUG):
+            expiry_timestamp = request.session.get_expiry_date().timestamp()
+            now = time.time()
+            time_left = int(expiry_timestamp - now)
+            logger.debug(f"Session expires in {time_left}")
+
+        redirect_response = self._handle_token(request, has_valid_dot_token)
+        if redirect_response is not None:
+            return redirect_response
 
         if (
             AUTH_REQUIRED

@@ -132,6 +132,82 @@ function makeMapData(): MapData {
     };
 }
 
+function makeMultiSourceMapData(): MapData {
+    return {
+        overlays: [],
+        basemaps: [
+            {
+                addtomap: true,
+                icon: '',
+                id: 2,
+                isoverlay: false,
+                name: 'BC Basemap',
+                title: 'BC Basemap',
+                url: '',
+                visible: true,
+                // No single `source` — uses `sources` (plural) with two entries
+                sources: [
+                    {
+                        id: 1,
+                        name: 'bc-basemap-source-BC Basemap',
+                        source: {
+                            type: 'vector',
+                            url: 'https://tiles.example.com/main',
+                        },
+                        source_json: '',
+                    },
+                    {
+                        id: 2,
+                        name: 'bc-basemap-hillshade-source-BC Basemap',
+                        source: {
+                            type: 'vector',
+                            url: 'https://tiles.example.com/hillshade',
+                        },
+                        source_json: '',
+                    },
+                ],
+                layerdefinitions: [
+                    { id: 'bc-background', type: 'background' },
+                    {
+                        id: 'bc-land',
+                        type: 'fill',
+                        source: 'bc-basemap-source-BC Basemap',
+                        'source-layer': 'BC Terrestrial (Base)',
+                    },
+                    {
+                        id: 'bc-hillshade',
+                        type: 'fill',
+                        source: 'bc-basemap-hillshade-source-BC Basemap',
+                        'source-layer': 'Cascadia_Hillshade',
+                    },
+                ],
+            },
+        ],
+        default_bounds: { type: 'FeatureCollection', features: [] },
+    };
+}
+
+function makeNoSourceMapData(): MapData {
+    return {
+        overlays: [],
+        basemaps: [
+            {
+                addtomap: true,
+                icon: '',
+                id: 3,
+                isoverlay: false,
+                name: 'Background Only',
+                title: 'Background Only',
+                url: '',
+                visible: true,
+                sources: [],
+                layerdefinitions: [{ id: 'bg', type: 'background' }],
+            },
+        ],
+        default_bounds: { type: 'FeatureCollection', features: [] },
+    };
+}
+
 function makeAliasedData(
     features: Feature[] = [],
     details: MapFileData[] = [],
@@ -276,6 +352,16 @@ describe('SimpleMapView', () => {
         await wrapper.setProps({ mapData: makeMapData() });
         await nextTick();
 
+        expect(maplibregl.Map).toHaveBeenCalledOnce();
+    });
+
+    it('creates a Map when basemap has multiple sources (no single source)', () => {
+        mountView({ mapData: makeMultiSourceMapData() });
+        expect(maplibregl.Map).toHaveBeenCalledOnce();
+    });
+
+    it('creates a Map when basemap has no sources at all (background-only)', () => {
+        mountView({ mapData: makeNoSourceMapData() });
         expect(maplibregl.Map).toHaveBeenCalledOnce();
     });
 
